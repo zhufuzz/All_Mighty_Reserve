@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+{% autoescape true %}
+<html>
+<head>
+  <link type="text/css" rel="stylesheet" href="/static/bootstrap/css/main.css" />
+  <link type="text/css" rel="stylesheet" href="/static/bootstrap/css/bootstrap.min.css" />
+<script>
+		function checkValidations() {
+		var resourceName = document.getElementById("resourceName").value;
+
+
+
+		var d = new Date();
+		var getMonth = document.getElementById("Month").value;
+		var getDay = document.getElementById("Day").value;
+		var getYear = document.getElementById("Year").value;
+		var getsHours = document.getElementById("startHours").value;
+		var getsMins = document.getElementById("startMins").value;
+
+		var sMeridian = document.getElementById("startMeridian").value;
+		var intsHours = parseInt(getsHours);
+
+		if(sMeridian == 'PM'){
+		intsHours = intsHours + 12;
+		getsHours = intsHours;
+		}
+
+		if(getsHours.length == 1){
+		getsHours = '0'+getsHours;
+		}
+		if(getsMins.length == 1){
+		getsMins = '0'+getsMins;
+		}
+
+		var geteHours = document.getElementById("endHours").value;
+		var eMeridian = document.getElementById("endMeridian").value;
+		var inteHours = parseInt(geteHours);
+		if(eMeridian == 'PM'){
+		inteHours = inteHours + 12;
+		geteHours = inteHours;
+		}
+		if(geteHours.length == 1){
+		geteHours = '0'+geteHours;
+		}
+
+		var geteMins = document.getElementById("endMins").value;
+		if(geteMins.length == 1){
+		geteMins = '0'+geteMins;
+		}
+
+		var getStartDateString = getYear + '-' +getMonth +'-'+getDay+' '+getsHours+':'+getsMins+':00';
+		var myStartDate = new Date(getStartDateString);
+
+		var getEndDateString = getYear + '-' +getMonth +'-'+getDay+' '+geteHours+':'+geteMins+':00';
+		var myEndDate = new Date(getEndDateString);
+		if(myStartDate < d){
+		var message = "Date should be greater than current date";
+		document.getElementById("displayError").innerHTML = message;
+		return false;
+		}else {
+			if(myEndDate < myStartDate){
+			var message = "End time should be greater than Start time";
+
+			document.getElementById("displayError").innerHTML = message;
+			return false;
+			}
+			else {
+			return true;
+			}
+		}
+		};
+
+		function checkReserveValidations() {
+		 var d = new Date();
+
+		 getStartHours = document.getElementById("rstartHours").value;
+		 getStartMins = document.getElementById("rstartMins").value;
+		 getStartMeridian = document.getElementById("rstartMeridian").value;
+		 intstartHours = parseInt(getStartHours);
+
+		if(getStartMeridian == 'PM'){
+		intstartHours = intstartHours + 12;
+		getStartHours = intstartHours;
+		}
+		var splitDate = "{{resource_date}}"	;
+		var splitDateArray = splitDate.split("/");
+
+		var newResourceDate = splitDateArray[0] +"-"+ splitDateArray[1]+"-"+splitDateArray[2];
+
+		var getDate = newResourceDate+' '+getStartHours+':'+getStartMins+':00';
+
+		var resourceStartDate = new Date(getDate);
+
+		 if(resourceStartDate < d) {
+			var message = "Start Time should be greater than current time";
+		 document.getElementById("durationError").innerHTML = message;
+			return false;
+		 }
+
+		 var endHours = document.getElementById("endHours").value;
+		 var endMins = document.getElementById("endMins").value;
+
+		 if (endHours == "0" && endMins == '0') {
+		 var message = "Duration should be greater than zero";
+		 document.getElementById("durationError").innerHTML = message;
+		 return false;
+		 } else {
+		 return true;
+		 }
+
+		};
+
+	</script>
+  </head>
+	<body>
+		<div class="container">
+			<h3>Reservation System</h3>
+			<hr>
+			<ul class="nav nav-pills">
+				<li class=
+				{% if menu_title == "show_reservations" %}
+					active
+				{% endif %}
+				><a href="?menu_title=show_reservations&resource_uuid={{resource.uuid}}">Show Upcoming/Current Reservations</a></li>
+				<li class=
+				{% if menu_title == "add_new_reservation" %}
+					active
+				{% endif %}
+				><a href="?menu_title=add_new_reservation&resource_uuid={{resource.uuid}}">Add New Reservation</a></li>
+				{% if user and user.user_id() == resource.user.identity %}
+					<li class=
+					{% if menu_title == "edit_resource" %}
+						active
+					{% endif %}
+
+					><a href="?menu_title=edit_resource&resource_uuid={{resource.uuid}}">Edit Resource</a></li>
+
+
+				{% endif %}
+				<li><a href="/">Home</a></li>
+				<li><a href="{{url|safe}}">{{ url_linktext }}</a></li>
+
+
+			</ul>
+
+		<div class="second-heading">
+			<div class="title-heading">
+			Hello
+			{% if user %}
+			{{user.nickname()}}
+			{% endif %}
+			</div>
+			<div>
+			<form action="/searchResource" method="get">
+			Search Resources By Resource Name:
+			<input type="text" name="searchResource"/>
+			<input type="submit" value="Submit">
+			</form>
+			</div>
+
+			<hr>
+			<div>Resource Name: {{resource.resourceName}}<div>
+
+			<div>
+				<div class="tag-style">TAGS:</div>
+				<div>
+				{% for eachTag in resource.tags %}
+						<form id="tagForm{{eachTag}}" action="/listTagResources" method="get" class="tag-header">
+						<input type="hidden" name="get_Tag" value="{{eachTag}}">
+						<a href="javascript:void(0)" onclick="document.getElementById('tagForm{{eachTag}}').submit()">{{eachTag}}</a>
+						</form>
+				{% endfor %}
+				</div>
+			</div>
+
+			<br>
+			<div>Number of Reservations Made: {{resource.numReservations}}</div>
+
+			<div class="rss-style">
+				<div>
+				<form id="RSSForm{{resource.uuid}}" action="/resourceRSS" method="get">
+					<input type="hidden" name="get_ResourceID" value="{{resource.uuid}}">
+					<a href="javascript:void(0)" onclick="document.getElementById('RSSForm{{resource.uuid}}').submit()">RSS</a>
+				</form>
+				</div>
+			</div>
+
+
+		</div>
+		<hr>
+
+		{% if menu_title == "show_reservations" %}
+
+			<div class="divTable">
+				 <div class="headRow">
+					<div  class="divCell">Reservation Owned By</div>
+					<div  class="divCell">Start Time</div>
+					<div  class="divCell">Duration</div>
+					<div  class="divCell">Delete</div>
+
+				 </div>
+
+				{% for reservation in reservations %}
+					{% if reservation.resourceUUID == resource.uuid %}
+
+					<div class="divRow" id = "rowdiv{{reservation.uuid}}">
+						<div class="divCell">{{reservation.user.email}}</div>
+
+
+						<div class="divCell">{{reservation.startTime}}</div>
+						<div class="divCell">{{reservation.duration}}</div>
+						{% if reservation.user.identity == user.user_id() %}
+							<form action="/" method="get">
+								<div class="divCell">
+								<input type="hidden" name="deleteReservation" value="{{reservation.uuid}}">
+								<input type="submit" value="Delete" >
+								</div>
+							</form>
+
+						{% endif %}
+
+					</div>
+
+					<script>
+					var d = new Date();
+					var str = "";
+
+						var endTime = new Date("{{reservation.endTime}}");
+						if (endTime < d) {
+						document.getElementById("rowdiv{{reservation.uuid}}").style.display = "none";
+						}
+					</script>
+					{% endif %}
+				{% endfor %}
+
+
+			</div>
+
+
+
+		{% endif %}
+		{% if menu_title == "add_new_reservation" %}
+
+			<div>
+				<h4>Make A Reservation</h4>
+				<span id="durationError"></span>
+
+				{% if flag == 'false' %}
+					<div>Please enter the correct start Time and duration
+					</div>
+				{% endif %}
+				Resource Name: {{resource.resourceName}}
+				<br>
+				Resource StartTime: {{resource.startTime}}
+				<br>
+				Resource EndTime: {{resource.endTime}}
+				<br>
+				<br>
+				All Reservations done on this resource
+				<span id = "endTimes"></span>
+
+				<script>
+				var d = new Date();
+				var str = "";
+				var numRes = 1;
+					{% for reservation in reservations %}
+					var endTime = new Date("{{reservation.endTime}}");
+					var d1 = new Date("{{reservation.startTime}}")
+					var d2 = new Date("{{reservation.endTime}}")
+
+						if (endTime > d) {
+						str = str + "<br>" +"Reservation "+numRes +" FROM " +d1+' ' + "TO " + d2 +"<br>";
+						}
+					numRes  =  numRes +1 ;
+					{% endfor %}
+				document.getElementById("endTimes").innerHTML = str;
+				</script>
+				<form action="/addReservation" onSubmit="return checkReserveValidations()" method="post" id="addReserveForm">
+					<input type="hidden" name="resource_name" value="{{resource.resourceName}}">
+					<input type="hidden" name="resource_uuid" value="{{resource.uuid}}">
+					<input type="hidden" name="resource_startDate" value="{{resource_date}}">
+
+					<br>
+					<div>
+					Resource Availability Date:
+						{{resource_date}}
+					</div>
+					<br>
+					<div>
+					<span>
+					Select Start Time (HH-MM):
+					<select name="startHours" id = "rstartHours">
+					{% for num in range(1,13)%}
+					  <option value="{{ num }}">{{num}}</option>
+					{% endfor %}
+					</select>
+					</span>
+					<span>
+					<select name="startMins" id = "rstartMins">
+					{% for num in range(0,60)%}
+					  <option value="{{ num }}">{{num}}</option>
+					{% endfor %}
+					</select>
+					</span>
+					<span>
+					<select name="startMeridian" id = "rstartMeridian">
+					  <option value="AM">AM</option>
+					  <option value="PM">PM</option>
+					</select>
+					</span>
+
+					<span>
+					Select Duration(in hours and mins):
+					<select name="endHours" id="endHours">
+					{% for num in range(0,13)%}
+					  <option value="{{ num }}">{{num}}</option>
+					{% endfor %}
+					</select>
+					</span>
+					<span>
+					<select name="endMins" id="endMins">
+					{% for num in range(0,60)%}
+					  <option value="{{ num }}">{{num}}</option>
+					{% endfor %}
+					</select>
+					</span>
+
+					</div>
+					<br>
+					<input type="submit" value="Reserve">
+
+				</form>
+			</div>
+
+		{% endif %}
+		{% if menu_title == "edit_resource" %}
+			<div>
+				<h4>Edit Current Resource</h4>
+				<span id="displayError"></span>
+				<form action="/sign" onSubmit= "return checkValidations()"method="post" id="editForm">
+					<input type="hidden" name="resource_uuid" value="{{resource.uuid}}">
+					<div>Resource Name:
+						<input id="resourceName" value="{{ resource.resourceName }}" name="resource_name" required/>
+					</div>
+					<br>
+					<div>
+
+					Select Date (MM-DD-YYYY):
+					<select name="Month" id= "Month">
+					{% for num in range(1,13)%}
+					  <option value="{{ num }}">{{num}}</option>
+					{% endfor %}
+					</select>
+					<select name="Day" id = "Day">
+					{% for num in range(1,32)%}
+					  <option value="{{ num }}">{{num}}</option>
+					{% endfor %}
+					</select>
+					<select name="Year" id = "Year">
+					{% for num in range(2015,2100)%}
+					  <option value="{{ num }}">{{num}}</option>
+					{% endfor %}
+					</select>
+
+					</div>
+					<br>
+					<div>
+					<span>
+					Select Start Time (HH-MM):
+					<select name="startHours" id = "startHours">
+					{% for num in range(1,13)%}
+					  <option value="{{ num }}">{{num}}</option>
+					{% endfor %}
+					</select>
+					</span>
+					<span>
+					<select name="startMins" id = "startMins">
+					{% for num in range(0,60)%}
+					  <option value="{{ num }}">{{num}}</option>
+					{% endfor %}
+					</select>
+					</span>
+					<span>
+					<select name="startMeridian" id = "startMeridian">
+					  <option value="AM">AM</option>
+					  <option value="PM">PM</option>
+					</select>
+					</span>
+
+					<span>
+					Select End Time (HH-MM):
+					<select name="endHours" id="endHours">
+					{% for num in range(1,13)%}
+					  <option value="{{ num }}">{{num}}</option>
+					{% endfor %}
+					</select>
+					</span>
+					<span>
+					<select name="endMins" id="endMins">
+					{% for num in range(0,60)%}
+					  <option value="{{ num }}">{{num}}</option>
+					{% endfor %}
+					</select>
+					</span>
+					<span>
+					<select name="endMeridian" id="endMeridian">
+					  <option value="AM">AM</option>
+					  <option value="PM">PM</option>
+					</select>
+					</span>
+					</div>
+					<br>
+					<div>
+						Set Tags (; separated):
+						<input id="resourceTags" name="resource_Tag" />
+					</div>
+					<br>
+					<script>
+					var x = "{{resource.startTime}}";
+					startDateTime = new Date("{{resource.startTime}}");
+					startDate = startDateTime.getDate();
+					startMonth = startDateTime.getMonth() + 1;
+					startYear = startDateTime.getFullYear();
+					startHours = startDateTime.getHours();
+					startMins = startDateTime.getMinutes();
+
+					if(startHours > 12) {
+					startHours = startHours - 12;
+					startMeridian = 'PM'
+					} else {
+					startMeridian = 'AM'
+					}
+
+					endDateTime = new Date("{{resource.endTime}}");
+					endHours = endDateTime.getHours();
+					endMins = endDateTime.getMinutes();
+
+
+					if(endHours > 12) {
+					endHours = endHours - 12;
+					endMeridian = 'PM'
+					} else {
+					endMeridian = 'AM'
+					}
+					document.getElementById("Month").value = startMonth;
+					document.getElementById("Day").value = startDate;
+					document.getElementById("Year").value = startYear;
+					document.getElementById("startHours").value = startHours;
+					document.getElementById("startMins").value = startMins;
+					document.getElementById("startMeridian").value = startMeridian;
+					document.getElementById("endHours").value = endHours;
+					document.getElementById("endMins").value = endMins;
+					document.getElementById("endMeridian").value = endMeridian;
+					var str = ""
+					{% for eachtag in resource.tags %}
+						str = str + "{{eachtag}}" + ';' ;
+					{% endfor %}
+					document.getElementById("resourceTags").value = str;
+
+					</script>
+					<input type="submit" value="Submit">
+
+				</form>
+			</div>
+
+
+		{% endif %}
+
+
+
+		<hr>
+
+
+
+
+		</div>
+	</body>
+</html>
+{% endautoescape %}
