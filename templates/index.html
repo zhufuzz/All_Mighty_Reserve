@@ -7,14 +7,10 @@
     <link type="text/css" rel="stylesheet" href="/static/css/bootstrap.css">
     <link type="text/css" rel="stylesheet" href="/static/css/bootstrap-responsive.css">
     <link type="text/css" rel="stylesheet" href="/static/css/main.css">
-
+    <link type="text/css" rel="stylesheet" href="/static/css/cal.css">
+    {% block clock %}{% endblock %}
     <!-- [END css] -->
-    <script
-      src="http://code.jquery.com/jquery-3.2.1.min.js"
-      integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
-      crossorigin="anonymous"></script>
 
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 
   </head>
 
@@ -37,10 +33,10 @@
 
             <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
-                    <li><a href="#/conference">My Reservations</a></li>
-                    <li><a href="#/conference/create" >All Resources</a></li>
-                    <li><a href="#/profile">My Resources</a></li>
-                    <li><a href="/createResource.html">Create Resources</a></li>
+                    <li><a href="/">My Reservations</a></li>
+                    <li><a href="/CreateResource" >All Resources</a></li>
+                    <li><a href="/MyResource">My Resources</a></li>
+                    <li><a href="/CreateResource">Create Resources</a></li>
                     <li class="nav-divider"></li>
                 </ul>
 
@@ -99,9 +95,10 @@
                 {% endif %}
                 <blockquote>{{ greeting.content }}</blockquote>
             {% endfor %}
+         </ul>
         {% endblock %}
 
-        </ul>
+
     </div>
 {#    <!-- [START SignIn] -->
       <form action="/sign?guestbook_name={{ guestbook_name }}" method="post">
@@ -115,6 +112,14 @@
 
     </div>
   </body>
+    <script
+      src="http://code.jquery.com/jquery-3.2.1.min.js"
+      integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+      crossorigin="anonymous"></script>
 
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+
+    <script src="/static/js/cal.js"></script>
 </html>
 {% endautoescape %}

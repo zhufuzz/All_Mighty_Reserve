@@ -64,31 +64,6 @@ class MainPage(webapp2.RequestHandler):
 
 ##########################################
 
-class CreateResource(webapp2.RequestHandler):
-
-
-
-	def get(self):
-		guestbook_name = self.request.get('guestbook_name',
-										  DEFAULT_GUESTBOOK_NAME)
-
-		user = users.get_current_user()
-		if user:
-			url = users.create_logout_url(self.request.uri)
-			url_linktext = 'Logout'
-		else:
-			url = users.create_login_url(self.request.uri)
-			url_linktext = 'Login'
-
-		template_values = {
-			'user': user,
-
-			'guestbook_name': urllib.quote_plus(guestbook_name),
-			'url': url,
-			'url_linktext': url_linktext,
-		}
-		template = JINJA_ENVIRONMENT.get_template('createResource.html')
-		self.response.write(template.render(template_values))
 
 
 class AllResources(webapp2.RequestHandler):
@@ -138,8 +113,34 @@ class MyResource(webapp2.RequestHandler):
 		template = JINJA_ENVIRONMENT.get_template('index.html')
 		self.response.write(template.render(template_values))
 
+##################################################################
 
 
+class CreateResource(webapp2.RequestHandler):
+
+	def get(self):
+		guestbook_name = self.request.get('guestbook_name',
+										  DEFAULT_GUESTBOOK_NAME)
+
+		user = users.get_current_user()
+		if user:
+			url = users.create_logout_url(self.request.uri)
+			url_linktext = 'Logout'
+		else:
+			url = users.create_login_url(self.request.uri)
+			url_linktext = 'Login'
+
+		template_values = {
+			'user': user,
+
+			'guestbook_name': urllib.quote_plus(guestbook_name),
+			'url': url,
+			'url_linktext': url_linktext,
+		}
+		template = JINJA_ENVIRONMENT.get_template('createResource.html')
+		self.response.write(template.render(template_values))
+
+##################################################################
 
 app = webapp2.WSGIApplication([
 	('/', MainPage),
