@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+{% autoescape true %}
+<html>
+<head>
+  <link type="text/css" rel="stylesheet" href="/static/css/main.css" />
+  <link type="text/css" rel="stylesheet" href="/static/bootstrap/css/bootstrap.min.css" />
+	<script>
+		function checkValidations() {
+		var resourceName = document.getElementById("resourceName").value;
+
+		var d = new Date();
+		var getMonth = document.getElementById("Month").value;
+		var getDay = document.getElementById("Day").value;
+		var getYear = document.getElementById("Year").value;
+		var getsHours = document.getElementById("startHours").value;
+		var getsMins = document.getElementById("startMins").value;
+
+		var sMeridian = document.getElementById("startMeridian").value;
+		var intsHours = 0;
+		intsHours = parseInt(getsHours);
+
+		if(sMeridian == 'PM'){
+		if(intshours!=12){
+		intsHours = intsHours + 12;
+		getsHours = intsHours;
+		}
+		}
+
+		if(getsHours.length == 1){
+		getsHours = '0'+getsHours;
+		}
+		if(getsMins.length == 1){
+		getsMins = '0'+getsMins;
+		}
+
+		var geteHours = document.getElementById("endHours").value;
+		var eMeridian = document.getElementById("endMeridian").value;
+		var inteHours = parseInt(geteHours);
+		if(eMeridian == 'PM'){
+		if(intehours){
+		inteHours = inteHours + 12;
+		geteHours = inteHours;
+		}
+		}
+		if(geteHours.length == 1){
+		geteHours = '0'+geteHours;
+		}
+
+		var geteMins = document.getElementById("endMins").value;
+		if(geteMins.length == 1){
+		geteMins = '0'+geteMins;
+		}
+
+		var getStartDateString = getYear + '-' +getMonth +'-'+getDay+' '+getsHours+':'+getsMins+':00';
+		var myStartDate = new Date(getStartDateString);
+
+		var getEndDateString = getYear + '-' +getMonth +'-'+getDay+' '+geteHours+':'+geteMins+':00';
+		var myEndDate = new Date(getEndDateString);
+		if(myStartDate < d){
+		var message = "Date should be greater than current date";
+		document.getElementById("displayError").innerHTML = message;
+		return false;
+		}else {
+			if(myEndDate < myStartDate){
+			var message = "End time should be greater than Start time";
+
+			document.getElementById("displayError").innerHTML = message;
+			return false;
+			}
+			else {
+			return true;
+			}
+		}
+		}
+
+	</script>
+
+  </head>
+	<body>
+		<div class="container">
+			<h3>Reservation System </h3>
+			<hr>
+			<ul class="nav nav-pills">
+				{% if checkUserResources == 'false' %}
+
+					<li class=
+					{% if menu_title == "see_your" %}
+						active
+					{% endif %}
+					><a href="?menu_title=see_your&checkUserResources={{checkUserResources}}&getUser={{getUser}}">See Your Reservations</a></li>
+				{% endif %}
+				{% if checkUserResources == 'true' %}
+
+					<li class=
+					{% if menu_title == "see_your" %}
+						active
+					{% endif %}
+					><a href="?menu_title=see_your&checkUserResources={{checkUserResources}}&getUser={{getUser}}">See Reservations of {{getUser}}</a></li>
+				{% endif %}
+
+				{% if checkUserResources == 'false' %}
+					<li class=
+					{% if menu_title == "see_all" %}
+						active
+					{% endif %}
+					><a href="?menu_title=see_all">See All Resources</a></li>
+
+
+
+				{% endif %}
+				{% if checkUserResources == 'false' %}
+
+					<li class=
+					{% if menu_title == "see_resource" %}
+						active
+					{% endif %}
+
+					><a href="?menu_title=see_resource&checkUserResources={{checkUserResources}}&getUser={{getUser}}">See Resources Owned by You</a></li>
+				{% endif %}
+				{% if checkUserResources == 'true' %}
+
+					<li class=
+					{% if menu_title == "see_resource" %}
+						active
+					{% endif %}
+
+					><a href="?menu_title=see_resource&checkUserResources={{checkUserResources}}&getUser={{getUser}}">See Resources Owned by {{getUser}}</a></li>
+				{% endif %}
+				{% if checkUserResources == 'false' %}
+
+					<li class=
+					{% if menu_title == "create" %}
+						active
+					{% endif %}
+
+					><a href="?menu_title=create">{{url_createResource}}</a></li>
+				{% endif %}
+				<li><a href="/">Home</a></li>
+				<li><a href="{{url|safe}}">{{ url_linktext }}</a></li>
+			</ul>
+
+		<div class="second-heading">
+			<div class="title-heading">
+			Hello
+			{% if user %}
+			{{user.nickname()}}
+			{% endif %}
+			</div>
+			<div>
+			<form action="/searchResource" method="get">
+			Search Resources By Resource Name:
+			<input type="text" name="searchResource"/>
+			<input type="submit" value="Submit">
+			</form>
+			</div>
+		</div>
+		<hr>
+
+		{% if menu_title == "see_your" %}
+
+			<div class="divTable">
+				 <div class="headRow">
+					<div  class="divCell">Resource Name</div>
+					<div  class="divCell">Resource Tags</div>
+					<div  class="divCell">Start Time</div>
+					<div  class="divCell">Duration</div>
+					<div  class="divCell">Delete</div>
+
+
+				 </div>
+
+				{% for reservation in reservations %}
+					{% if checkUserResources == "true" %}
+						{% if getUser == reservation.user.email %}
+							<div class="divRow" id = "rowdiv{{reservation.uuid}}">
+
+									<form id='myform{{reservation.resourceName}}' action="/reserveResource" method="get">
+									<div class="divCell">
+											<input type="hidden" name="resource_uuid" value="{{reservation.resourceUUID}}">
+											<a href="javascript:void(0)" onclick="document.getElementById('myform{{reservation.resourceName}}').submit()">{{reservation.resourceName}}</a>
+
+									</div>
+									</form>
+									<div class="divCell">
+
+										{% for resource in resources %}
+											{% if reservation.resourceName == resource.resourceName %}
+												{% for eachTag in resource.tags %}
+														<form id="tagForm{{eachTag}}" action="/listTagResources" method="get" class="tag-header">
+															<input type="hidden" name="get_Tag" value="{{eachTag}}">
+															<a href="javascript:void(0)" onclick="document.getElementById('tagForm{{eachTag}}').submit()">{{eachTag}}</a>
+														</form>
+												{% endfor %}
+											{% endif %}
+										{% endfor %}
+									</div>
+
+								<div class="divCell">{{reservation.startTime}}</div>
+								<div class="divCell">{{reservation.duration}}</div>
+								{% if getUser == user.email() %}
+									<form action="/" method="get">
+									<div class="divCell">
+									<input type="hidden" name="deleteReservation" value="{{reservation.uuid}}">
+									<input type="submit" value="Delete" >
+									</div>
+									</form>
+								{% endif %}
+							</div>
+
+							<script>
+							var d = new Date();
+							var str = "";
+
+								var endTime = new Date("{{reservation.endTime}}");
+								if (endTime < d) {
+								document.getElementById("rowdiv{{reservation.uuid}}").style.display = "none";
+								}
+							</script>
+						{% endif %}
+
+					{% endif %}
+					{% if checkUserResources == 'false' %}
+						{% if user and user.user_id() == reservation.user.identity %}
+
+							<div class="divRow" id = "rowdiv{{reservation.uuid}}">
+
+									<form id='myform{{reservation.resourceName}}' action="/reserveResource" method="get">
+									<div class="divCell">
+											<input type="hidden" name="resource_uuid" value="{{reservation.resourceUUID}}">
+											<a href="javascript:void(0)" onclick="document.getElementById('myform{{reservation.resourceName}}').submit()">{{reservation.resourceName}}</a>
+
+									</div>
+										</form>
+									<div class="divCell">
+
+									{% for resource in resources %}
+										{% if reservation.resourceName == resource.resourceName %}
+											{% for eachTag in resource.tags %}
+													<form id="tagForm{{eachTag}}" action="/listTagResources" method="get" class="tag-header">
+														<input type="hidden" name="get_Tag" value="{{eachTag}}">
+														<a href="javascript:void(0)" onclick="document.getElementById('tagForm{{eachTag}}').submit()">{{eachTag}}</a>
+													</form>
+											{% endfor %}
+										{% endif %}
+									{% endfor %}
+									</div>
+
+
+
+
+
+								<div class="divCell">{{reservation.startTime}}</div>
+								<div class="divCell">{{reservation.duration}}</div>
+								<form action="/" method="get">
+								<div class="divCell">
+								<input type="hidden" name="deleteReservation" value="{{reservation.uuid}}">
+								<input type="submit" value="Delete" >
+								</div>
+								</form>
+
+							</div>
+
+							<script>
+							var d = new Date();
+							var str = "";
+
+								var endTime = new Date("{{reservation.endTime}}");
+								if (endTime < d) {
+								document.getElementById("rowdiv{{reservation.uuid}}").style.display = "none";
+								}
+							</script>
+						{% endif %}
+
+
+					{% endif %}
+
+
+				{% endfor %}
+
+
+			</div>
+
+
+		{% endif %}
+		{% if menu_title == "see_all" %}
+
+			<div class="divTable">
+				 <div class="headRow">
+					<div class="divCell" align="center">Resource Name</div>
+					<div  class="divCell">Resource User</div>
+					<div  class="divCell">Start Time</div>
+					<div  class="divCell">End Time</div>
+					<div  class="divCell">Tags</div>
+					<div  class="divCell">RSS Link</div>
+					<div  class="divCell">Number of Reservations</div>
+
+				 </div>
+
+				{% for resource in resources %}
+					<div class="divRow">
+								<form id='myform{{resource.resourceName}}' action="/reserveResource" method="get">
+							<div class="divCell">
+									<input type="hidden" name="resource_uuid" value="{{resource.uuid}}">
+									<a href="javascript:void(0)" onclick="document.getElementById('myform{{resource.resourceName}}').submit()">{{resource.resourceName}}</a>
+
+							</div>
+								</form>
+
+						<div class="divCell">
+									<a href="/?getUser={{resource.user.email}}">{{resource.user.email}}</a>
+						</div>
+						<div class="divCell">{{resource.startTime}}</div>
+						<div class="divCell">{{resource.endTime}}</div>
+						<div class="divCell">
+						{% for eachTag in resource.tags %}
+							<form id="tagForm{{eachTag}}" action="/listTagResources" method="get" class="tag-header">
+								<input type="hidden" name="get_Tag" value="{{eachTag}}">
+								<a href="javascript:void(0)" onclick="document.getElementById('tagForm{{eachTag}}').submit()">{{eachTag}}</a>
+							</form>
+						{% endfor %}
+						</div>
+						<div class="divCell">
+							<form id="RSSForm{{resource.uuid}}" action="/resourceRSS" method="get">
+								<input type="hidden" name="get_ResourceID" value="{{resource.uuid}}">
+								<a href="javascript:void(0)" onclick="document.getElementById('RSSForm{{resource.uuid}}').submit()">RSS</a>
+							</form>
+						</div>
+						<div class="divCell">{{resource.numReservations}}</div>
+
+					</div>
+				{% endfor %}
+
+			</div>
+
+		{% endif %}
+		{% if menu_title == "see_resource" %}
+
+			<div class="divTable">
+				 <div class="headRow">
+					<div class="divCell" align="center">Resource Name</div>
+					<div  class="divCell">Start Time</div>
+					<div  class="divCell">End Time</div>
+					<div  class="divCell">Tags</div>
+					<div  class="divCell">RSS Link</div>
+					<div  class="divCell">Number of Reservations</div>
+
+
+				 </div>
+
+				{% for resource in resources %}
+					{% if checkUserResources == 'true' %}
+						{% if getUser == resource.user.email %}
+							<div class="divRow">
+							<div class="divCell">
+								<form id='myform{{resource.resourceName}}' action="/reserveResource" method="get">
+									<input type="hidden" name="resource_uuid" value="{{resource.uuid}}">
+									<a href="javascript:void(0)" onclick="document.getElementById('myform{{resource.resourceName}}').submit()">{{resource.resourceName}}</a>
+
+							</div>
+								</form>
+							<div class="divCell">{{resource.startTime}}</div>
+							<div class="divCell">{{resource.endTime}}</div>
+								<div class="divCell">
+
+								{% for eachTag in resource.tags %}
+									<form id="tagForm{{eachTag}}" action="/listTagResources" method="get" class="tag-header">
+										<input type="hidden" name="get_Tag" value="{{eachTag}}">
+										<a href="javascript:void(0)" onclick="document.getElementById('tagForm{{eachTag}}').submit()">{{eachTag}}</a>
+									</form>
+
+								{% endfor %}
+								</div>
+								<div class="divCell">
+									<form id="RSSForm{{resource.uuid}}" action="/resourceRSS" method="get">
+										<input type="hidden" name="get_ResourceID" value="{{resource.uuid}}">
+										<a href="javascript:void(0)" onclick="document.getElementById('RSSForm{{resource.uuid}}').submit()">RSS</a>
+									</form>
+								</div>
+								<div class="divCell">{{resource.numReservations}}</div>
+
+							</div>
+
+						{% endif %}
+					{% endif %}
+					{% if checkUserResources == 'false' %}
+						{% if user and user.user_id() == resource.user.identity %}
+							<div class="divRow">
+								<div class="divCell">
+									<form id='myform{{resource.resourceName}}' action="/reserveResource" method="get">
+										<input type="hidden" name="resource_uuid" value="{{resource.uuid}}">
+										<a href="javascript:void(0)" onclick="document.getElementById('myform{{resource.resourceName}}').submit()">{{resource.resourceName}}</a>
+
+								</div>
+									</form>
+								<div class="divCell">{{resource.startTime}}</div>
+								<div class="divCell">{{resource.endTime}}</div>
+								<div class="divCell">
+
+								{% for eachTag in resource.tags %}
+									<form id="tagForm{{eachTag}}" action="/listTagResources" method="get" class="tag-header">
+										<input type="hidden" name="get_Tag" value="{{eachTag}}">
+										<a href="javascript:void(0)" onclick="document.getElementById('tagForm{{eachTag}}').submit()">{{eachTag}}</a>
+									</form>
+
+								{% endfor %}
+								</div>
+								<div class="divCell">
+									<form id="RSSForm{{resource.uuid}}" action="/resourceRSS" method="get">
+										<input type="hidden" name="get_ResourceID" value="{{resource.uuid}}">
+										<a href="javascript:void(0)" onclick="document.getElementById('RSSForm{{resource.uuid}}').submit()">RSS</a>
+									</form>
+								</div>
+								<div class="divCell">{{resource.numReservations}}</div>
+
+
+
+							</div>
+
+						{% endif %}
+					{% endif %}
+
+				{% endfor %}
+
+			</div>
+
+
+		{% endif %}
+		{% if menu_title == "create" %}
+			<div>
+				<h4>Create Resource</h4>
+				<span id="displayError"></span>
+				<form action="/sign" onSubmit= "return checkValidations()"method="post" id="createForm">
+					<div>Resource Name:
+						<input id="resourceName" value="{{ resource_name }}" name="resource_name" required/>
+					</div>
+					<br>
+					<div>
+					Select Date(MM-DD-YYYY):
+					<select name="Month" id = "Month">
+					{% for num in range(1,13)%}
+					  <option value="{{ num }}">{{num}}</option>
+					{% endfor %}
+					</select>
+					<select name="Day" id = "Day">
+					{% for num in range(1,32)%}
+					  <option value="{{ num }}">{{num}}</option>
+					{% endfor %}
+					</select>
+					<select name="Year" id = "Year">
+					{% for num in range(2015,2100)%}
+					  <option value="{{ num }}">{{num}}</option>
+					{% endfor %}
+					</select>
+
+					</div>
+					<br>
+					<div>
+					<span>
+					Select Start Time(in hours and minutes):
+					<select name="startHours" id = "startHours">
+					{% for num in range(1,13)%}
+					  <option value="{{ num }}">{{num}}</option>
+					{% endfor %}
+					</select>
+					</span>
+					<span>
+					<select name="startMins" id = "startMins">
+					{% for num in range(0,60)%}
+					  <option value="{{ num }}">{{num}}</option>
+					{% endfor %}
+					</select>
+					</span>
+					<span>
+					<select name="startMeridian" id = "startMeridian">
+					  <option value="AM">AM</option>
+					  <option value="PM">PM</option>
+					</select>
+					</span>
+
+					<span>
+					Select End Time(in hours and minutes):
+					<select name="endHours" id="endHours">
+					{% for num in range(1,13)%}
+					  <option value="{{ num }}">{{num}}</option>
+					{% endfor %}
+					</select>
+					</span>
+					<span>
+					<select name="endMins" id="endMins">
+					{% for num in range(0,60)%}
+					  <option value="{{ num }}">{{num}}</option>
+					{% endfor %}
+					</select>
+					</span>
+					<span>
+					<select name="endMeridian" id="endMeridian">
+					  <option value="AM">AM</option>
+					  <option value="PM">PM</option>
+					</select>
+					</span>
+					</div>
+					<br>
+					<div>
+					Set Tags (; separated):
+						<input id="resourceTags" name="resource_Tag" />
+
+					</div>
+
+
+
+					<br>
+					<input type="submit" value="Submit">
+
+				</form>
+			</div>
+		{% endif %}
+
+
+
+		<hr>
+
+
+
+
+		</div>
+	</body>
+
+</html>
+{% endautoescape %}
