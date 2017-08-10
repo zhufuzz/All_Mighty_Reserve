@@ -13,15 +13,27 @@ class User(ndb.Model):
 
 class Resource(ndb.Model):
 	"""Resource: ..."""
-	uuid = ndb.StringProperty()
+	author = ndb.UserProperty()
+
 	resourceName = ndb.StringProperty()
-	startTime = ndb.DateTimeProperty(auto_now_add=False)
-	endTime = ndb.DateTimeProperty(auto_now_add=False)
-	user = ndb.StructuredProperty(User)
-	date = ndb.DateTimeProperty(auto_now_add=False)
-	tags = ndb.StringProperty(repeated=True)
+	tags = ndb.StringProperty()
 	pubDate = ndb.DateTimeProperty(auto_now_add=True)
-	numReservations = ndb.IntegerProperty(indexed=False)
+	# uuid = ndb.StringProperty()
+	# user = ndb.StructuredProperty(User)
+	#
+	# date = ndb.DateProperty()
+	# startTime = ndb.TimeProperty(auto_now_add=False)
+	# endTime = ndb.TimeProperty(auto_now_add=False)
+	# city = ndb.StringProperty()
+	#
+	# description = ndb.StringProperty()
+	#
+    #
+	#
+    #
+	# numReservations = ndb.IntegerProperty(indexed=False)
+	# maxReservations = ndb.IntegerProperty(indexed=False)
+
 
 
 class Reservation(ndb.Model):
@@ -30,7 +42,12 @@ class Reservation(ndb.Model):
 	uuid = ndb.StringProperty()
 	resourceUUID = ndb.StringProperty()
 	resourceName = ndb.StringProperty()
+
+	date = ndb.DateProperty()
+
+
 	startTime = ndb.DateTimeProperty(auto_now_add=False)
 	endTime = ndb.DateTimeProperty(auto_now_add=False)
 	duration = ndb.StringProperty(indexed=False)
+
 	pubDate = ndb.DateTimeProperty(auto_now_add=True)

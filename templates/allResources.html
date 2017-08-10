@@ -1,26 +1,21 @@
 {% extends "index.html" %}
 
 {% block content %}
-    <h1>ALL ALL ALL </h1>
-    <p class="important">
-      ALL ALL ALL ALL ALL ALL ALL .
-    </p>
 
-        <p class="important">
-      ALL ALL ALL ALL ALL ALL ALL .
-    </p>
-
-
-        <p class="important">
-      ALL ALL ALL ALL ALL ALL ALL .
-    </p>
+    <div class="container">
+        <p>ALl ALL ALL</p>
 
 
 
-<div class="container">
-    <hr>
-	<div id="calendar"></div>
-</div>
+    <ul class="list-group">
+        {% for resource in resources %}
+
+            <a href="#" class="list-group-item active list-group-item-heading">
+                {{ resource.resourceName   }} {{ resource.pubDate }}
+            </a>
+        {% endfor %}
+    </ul>
+    </div>
 
 
 {% endblock %}

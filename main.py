@@ -31,15 +31,11 @@ JINJA_ENVIRONMENT = jinja2.Environment(
 	extensions=['jinja2.ext.autoescape'],
 	autoescape=True)
 
-DEFAULT_GUESTBOOK_NAME = "default_guest_book"
+DEFAULT_RESOURCE_NAME = 'default_resource_name'
 
 #Route to index page and present user's reservation
 class MainPage(webapp2.RequestHandler):
 	def get(self):
-		guestbook_name = self.request.get('guestbook_name',
-										  DEFAULT_GUESTBOOK_NAME)
-
-
 		user = users.get_current_user()
 		if user:
 			url = users.create_logout_url(self.request.uri)
@@ -50,10 +46,8 @@ class MainPage(webapp2.RequestHandler):
 
 		template_values = {
 			'user': user,
-
-			'guestbook_name': urllib.quote_plus(guestbook_name),
 			'url': url,
-			'url_linktext': url_linktext,
+			'url_linktext': 'Logout',
 		}
 
 		template = JINJA_ENVIRONMENT.get_template('index.html')
@@ -66,62 +60,65 @@ class MainPage(webapp2.RequestHandler):
 
 
 
+
 class AllResources(webapp2.RequestHandler):
 	def get(self):
-		guestbook_name = self.request.get('guestbook_name',
-										  DEFAULT_GUESTBOOK_NAME)
-
-		user = users.get_current_user()
-		if user:
+		if users.get_current_user():
 			url = users.create_logout_url(self.request.uri)
 			url_linktext = 'Logout'
 		else:
 			url = users.create_login_url(self.request.uri)
 			url_linktext = 'Login'
 
-		template_values = {
-			'user': user,
-
-			'guestbook_name': urllib.quote_plus(guestbook_name),
-			'url': url,
-			'url_linktext': url_linktext,
-		}
-		template = JINJA_ENVIRONMENT.get_template('index.html')
-		self.response.write(template.render(template_values))
-
-
-class MyResource(webapp2.RequestHandler):
-	def get(self):
-		guestbook_name = self.request.get('guestbook_name',
-										  DEFAULT_GUESTBOOK_NAME)
-
 		user = users.get_current_user()
-		if user:
-			url = users.create_logout_url(self.request.uri)
-			url_linktext = 'Logout'
-		else:
-			url = users.create_login_url(self.request.uri)
-			url_linktext = 'Login'
+
+
+		#resource_name = self.request.get('resource_name', DEFAULT_RESOURCE_NAME)
+		#resource_query = Resource.query(ancestor=)
+
+		resource_query = Resource.query().order(-Resource.pubDate)
+		resources = resource_query.fetch(10)
+
+
+
+		# resources = Resource.query(ancestor=resource.key).order(-Resource.pubDate).fetch()
 
 		template_values = {
+			'resources': resources,
 			'user': user,
-
-			'guestbook_name': urllib.quote_plus(guestbook_name),
 			'url': url,
 			'url_linktext': url_linktext,
 		}
-		template = JINJA_ENVIRONMENT.get_template('index.html')
+		template = JINJA_ENVIRONMENT.get_template('allResources.html')
 		self.response.write(template.render(template_values))
+
+##########################################
+#
+# class MyResource(webapp2.RequestHandler):
+# 	def post(self):
+# 		guestbook_name = self.request.get('guestbook_name', DEFAULT_GUESTBOOK_NAME)
+#
+#
+#
+#
+# 		greeting = Greeting(parent=guestbook_key(guestbook_name))
+#
+# 		if users.get_current_user():
+# 			greeting.author = Author(
+# 				identity=users.get_current_user().user_id(),
+# 				email=users.get_current_user().email())
+#
+# 		greeting.content = self.request.get('content')
+# 		greeting.put()
+#
+# 		query_params = {'guestbook_name': guestbook_name}
+# 		self.redirect('/?' + urllib.urlencode(query_params))
 
 ##################################################################
 
 
 class CreateResource(webapp2.RequestHandler):
-
 	def get(self):
-		guestbook_name = self.request.get('guestbook_name',
-										  DEFAULT_GUESTBOOK_NAME)
-
 		user = users.get_current_user()
 		if user:
 			url = users.create_logout_url(self.request.uri)
@@ -132,21 +129,150 @@ class CreateResource(webapp2.RequestHandler):
 
 		template_values = {
 			'user': user,
-
-			'guestbook_name': urllib.quote_plus(guestbook_name),
 			'url': url,
 			'url_linktext': url_linktext,
 		}
+
+		# if self.request.get('resourceID'):
+		# 	resourceID = self.request.get('resourceID')
+		# 	resource = ndb.Key(urlsafe=resourceID).get()
+		# 	template_values['resource'] = resource
+
 		template = JINJA_ENVIRONMENT.get_template('createResource.html')
 		self.response.write(template.render(template_values))
 
+
+	def post(self):
+		# if self.request.get('resourceID'):
+		# 	resourceID = self.request.get('resourceID')
+		# 	resource = ndb.Key(urlsafe=resourceID).get()
+		# else:
+		# 	resource = Resource()
+
+
+		resource = Resource()
+		resource.author = users.get_current_user()
+		resource.resourceName = self.request.get('name')
+		resource.tags = self.request.get('tags')
+
+		# resource.city = self.request.get('City')
+		# resource.maxReservations = self.request.get('MaxAttendees')
+		# resource.description = self.request.get('Description')
+		# resource.date =
+		# resource.startTime =
+		# resource.endTime =
+		# resource.pubDate =
+
+		resource.put()
+
+
+		# url = '/AllResources?resourceID=%s' % resource.key.urlsafe()
+		self.redirect('/CreateResource')
+
+##################################################################
+
+
+#
+# class AddReservation(webapp2.RequestHandler):
+# 	def get(self):
+# 		user = users.get_current_user()
+# 		if user:
+# 			url = users.create_logout_url(self.request.uri)
+# 			url_linktext = 'Logout'
+# 		else:
+# 			url = users.create_login_url(self.request.uri)
+# 			url_linktext = 'Login'
+#
+# 		# guestbook_name = self.request.get('guestbook_name',
+# 		# 								  DEFAULT_GUESTBOOK_NAME)
+#
+#
+#
+# 		template_values = {
+# 			'user': user,
+#
+#
+# 			'url': url,
+# 			'url_linktext': url_linktext,
+# 		}
+#
+# 		template = JINJA_ENVIRONMENT.get_template('createResource.html')
+# 		self.response.write(template.render(template_values))
+#
+#
+#
+# 	def post(self):
+#
+# 		resourceID = self.request.get('resourceID')
+# 		resource = ndb.Key(urlsafe=resourceID).get()
+#
+# 		if self.request.get('reservationID'):
+# 			reservationID = self.request.get('reservationID')
+# 			reservation = ndb.Key(urlsafe=reservationID).get()
+# 		else:
+# 			reservation = Reservation(parent=resource.key)
+#
+# 		resource.author = users.get_current_user()
+# 		# answer.name = self.request.get('name')
+# 		# answer.content = self.request.get('content')
+# 		# answer.ups = 0
+# 		# answer.downs = 0
+# 		# answer.net = 0
+#         #
+#         #
+# 		# answer.put()
+# 		# url = '/ViewQuestion?questionID=%s' % question.key.urlsafe()
+# 		# self.redirect(url)
+#
+#
+# 		resource_Name = self.request.get('Name')
+# 		resource_City = self.request.get('City', '')
+# 		resource_Topics = self.request.get('Topics', '')
+# 		resource_MaxAttendees = self.request.get('MaxAttendees', '')
+# 		resource_Description = self.request.get('Description', '')
+# 		resource_date = self.request.get('date', '')
+# 		resource_startTime = self.request.get('startTime', '')
+# 		resource_Description = self.request.get('endTime', '')
+#
+# 		qid = self.request.get('questionID')
+# 		user = users.get_current_user()
+# 		if user:
+# 			url = users.create_logout_url(self.request.uri)
+# 			url_linktext = 'Logout'
+# 		else:
+# 			url = users.create_login_url(self.request.uri)
+# 			url_linktext = 'Login'
+#
+# 		# resource_query = Resource.query(Resource.uuid == old_resource_uuid)
+#
+#
+# 		template_values = {
+# 			'resource_Name': resource_Name,
+#
+# 			'resource_City': resource_City,
+#
+# 			'resource_Topics': resource_Topics,
+#
+# 			'resource_MaxAttendees': resource_MaxAttendees,
+#
+# 			'resource_Description': resource_Description,
+#
+# 			'resource_date': resource_date,
+#
+# 			'startTime': resource_startTime,
+#
+# 			'endTime': resource_startTime
+# 		}
+#
+# 		template = JINJA_ENVIRONMENT.get_template('createResource.html')
+# 		self.response.write(template.render(template_values))
 ##################################################################
 
 app = webapp2.WSGIApplication([
 	('/', MainPage),
-	('/CreateResource', CreateResource)
-	# ('/AllResources', AllResources)
-	# ('/MyResource', MyResource)
+	('/CreateResource', CreateResource),
+	('/AllResources', AllResources)
+	#('/MyResource', MyResource)
 
 ], debug=True)
 
