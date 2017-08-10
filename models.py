@@ -18,6 +18,11 @@ class Resource(ndb.Model):
 	resourceName = ndb.StringProperty()
 	tags = ndb.StringProperty()
 	pubDate = ndb.DateTimeProperty(auto_now_add=True)
+	
+	date = ndb.StringProperty()
+	startTime = ndb.StringProperty()
+	endTime = ndb.StringProperty()
+
 	# uuid = ndb.StringProperty()
 	# user = ndb.StructuredProperty(User)
 	#

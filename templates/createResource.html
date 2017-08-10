@@ -9,11 +9,12 @@
 {% block content %}
 
     <form action="/CreateResource" method="post">
+        <hr>
         <div class="form-group">
             <label>Resource Name</label>
             <div>
                 <input type="text" class="form-control" name="name" id="name"
-                   placeholder="Resource Name ...">
+                   placeholder="Resource Name ..."><br/>
             </div>
 
 
@@ -21,45 +22,46 @@
             <label>Tag</label>
             <div>
                 <input type="text" class="form-control" name="tags"
-                   placeholder="Tag ...">
+                   placeholder="Tag ..."><br/>
             </div>
 
-
+            <div class="form-group">
             <label for="dtp_input1">Date Picking</label>
-                <div class="input-group date form_date col-md-5" data-date="" data-date-format="dd MM yyyy"
-                     data-link-field="dtp_input2" data-link-format="yyyy-mm-dd">
+                <div class="input-group date form_date" data-date="" data-date-format="dd MM yyyy"
+                     data-link-field="dtp_input1" data-link-format="yyyy-mm-dd">
 
-                    <input class="form-control" id="date" name="date" type="date">
+{#                    <input class="form-control" id="date" name="date" size="16"  type="date">#}
+                    <input class="form-control" size="16" id="date" name="date" type="text" value="" placeholder="dd MM yyyy">
                     <span class="input-group-addon"><span class="glyphicon glyphicon-remove"></span></span>
                     <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>
                 </div>
-            <input type="hidden" id="dtp_input1"  /><br/>
+            <input type="hidden" id="dtp_input1"  />
+            </div>
 
-
-
-
+            <div class="form-group">
             <label for="dtp_input2" >Start Time</label>
-                <div class="input-group date form_time col-md-5" data-date="" data-date-format="hh:ii"
-                     data-link-field="dtp_input3" data-link-format="hh:ii">
+                <div class="input-group date form_time" data-date="" data-date-format="hh:ii"
+                     data-link-field="dtp_input2" data-link-format="hh:ii">
 
                     <input class="form-control" id="startTime" name="startTime" size="16" type="time"  >
                     <span class="input-group-addon"><span class="glyphicon glyphicon-remove"></span></span>
 					<span class="input-group-addon"><span class="glyphicon glyphicon-time"></span></span>
 
                 </div>
-            <input type="hidden" id="dtp_input2"  /><br/>
+            <input type="hidden" id="dtp_input2"  />
+            </div>
 
-
-
+            <div class="form-group">
             <label for="dtp_input3" >End Time</label>
-                <div class="input-group date form_time col-md-5" data-date="" data-date-format="hh:ii"
+                <div class="input-group date form_time" data-date="" data-date-format="hh:ii"
                      data-link-field="dtp_input3" data-link-format="hh:ii">
 
                     <input class="form-control" id="endTime" name="endTime" size="16" type="time" >
                     <span class="input-group-addon"><span class="glyphicon glyphicon-remove"></span></span>
 					<span class="input-group-addon"><span class="glyphicon glyphicon-time"></span></span>
                 </div>
-            <input type="hidden" id="dtp_input3"  /><br/>
+            <input type="hidden" id="dtp_input3"  />
+            </div>
 
         </div>
             {#<label for="name">City</label>
@@ -112,10 +114,10 @@
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 
 <script type="text/javascript" src="static/js/clock/bootstrap-datetimepicker.js" charset="UTF-8"></script>
-<script type="text/javascript" src="static/js/clock/locales/bootstrap-datetimepicker.es.js" charset="UTF-8"></script>
+<script type="text/javascript" src="static/js/clock/locales/bootstrap-datetimepicker.en.js" charset="UTF-8"></script>
 <script type="text/javascript">
     $('.form_datetime').datetimepicker({
-        //language:  'fr',
+        language:  'en',
         weekStart: 1,
         todayBtn:  1,
 		autoclose: 1,
@@ -125,7 +127,7 @@
         showMeridian: 1
     });
 	$('.form_date').datetimepicker({
-        language:  'fr',
+        language:  'en',
         weekStart: 1,
         todayBtn:  1,
 		autoclose: 1,
@@ -135,7 +137,7 @@
 		forceParse: 0
     });
 	$('.form_time').datetimepicker({
-        language:  'fr',
+        language:  'en',
         weekStart: 1,
         todayBtn:  1,
 		autoclose: 1,
