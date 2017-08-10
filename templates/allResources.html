@@ -11,7 +11,8 @@
         {% for resource in resources %}
 
             <a href="#" class="list-group-item active list-group-item-heading">
-                {{ resource.resourceName   }} {{ resource.pubDate }}
+                {{ resource.resourceName   }} || {{ resource.pubDate }} || {{ resource.date }} ||
+            {{ resource.startTime }} || {{ resource.endTime }}
             </a>
         {% endfor %}
     </ul>

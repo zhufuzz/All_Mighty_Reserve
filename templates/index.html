@@ -4,11 +4,14 @@
   <head>
     <meta name="viewport" content="width=device-width, initial-scale=1"  charset="utf-8">
     <!-- [START css] -->
+    {% block clock %}
+
+    {% endblock %}
+
     <link type="text/css" rel="stylesheet" href="/static/css/bootstrap.css">
     <link type="text/css" rel="stylesheet" href="/static/css/bootstrap-responsive.css">
     <link type="text/css" rel="stylesheet" href="/static/css/main.css">
-    <link type="text/css" rel="stylesheet" href="/static/css/cal.css">
-    {% block clock %}{% endblock %}
+
     <!-- [END css] -->
 
 
@@ -100,13 +103,7 @@
 
 
     </div>
-{#    <!-- [START SignIn] -->
-      <form action="/sign?guestbook_name={{ guestbook_name }}" method="post">
-        <div><textarea name="content" class="input-block-level" rows="3"></textarea></div>
-        <div><input type="submit" class="btn btn-large btn-primary" value="Sign Guestbook"></div>
-      </form>
-    <!-- [END SignIn] -->
-      <hr>#}
+
 
     </div>
 
@@ -119,7 +116,5 @@
 
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 
-
-    <script src="/static/js/cal.js"></script>
 </html>
 {% endautoescape %}
