@@ -13,17 +13,19 @@ class User(ndb.Model):
 
 class Resource(ndb.Model):
 	"""Resource: ..."""
+	uuid = ndb.StringProperty()
+
 	author = ndb.UserProperty()
 
 	resourceName = ndb.StringProperty()
-	tags = ndb.StringProperty()
-	pubDate = ndb.DateTimeProperty(auto_now_add=True)
-	
+	tags = ndb.StringProperty(repeated = True)
+	#pubDate = ndb.DateTimeProperty(auto_now_add=True)
+	pubDate = ndb.StringProperty()
 	date = ndb.StringProperty()
 	startTime = ndb.StringProperty()
 	endTime = ndb.StringProperty()
 
-	# uuid = ndb.StringProperty()
+	#
 	# user = ndb.StructuredProperty(User)
 	#
 	# date = ndb.DateProperty()

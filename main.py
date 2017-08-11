@@ -11,7 +11,7 @@ import uuid
 import jinja2
 import webapp2
 from time import sleep
-from datetime import datetime, time, timedelta
+from datetime import datetime, time, timedelta, date
 from email import utils
 
 from google.appengine.ext import ndb
@@ -43,6 +43,7 @@ class MainPage(webapp2.RequestHandler):
 		else:
 			url = users.create_login_url(self.request.uri)
 			url_linktext = 'Login'
+			self.redirect(users.create_login_url(self.request.uri))
 
 		template_values = {
 			'user': user,
@@ -144,9 +145,16 @@ class CreateResource(webapp2.RequestHandler):
 	def post(self):
 
 		resource = Resource()
+		# now = datetime.datetime.now()
+		# print now.strftime("%Y/%m/%d")
+		resource.pubDate = date.today().strftime("%Y/%m/%d")
+
+		# >>> now.strftime("%B %d, %Y")
+		# 'July 23, 2010'  '2014/12/25'
+
 		resource.author = users.get_current_user()
 		resource.resourceName = self.request.get('name')
-		resource.tags = self.request.get('tags')
+		resource.tags = self.request.get('tags').split(';')
 
 		# resource.city = self.request.get('City')
 		# resource.maxReservations = self.request.get('MaxAttendees')

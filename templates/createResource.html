@@ -4,16 +4,76 @@
     <link href="/static/css/bootstrap.min.css" rel="stylesheet" media="screen">
     <link href="/static/css/bootstrap-datetimepicker.min.css" rel="stylesheet" media="screen">
 
+    <script type="text/javascript">
+        {# check name, if name is  empty, reload current page      #}
+        function checkName_reload(){
+            var name = document.getElementById("name").value;
+            if(name.trim() == ""){
+                alert("name can not be empty");
+{#                location.reload();#}
+            }
+        }
+
+        function checkName(){
+            var name = document.getElementById("name").value;
+            if(name.trim() == ""){
+                alert("name can not be empty");
+            }
+        }
+
+
+        function checkDate(){
+            var dateStr = document.getElementById("date").value;
+            myDate = new Date(Date.parse(dateStr))
+            var today = new Date();
+            if (myDate<today) {
+                alert("Ivalid Input: You can only create resources start after today!!!");
+{#                location.reload();#}
+            }
+        }
+
+
+        function checkTime(){
+            var startTimeStr = document.getElementById("startTime").value;
+            if(startTimeStr.length === 0){
+                alert("startTime input is null!");
+                return;
+            }
+            var endTimeStr = document.getElementById("endTime").value;
+            if(endTimeStr.length === 0){
+                alert("endTime input is null!");
+                return;
+            }
+            var startTime = parseInt(startTimeStr.replace(':',''));
+            var endTime = parseInt(endTimeStr.replace(':',''));
+
+            if (endTime<startTime) {
+                alert("Ivalid Input: Start Time should be after End Time.");
+{#                location.reload();#}
+            }
+
+        }
+
+
+        function try_altert(){
+             alert("try_altert");
+        }
+    </script>
+
 {% endblock %}
 
 {% block content %}
 
     <form action="/CreateResource" method="post">
         <hr>
+
+     <input class="btn btn-info btn-block"  onclick="try_altert()" value="check alter">
+
+
         <div class="form-group">
             <label>Resource Name</label>
             <div>
-                <input type="text" class="form-control" name="name" id="name"
+                <input type="text" class="form-control" name="name" id="name" value=""
                    placeholder="Resource Name ..."><br/>
             </div>
 
@@ -22,28 +82,30 @@
             <label>Tag</label>
             <div>
                 <input type="text" class="form-control" name="tags"
-                   placeholder="Tag ..."><br/>
+                   placeholder="Tag ... seperated by ;"><br/>
             </div>
 
             <div class="form-group">
             <label for="dtp_input1">Date Picking</label>
-                <div class="input-group date form_date" data-date="" data-date-format="dd MM yyyy"
-                     data-link-field="dtp_input1" data-link-format="yyyy-mm-dd">
-
-{#                    <input class="form-control" id="date" name="date" size="16"  type="date">#}
-                    <input class="form-control" size="16" id="date" name="date" type="text" value="" placeholder="dd MM yyyy">
+                <div class="input-group date form_date"
+                     data-date="" data-date-format="yyyy/mm/dd"
+                     data-link-field="dtp_input1" data-link-format="yyyy/mm/dd">
+                    <input class="form-control"  size="16"              onchange="checkDate()"
+                           id="date" name="date" type="text" value="" placeholder="yyyy/mm/dd">
                     <span class="input-group-addon"><span class="glyphicon glyphicon-remove"></span></span>
                     <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>
                 </div>
-            <input type="hidden" id="dtp_input1"  />
+            <input type="hidden" id="dtp_input1"/>
             </div>
+
+
 
             <div class="form-group">
             <label for="dtp_input2" >Start Time</label>
                 <div class="input-group date form_time" data-date="" data-date-format="hh:ii"
                      data-link-field="dtp_input2" data-link-format="hh:ii">
 
-                    <input class="form-control" id="startTime" name="startTime" size="16" type="time"  >
+                    <input class="form-control" id="startTime" name="startTime" value="" size="16" type="time" >
                     <span class="input-group-addon"><span class="glyphicon glyphicon-remove"></span></span>
 					<span class="input-group-addon"><span class="glyphicon glyphicon-time"></span></span>
 
@@ -56,7 +118,7 @@
                 <div class="input-group date form_time" data-date="" data-date-format="hh:ii"
                      data-link-field="dtp_input3" data-link-format="hh:ii">
 
-                    <input class="form-control" id="endTime" name="endTime" size="16" type="time" >
+                    <input class="form-control" id="endTime" name="endTime" value="" size="16" type="time" >
                     <span class="input-group-addon"><span class="glyphicon glyphicon-remove"></span></span>
 					<span class="input-group-addon"><span class="glyphicon glyphicon-time"></span></span>
                 </div>
@@ -81,13 +143,16 @@
 
 
 #}
-            <hr>
+{#            <hr><hr><hr><hr><hr><hr><hr><hr><hr><hr>#}
+            <br><br><br><br><br><br><br><br><br><br>
             <div>
                 {% if resource %}
                 <input type="hidden" name="resourceID" value="{{resource.key.urlsafe()}}">
-                <input class="btn btn-info btn-block"  type="submit" value="Update Resource">
+                <input class="btn btn-info btn-block"  onmouseover="checkTime()"
+                       type="submit" value="Update Resource">
                 {% else %}
-                <input class="btn btn-info btn-block"  type="submit" value="Submit Resource">
+                <input class="btn btn-info btn-block"  onmouseover="checkTime()"
+                       type="submit" value="Submit Resource">
                 {% endif %}
             </div>
 
@@ -106,15 +171,15 @@
 
 
 
-    <script
-      src="http://code.jquery.com/jquery-3.2.1.min.js"
-      integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
-      crossorigin="anonymous"></script>
+<script
+  src="http://code.jquery.com/jquery-3.2.1.min.js"
+  integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+  crossorigin="anonymous"></script>
 
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 
 <script type="text/javascript" src="static/js/clock/bootstrap-datetimepicker.js" charset="UTF-8"></script>
-<script type="text/javascript" src="static/js/clock/locales/bootstrap-datetimepicker.en.js" charset="UTF-8"></script>
+{#<script type="text/javascript" src="static/js/clock/locales/bootstrap-datetimepicker.en.js" charset="UTF-8"></script>#}
 <script type="text/javascript">
     $('.form_datetime').datetimepicker({
         language:  'en',
@@ -148,5 +213,7 @@
 		forceParse: 0
     });
 </script>
+
+
 {% endblock %}
 
