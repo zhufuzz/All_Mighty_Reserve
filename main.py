@@ -154,7 +154,7 @@ class CreateResource(webapp2.RequestHandler):
 
 		resource.author = users.get_current_user()
 		resource.resourceName = self.request.get('name')
-		resource.tags = self.request.get('tags').split(';')
+		resource.tags = self.request.get('tags').strip().split(',')
 
 		# resource.city = self.request.get('City')
 		# resource.maxReservations = self.request.get('MaxAttendees')
