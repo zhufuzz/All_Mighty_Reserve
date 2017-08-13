@@ -30,7 +30,7 @@
             <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
                     <li class="{% block Reserve %}{% endblock %}"><a href="#">Reserve</a></li>
-
+                    <li class="{% block Home %}{% endblock %}"><a href="/">Home</a></li>
 {#                   <li  class="{% block AllResources %}{% endblock %}"><a href="/AllResources" >All Resources</a></li>#}
 {#                   <li class="{% block MyResource %} {% endblock %}"><a href="/MyResource">My Resources</a></li>#}
 {#                <li class="{% block CreateResource %}{% endblock %}"><a href="/CreateResource">Create Resources</a></li>#}
@@ -48,22 +48,6 @@
     </div>
 
 
-      <!-- [START greetings] -->
-{#      {% for greeting in greetings %}
-      <div class="row">
-        {% if greeting.author %}
-          <b>{{ greeting.author.email }}
-            {% if user and user.user_id() == greeting.author.identity %}
-              (You)
-            {% endif %}
-          </b> wrote:
-        {% else %}
-          An anonymous person wrote:
-        {% endif %}
-        <blockquote>{{ greeting.content }}</blockquote>
-      </div>
-      {% endfor %}#}
-      <!-- [END Nav] -->
 
     <div class="container" >
 
@@ -80,7 +64,6 @@
       src="http://code.jquery.com/jquery-3.2.1.min.js"
       integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
       crossorigin="anonymous"></script>
-
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 
 </html>

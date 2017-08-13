@@ -69,41 +69,58 @@
     <form action="/CreateResource" method="post">
         <hr>
 
-{#     <input class="btn btn-info btn-block"  onclick="try_altert()" value="check alter" >#}
+{#     <input class="btn btn-info btn-block"  onclick="try_altert()" value="check alter" >
+Resource Name ...
+
+#}
 
 
         <div class="form-group">
-            <label class="col-sm-2 control-label">Resource Name</label>
+            <label class="control-label">Resource Name</label>
             <div>
                 <input type="text" class="form-control" name="name" id="name"
-                   placeholder="Resource Name ..." {% if question %} value="{{resource.name}}" {% endif %} /required>
+                   {% if resource %} value="{{resource.name}}" {% else %} placeholder="Resource Name ..."{% endif %}
+                /required>
             </div>
         </div><br/>
 
         <div class="form-group">
-            <label class="col-sm-2 control-label">Tag</label>
+            <label class=" control-label">Tag</label>
             <div>
                 <input type="text" class="form-control" name="tags" id="tags"
-                   placeholder="Tag ... seperated by ," >
+                {% if resource %}
+                       value="{% for tag in resource.tags %}{{ tag }}, {% endfor %}"
+                {% else %} placeholder="Tag ... seperated by ,"
+                {% endif %}
+                   >
             </div>
         </div><br/>
 
-            <div class="form-group">
-            <label class="col-sm-2 control-label">Max Reservations</label>
+        <div class="form-group">
+            <label class=" control-label">Max Reservations</label>
             <div>
                 <input type="text" class="form-control" name="maxReservations" id="maxReservations"
-                   placeholder="maxReservations...." /required>
+                        {% if resource %} value="{{resource.maxReservations}}"
+                        {% else %}placeholder="maxReservations...."
+                        {% endif %}
+                    /required>
             </div>
         </div><br/>
+
+
 
         <div class="form-group">
             <label class="control-label">Description</label>
             <div>
-                <textarea class="form-control"  rows="5" name="description" id="description"
-                          placeholder="description ... " {% if resource %} value="{{resource.description}}"
-                {% else %} value=""  {% endif %} >
 
-                </textarea>
+                <input  class="form-control"  rows="5" name="description" id="description"
+                {% if resource %} value="{{resource.description.strip()}}"
+                {% else %}placeholder="Description...."
+                {% endif %}
+
+                >
+
+                </input>
             </div>
         </div><br/>
 
@@ -113,10 +130,13 @@
                      data-date="" data-date-format="yyyy/mm/dd"
                      data-link-field="dtp_input1" data-link-format="yyyy/mm/dd">
                     <input class="form-control"
-{#                           onchange="checkDate()"#}
+{#                                                              onchange="checkDate()"#}
                            id="date" name="date" type="text"
-                           {% if question %} value="{{resource.date}}"  {% else %} value="" {% endif %}
-                           placeholder="yyyy/mm/dd" required/>
+
+                            {% if resource %} value="{{resource.date.strftime("%Y/%m/%d")}}"
+                            {% else %}
+                            {% endif %}
+                           required/>
                     <span class="input-group-addon"><span class="glyphicon glyphicon-remove"></span></span>
                     <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>
                 </div>
@@ -129,24 +149,28 @@
             <label for="dtp_input2" >Start Time</label>
                 <div class="input-group date form_time" data-date="" data-date-format="hh:ii"
                      data-link-field="dtp_input2" data-link-format="hh:ii">
+                    <input class="form-control" id="startTime" name="startTime" size="16" type="time"
 
-                    <input class="form-control" id="startTime" name="startTime"
-                           {% if question %} value="{{resource.startTime}}" {% else %} value="" {% endif %}
-                           size="16" type="time" required/>
+                            {% if resource %} value="{{resource.startTime.strftime("%H:%M")}}"
+                            {% else %}
+                            {% endif %}
+                           required/>
                     <span class="input-group-addon"><span class="glyphicon glyphicon-remove"></span></span>
                     <span class="input-group-addon"><span class="glyphicon glyphicon-time"></span></span>
-
                 </div>
             <input type="hidden" id="dtp_input2"  />
         </div>
+
 
         <div class="form-group">
             <label for="dtp_input3" >End Time</label>
                 <div class="input-group date form_time" data-date="" data-date-format="hh:ii"
                      data-link-field="dtp_input3" data-link-format="hh:ii">
-                    <input class="form-control" id="endTime" name="endTime"
-                           {% if question %} value="{{resource.endTime}}" {% else %} value="" {% endif %}
-                           size="16" type="time" required/>
+                    <input class="form-control" id="endTime" name="endTime" size="16" type="time"
+                            {% if resource %} value="{{resource.endTime.strftime("%H:%M")}}"
+                            {% else %}
+                            {% endif %}
+                           required/>
                     <span class="input-group-addon"><span class="glyphicon glyphicon-remove"></span></span>
                     <span class="input-group-addon"><span class="glyphicon glyphicon-time"></span></span>
                 </div>

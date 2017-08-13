@@ -19,7 +19,7 @@ class Resource(ndb.Model):
 	startTime = ndb.DateTimeProperty(auto_now_add=False)
 	endTime = ndb.DateTimeProperty(auto_now_add=False)
 
-	description = ndb.StringProperty()
+	description = ndb.TextProperty(indexed=False)
 	duration = ndb.IntegerProperty(indexed=False)
 	numReservations = ndb.IntegerProperty(indexed=False)
 	maxReservations = ndb.IntegerProperty(indexed=False)

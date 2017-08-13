@@ -1,6 +1,7 @@
 {% extends "reserveBase.html" %}
 
 {% block Reserve %}active{% endblock %}
+{% block Home %}/{% endblock %}
 
 {% block content %}
 
@@ -34,7 +35,7 @@
             <div class="form-group">
                 <label for="1">Num of Atendees</label>
                 <select id="1" class="form-control"  name="maxReservations">
-                {% for n in range(1,resource.numsAvailable) %}<option>{{ n }}</option> {% endfor %}
+                {% for n in range(1,resource.numsAvailable + 1) %}<option>{{ n }}</option> {% endfor %}
 
                 </select>
             </div>
@@ -69,6 +70,13 @@
                 </div>
             <input type="hidden" id="dtp_input3"  />
         </div>
+
+                 <br><br><br><br><br><br><br><br><br><br>
+            <div>
+
+                <input class="btn btn-info btn-block"
+                       type="submit" value="Submit Reservation">
+                </div>
 
     {% endif %}
  </ul>
