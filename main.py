@@ -55,66 +55,57 @@ class MainPage(webapp2.RequestHandler):
 
 
 
-#
-# class AllResources(webapp2.RequestHandler):
-# 	def get(self):
-# 		if users.get_current_user():
-# 			url = users.create_logout_url(self.request.uri)
-# 			url_linktext = 'Logout'
-# 		else:
-# 			url = users.create_login_url(self.request.uri)
-# 			url_linktext = 'Login'
-# 			self.redirect(users.create_login_url(self.request.uri))
-#
-# 		user = users.get_current_user()
-#
-#
-# 		#resource_name = self.request.get('resource_name', DEFAULT_RESOURCE_NAME)
-# 		#resource_query = Resource.query(ancestor=)
-#
-# 		resource_query = Resource.query().order(-Resource.pubDate)
-# 		resources = resource_query.fetch()
-#
-#
-#
-# 		# resources = Resource.query(ancestor=resource.key).order(-Resource.pubDate).fetch()
-#
-# 		template_values = {
-# 			'resources': resources,
-# 			'user': user,
-# 			'url': url,
-# 			'url_linktext': url_linktext,
-# 		}
-# 		template = JINJA_ENVIRONMENT.get_template('allResources.html')
-# 		self.response.write(template.render(template_values))
+
+class AllResources(webapp2.RequestHandler):
+	def get(self):
+		user = users.get_current_user()
+		url, url_linktext = checkUser(user, self)
+
+		resource_query = Resource.query().order(-Resource.modDate)
+		resources = resource_query.fetch()
+
+		template_values = {
+			'resources': resources,
+			'user': user,
+			'url': url,
+			'url_linktext': url_linktext,
+			'today': date.today()
+
+		}
+		template = JINJA_ENVIRONMENT.get_template('allResources.html')
+		self.response.write(template.render(template_values))
 
 ##########################################
-# class MyResource(webapp2.RequestHandler):
-# 	def get(self):
-# 		if users.get_current_user():
-# 			url = users.create_logout_url(self.request.uri)
-# 			url_linktext = 'Logout'
-# 		else:
-# 			url = users.create_login_url(self.request.uri)
-# 			url_linktext = 'Login'
-# 			self.redirect(users.create_login_url(self.request.uri))
-# 		user = users.get_current_user()
-#
-# 		resource_query = Resource.query().order(-Resource.pubDate)
-# 		resources = resource_query.fetch()
-#
-# 		template_values = {
-# 			'resources': resources,
-# 			'user': user,
-# 			'url': url,
-# 			'url_linktext': url_linktext,
-# 		}
-# 		template = JINJA_ENVIRONMENT.get_template('myResource.html')
-# 		self.response.write(template.render(template_values))
+class MyResource(webapp2.RequestHandler):
+	def get(self):
+		# if users.get_current_user():
+		# 	url = users.create_logout_url(self.request.uri)
+		# 	url_linktext = 'Logout'
+		# else:
+		# 	url = users.create_login_url(self.request.uri)
+		# 	url_linktext = 'Login'
+		# 	self.redirect(users.create_login_url(self.request.uri))
+		# user = users.get_current_user()
+		user = users.get_current_user()
+		url, url_linktext = checkUser(user, self)
+
+		resource_query = Resource.query().order(-Resource.modDate)
+		resources = resource_query.fetch()
+
+		template_values = {
+			'resources': resources,
+			'user': user,
+			'url': url,
+			'url_linktext': url_linktext,
+			'today': date.today()
+
+		}
+		template = JINJA_ENVIRONMENT.get_template('myResource.html')
+		self.response.write(template.render(template_values))
 
 ##################################################################
 
-
+# @ndb.transactional(xg=True)
 class CreateResource(webapp2.RequestHandler):
 	def get(self):
 		user = users.get_current_user()
@@ -143,16 +134,20 @@ class CreateResource(webapp2.RequestHandler):
 			resource = Resource()
 
 		resource.author = users.get_current_user()
-
 		resource.name = self.request.get('name')
-
 		resource.tags = self.request.get('tags').strip().split(',')
-
-		resource.date = self.request.get('date')
-		resource.startTime = self.request.get('startTime')
-		resource.endTime = self.request.get('endTime')
-
+		resource.maxReservations = int(self.request.get('maxReservations'))
 		resource.description = self.request.get('description')
+
+		dateStr = self.request.get('date')
+		startTimeStr = self.request.get('startTime')
+		endTimeStr = self.request.get('endTime')
+
+		resource.date = datetime.strptime(dateStr, '%Y/%m/%d')
+		resource.startTime = datetime.strptime(dateStr + ' ' + startTimeStr, '%Y/%m/%d %H:%M')
+		resource.endTime = datetime.strptime(dateStr + ' ' + endTimeStr, '%Y/%m/%d %H:%M')
+
+
 		# resource.city = self.request.get('City')
 		# resource.maxReservations = self.request.get('MaxAttendees')
 		# resource.description = self.request.get('Description')
@@ -163,6 +158,56 @@ class CreateResource(webapp2.RequestHandler):
 
 		# url = '/AllResources?resourceID=%s' % resource.key.urlsafe()
 		self.redirect('/AllResources')
+
+
+
+######################################################
+
+class DeleteResource(webapp2.RequestHandler):
+	def get(self):
+		deleteResourceStr = self.request.get('resourceID')
+		if deleteResourceStr != '':
+			deleteResourceKey = ndb.Key(urlsafe=deleteResourceStr)
+			deleteResourceKey.delete()
+			# delete_Resource = deleteResourceKey.get()
+			# delete_Resource.key.delete()
+			# delete_Resource.put()
+		self.redirect('/AllResources')
+#def get_url_safe_key(sandy_key):
+#     url_string = sandy_key.urlsafe()
+#     return url_string
+#
+#
+# def get_entity_from_url_safe_key(url_string):
+#     sandy_key = ndb.Key(urlsafe=url_string)
+#     sandy = sandy_key.get()
+#     return sandy
+#
+#
+# def get_key_and_numeric_id_from_url_safe_key(url_string):
+#     key = ndb.Key(urlsafe=url_string)
+#     kind_string = key.kind()
+#     ident = key.id()
+#     return key, ident, kind_string
+class Reserve(webapp2.RequestHandler):
+	def get(self):
+		user = users.get_current_user()
+		url, url_linktext = checkUser(user, self)
+
+		resourceIDStr = self.request.get('resourceID')
+		resourceID = ndb.Key(urlsafe=resourceIDStr)
+		resource = resourceID.get()
+
+		template_values = {
+			'user': user,
+			'url': url,
+			'url_linktext': url_linktext,
+			'resource': resource,
+			'resourceIDStr':resourceIDStr
+		}
+		template = JINJA_ENVIRONMENT.get_template('reserve.html')
+		self.response.write(template.render(template_values))
+
 
 ##################################################################
 
@@ -266,8 +311,10 @@ class CreateResource(webapp2.RequestHandler):
 app = webapp2.WSGIApplication([
 	('/', MainPage),
 	('/CreateResource', CreateResource),
-	# ('/AllResources', AllResources),
-	# ('/MyResource', MyResource)
+	('/AllResources', AllResources),
+	('/DeleteResource', DeleteResource),
+	('/Reserve', Reserve),
+	('/MyResource', MyResource)
 
 ], debug=True)
 
