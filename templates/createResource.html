@@ -67,65 +67,81 @@
     <form action="/CreateResource" method="post">
         <hr>
 
-     <input class="btn btn-info btn-block"  onclick="try_altert()" value="check alter">
+{#     <input class="btn btn-info btn-block"  onclick="try_altert()" value="check alter" >#}
 
 
         <div class="form-group">
-            <label>Resource Name</label>
+            <label class="col-sm-2 control-label">Resource Name</label>
             <div>
-                <input type="text" class="form-control" name="name" id="name" value=""
-                   placeholder="Resource Name ..."><br/>
+                <input type="text" class="form-control" name="name" id="name"
+                   placeholder="Resource Name ..." {% if question %} value="{{resource.name}}" {% endif %} /required>
             </div>
+        </div><br/>
 
-
-
-            <label>Tag</label>
+        <div class="form-group">
+            <label class="col-sm-2 control-label">Tag</label>
             <div>
-                <input type="text" class="form-control" name="tags"
-                   placeholder="Tag ... seperated by ;"><br/>
+                <input type="text" class="form-control" name="tags" id="tags"
+                   placeholder="Tag ... seperated by ," >
             </div>
+        </div><br/>
 
-            <div class="form-group">
+        <div class="form-group">
+            <label class="control-label">description</label>
+            <div>
+                <textarea class="form-control"  rows="5" name="description" id="description"
+                          placeholder="description ... " {% if resource %} value="{{resource.description}}"
+                {% else %} value=""  {% endif %} >
+
+                </textarea>
+            </div>
+        </div><br/>
+
+        <div class="form-group">
             <label for="dtp_input1">Date Picking</label>
                 <div class="input-group date form_date"
                      data-date="" data-date-format="yyyy/mm/dd"
                      data-link-field="dtp_input1" data-link-format="yyyy/mm/dd">
-                    <input class="form-control"  size="16"              onchange="checkDate()"
-                           id="date" name="date" type="text" value="" placeholder="yyyy/mm/dd">
+                    <input class="form-control"  onchange="checkDate()"
+                           id="date" name="date" type="text"
+                           {% if question %} value="{{resource.date}}"  {% else %} value="" {% endif %}
+                           placeholder="yyyy/mm/dd" required/>
                     <span class="input-group-addon"><span class="glyphicon glyphicon-remove"></span></span>
                     <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>
                 </div>
             <input type="hidden" id="dtp_input1"/>
-            </div>
+        </div>
 
 
 
-            <div class="form-group">
+        <div class="form-group">
             <label for="dtp_input2" >Start Time</label>
                 <div class="input-group date form_time" data-date="" data-date-format="hh:ii"
                      data-link-field="dtp_input2" data-link-format="hh:ii">
 
-                    <input class="form-control" id="startTime" name="startTime" value="" size="16" type="time" >
+                    <input class="form-control" id="startTime" name="startTime"
+                           {% if question %} value="{{resource.startTime}}" {% else %} value="" {% endif %}
+                           size="16" type="time" required/>
                     <span class="input-group-addon"><span class="glyphicon glyphicon-remove"></span></span>
-					<span class="input-group-addon"><span class="glyphicon glyphicon-time"></span></span>
+                    <span class="input-group-addon"><span class="glyphicon glyphicon-time"></span></span>
 
                 </div>
             <input type="hidden" id="dtp_input2"  />
-            </div>
+        </div>
 
-            <div class="form-group">
+        <div class="form-group">
             <label for="dtp_input3" >End Time</label>
                 <div class="input-group date form_time" data-date="" data-date-format="hh:ii"
                      data-link-field="dtp_input3" data-link-format="hh:ii">
-
-                    <input class="form-control" id="endTime" name="endTime" value="" size="16" type="time" >
+                    <input class="form-control" id="endTime" name="endTime"
+                           {% if question %} value="{{resource.endTime}}" {% else %} value="" {% endif %}
+                           size="16" type="time" required/>
                     <span class="input-group-addon"><span class="glyphicon glyphicon-remove"></span></span>
-					<span class="input-group-addon"><span class="glyphicon glyphicon-time"></span></span>
+                    <span class="input-group-addon"><span class="glyphicon glyphicon-time"></span></span>
                 </div>
             <input type="hidden" id="dtp_input3"  />
-            </div>
-
         </div>
+
             {#<label for="name">City</label>
             <input type="text" class="form-control" id="City" placeholder="City ...">
 
@@ -148,10 +164,10 @@
             <div>
                 {% if resource %}
                 <input type="hidden" name="resourceID" value="{{resource.key.urlsafe()}}">
-                <input class="btn btn-info btn-block"  onmouseover="checkTime()"
+                <input class="btn btn-info btn-block"
                        type="submit" value="Update Resource">
                 {% else %}
-                <input class="btn btn-info btn-block"  onmouseover="checkTime()"
+                <input class="btn btn-info btn-block"
                        type="submit" value="Submit Resource">
                 {% endif %}
             </div>

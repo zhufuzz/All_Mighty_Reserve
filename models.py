@@ -5,26 +5,24 @@ models.py
 
 from google.appengine.ext import ndb
 
-class User(ndb.Model):
-	"""User: the person..."""
-	identity=ndb.StringProperty(indexed=False)
-	email=ndb.StringProperty(indexed=False)
-
-
 class Resource(ndb.Model):
 	"""Resource: ..."""
-	uuid = ndb.StringProperty()
-
 	author = ndb.UserProperty()
 
-	resourceName = ndb.StringProperty()
+	name = ndb.StringProperty()
 	tags = ndb.StringProperty(repeated = True)
 	#pubDate = ndb.DateTimeProperty(auto_now_add=True)
-	pubDate = ndb.StringProperty()
-	date = ndb.StringProperty()
-	startTime = ndb.StringProperty()
-	endTime = ndb.StringProperty()
+	pubDate = ndb.DateTimeProperty(auto_now_add=True)
+	modDate = ndb.DateTimeProperty(auto_now=True)
 
+	date = ndb.DateProperty(auto_now_add=False)
+	startTime = ndb.TimeProperty(auto_now_add=False)
+	endTime = ndb.TimeProperty(auto_now_add=False)
+
+	description = ndb.StringProperty()
+	duration = ndb.IntegerProperty(indexed=False)
+	numReservations = ndb.IntegerProperty(indexed=False)
+	maxReservations = ndb.IntegerProperty(indexed=False)
 	#
 	# user = ndb.StructuredProperty(User)
 	#
@@ -45,16 +43,16 @@ class Resource(ndb.Model):
 
 class Reservation(ndb.Model):
 	"""Resource: ..."""
-	user = ndb.StructuredProperty(User)
-	uuid = ndb.StringProperty()
-	resourceUUID = ndb.StringProperty()
-	resourceName = ndb.StringProperty()
-
-	date = ndb.DateProperty()
+	author = ndb.UserProperty()
 
 
-	startTime = ndb.DateTimeProperty(auto_now_add=False)
-	endTime = ndb.DateTimeProperty(auto_now_add=False)
-	duration = ndb.StringProperty(indexed=False)
+	name = ndb.StringProperty()
 
 	pubDate = ndb.DateTimeProperty(auto_now_add=True)
+	modDate = ndb.DateTimeProperty(auto_now=True)
+
+	date = ndb.DateProperty()
+	startTime = ndb.TimeProperty()
+	endTime = ndb.TimeProperty()
+
+	duration = ndb.IntegerProperty(indexed=False)
