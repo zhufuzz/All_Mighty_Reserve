@@ -23,6 +23,7 @@ class Resource(ndb.Model):
 	duration = ndb.IntegerProperty(indexed=False)
 	numReservations = ndb.IntegerProperty(indexed=False)
 	maxReservations = ndb.IntegerProperty(indexed=False)
+	numsAvailable = ndb.IntegerProperty(indexed=False)
 	#
 	# user = ndb.StructuredProperty(User)
 	#
@@ -58,5 +59,6 @@ class Reservation(ndb.Model):
 	date = ndb.DateProperty()
 	startTime = ndb.DateTimeProperty()
 	endTime = ndb.DateTimeProperty()
+	numsOfAttendee = ndb.IntegerProperty(indexed=False)
 
 	duration = ndb.IntegerProperty(indexed=False)

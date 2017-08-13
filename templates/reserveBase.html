@@ -6,13 +6,8 @@
     <!-- [START css] -->
     {% block clock %} {% endblock %}
 
-
-
     <link type="text/css" rel="stylesheet" href="./static/css/bootstrap.css">
     <link type="text/css" rel="stylesheet" href="./static/css/main.css">
-
-    <!-- [END css] -->
-
 
   </head>
 
@@ -34,7 +29,7 @@
 
             <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
-                    <li class="{% block Reserve %}{% endblock %}"><a href="/">Reserve</a></li>
+                    <li class="{% block Reserve %}{% endblock %}"><a href="#">Reserve</a></li>
 
 {#                   <li  class="{% block AllResources %}{% endblock %}"><a href="/AllResources" >All Resources</a></li>#}
 {#                   <li class="{% block MyResource %} {% endblock %}"><a href="/MyResource">My Resources</a></li>#}
@@ -73,8 +68,8 @@
     <div class="container" >
 
         <br><br><br><br><br>
-
         {% block content %}
+
 
         {% endblock %}
     </div>

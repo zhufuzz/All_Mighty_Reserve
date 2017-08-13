@@ -28,13 +28,13 @@
               <em><small>{{resource.description }}</small></em>
 
 
-                 <div class="btn-toolbar" role="toolbar">
-                    <div class="btn-group">
-                    {% for tag in resource.tags %}
-                            <a type="button" href="#"><span class="label label-warning">{{ tag }}</span></a>
-                    {% endfor %}
-                    </div>
-                 </div>
+             <div class="btn-toolbar" role="toolbar">
+                <div class="btn-group">
+                {% for tag in resource.tags %}
+                        <a type="button" href="#"><span class="label label-warning">{{ tag }}</span></a>
+                {% endfor %}
+                </div>
+             </div>
 
             <br>
             <div class="btn-toolbar" role="toolbar">

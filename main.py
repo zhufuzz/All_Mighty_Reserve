@@ -137,6 +137,9 @@ class CreateResource(webapp2.RequestHandler):
 		resource.name = self.request.get('name')
 		resource.tags = self.request.get('tags').strip().split(',')
 		resource.maxReservations = int(self.request.get('maxReservations'))
+		resource.numsAvailable = int(self.request.get('maxReservations'))
+		resource.numReservations = 0
+
 		resource.description = self.request.get('description')
 
 		dateStr = self.request.get('date')
@@ -165,6 +168,9 @@ class CreateResource(webapp2.RequestHandler):
 
 class DeleteResource(webapp2.RequestHandler):
 	def get(self):
+		user = users.get_current_user()
+		url, url_linktext = checkUser(user, self)
+
 		deleteResourceStr = self.request.get('resourceID')
 		if deleteResourceStr != '':
 			deleteResourceKey = ndb.Key(urlsafe=deleteResourceStr)
@@ -197,21 +203,66 @@ class Reserve(webapp2.RequestHandler):
 		resourceIDStr = self.request.get('resourceID')
 		resourceID = ndb.Key(urlsafe=resourceIDStr)
 		resource = resourceID.get()
-
+		resource.numsAvailable = resource.maxReservations - resource.numReservations
+		resource.put()
 		template_values = {
 			'user': user,
 			'url': url,
 			'url_linktext': url_linktext,
 			'resource': resource,
-			'resourceIDStr':resourceIDStr
+			'today': date.today()
 		}
 		template = JINJA_ENVIRONMENT.get_template('reserve.html')
 		self.response.write(template.render(template_values))
 
+	def post(self):
+		if self.request.get('resourceID'):
+			resourceID = self.request.get('resourceID')
+			resource = ndb.Key(urlsafe=resourceID).get()
+		else:
+			resource = Resource()
 
+		if self.request.get('reservationID'):
+			reservationID = self.request.get('reservationID')
+			reservation = ndb.Key(urlsafe=reservationID).get()
+		else:
+			reservation = Reservation()
+
+
+		reservation.author = users.get_current_user()
+		reservation.name = self.request.get('name')
+		reservation.numsOfAttendee = self.request.get('numsOfAttendee')
+		resource.numReservations = resource.numsOfAttendee + 1
+
+
+		dateStr = self.request.get('date')
+		startTimeStr = self.request.get('startTime')
+		endTimeStr = self.request.get('endTime')
+
+		reservation.date = datetime.strptime(dateStr, '%Y/%m/%d')
+		reservation.startTime = datetime.strptime(dateStr + ' ' + startTimeStr, '%Y/%m/%d %H:%M')
+		reservation.endTime = datetime.strptime(dateStr + ' ' + endTimeStr, '%Y/%m/%d %H:%M')
+		# reservation.duration = reservation.endTime - reservation.startTime
+
+
+		reservation.put()
+		resource.put
+
+		# url = '/AllResources?resourceID=%s' % resource.key.urlsafe()
+		self.redirect('/')
 ##################################################################
+class ReserveBase(webapp2.RequestHandler):
+	def get(self):
+		user = users.get_current_user()
+		url, url_linktext = checkUser(user, self)
 
-
+		template_values = {
+			'user': user,
+			'url': url,
+			'url_linktext': url_linktext,
+		}
+		template = JINJA_ENVIRONMENT.get_template('reserve.html')
+		self.response.write(template.render(template_values))
 #
 # class AddReservation(webapp2.RequestHandler):
 # 	def get(self):
@@ -314,7 +365,8 @@ app = webapp2.WSGIApplication([
 	('/AllResources', AllResources),
 	('/DeleteResource', DeleteResource),
 	('/Reserve', Reserve),
-	('/MyResource', MyResource)
+	('/MyResource', MyResource),
+	('/ReserveBase', ReserveBase)
 
 ], debug=True)
 

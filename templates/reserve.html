@@ -3,15 +3,73 @@
 {% block Reserve %}active{% endblock %}
 
 {% block content %}
+
  <ul class="list-group">
-    <a href="#" class="list-group-item active list-group-item-heading">All My Reservations</a>
-    <a href="#" class="list-group-item list-group-item-info">list-group-item-info</a>
-    <a href="#" class="list-group-item list-group-item-success">list-group-item-success</a>
-    <a href="#" class="list-group-item list-group-item-text">list-group-item-text</a>
-    <a href="#" class="list-group-item list-group-item-danger">list-group-item-danger</a>
-    <a href="#" class="list-group-item list-group-item-warning">list-group-item-warning</a>
-    <p>{{ resource.user }}</p>
-    <p>{{ resource.name }}</p>
-    <p>{{ resourceIDStr }}</p>
+ {% if resource.date >= today  and  resource.maxReservations - resource. numReservations >= 1 %}
+    <a href="#" class="list-group-item active list-group-item-heading">{{resource.name}}</a>
+{#    <a href="#" class="list-group-item list-group-item-info">list-group-item-info</a>#}
+{#    <a href="#" class="list-group-item list-group-item-success">list-group-item-success</a>#}
+{#    <a href="#" class="list-group-item list-group-item-text">list-group-item-text</a>#}
+{#    <a href="#" class="list-group-item list-group-item-danger">list-group-item-danger</a>#}
+{#    <a href="#" class="list-group-item list-group-item-warning">list-group-item-warning</a>#}
+
+
+
+
+{#        <li class="list-group-item list-group-item-heading">{{resource.name}}</li>#}
+        <li class="list-group-item list-group-item-info">By: {{resource.author}}, Created: {{resource.pubDate}}, Last Modified: {{resource.modDate}}</li>
+        <li class="list-group-item list-group-item-info">Date: {{resource.date}}, Start Time: {{resource.startTime}}, End Time: {{resource.endTime}}</li>
+
+
+         <div class="btn-toolbar" role="toolbar">
+            <div class="btn-group">
+            {% for tag in resource.tags %}
+                    <a type="button" href="#"><span class="label label-warning">{{ tag }}</span></a>
+            {% endfor %}
+            </div>
+         </div><br>
+
+
+        <form role="form">
+            <div class="form-group">
+                <label for="1">Num of Atendees</label>
+                <select id="1" class="form-control"  name="maxReservations">
+                {% for n in range(1,resource.numsAvailable) %}<option>{{ n }}</option> {% endfor %}
+
+                </select>
+            </div>
+        </form>
+
+
+
+        <div class="form-group">
+            <label for="dtp_input2" >Start Time</label>
+                <div class="input-group date form_time" data-date="" data-date-format="hh:ii"
+                     data-link-field="dtp_input2" data-link-format="hh:ii">
+
+                    <input class="form-control" id="startTime" name="startTime"
+                           {% if question %} value="{{resource.startTime}}" {% else %} value="" {% endif %}
+                           size="16" type="time" required/>
+                    <span class="input-group-addon"><span class="glyphicon glyphicon-remove"></span></span>
+                    <span class="input-group-addon"><span class="glyphicon glyphicon-time"></span></span>
+
+                </div>
+            <input type="hidden" id="dtp_input2"  />
+        </div>
+
+        <div class="form-group">
+            <label for="dtp_input3" >End Time</label>
+                <div class="input-group date form_time" data-date="" data-date-format="hh:ii"
+                     data-link-field="dtp_input3" data-link-format="hh:ii">
+                    <input class="form-control" id="endTime" name="endTime"
+                           {% if question %} value="{{resource.endTime}}" {% else %} value="" {% endif %}
+                           size="16" type="time" required/>
+                    <span class="input-group-addon"><span class="glyphicon glyphicon-remove"></span></span>
+                    <span class="input-group-addon"><span class="glyphicon glyphicon-time"></span></span>
+                </div>
+            <input type="hidden" id="dtp_input3"  />
+        </div>
+
+    {% endif %}
  </ul>
 {% endblock %}
