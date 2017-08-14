@@ -1,33 +1,24 @@
 <!DOCTYPE html>
 {% autoescape true %}
 <html>
-  <head>
-    <meta name="viewport" content="width=device-width, initial-scale=1"  charset="utf-8">
-    <!-- [START css] -->
-    {% block clock %} {% endblock %}
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1"  charset="utf-8">
+        {% block clock %} {% endblock %}
+        <link type="text/css" rel="stylesheet" href="./static/css/bootstrap.css">
+        <link type="text/css" rel="stylesheet" href="./static/css/main.css">
 
+    </head>
 
-
-    <link type="text/css" rel="stylesheet" href="./static/css/bootstrap.css">
-    <link type="text/css" rel="stylesheet" href="./static/css/main.css">
-
-    <!-- [END css] -->
-
-
-  </head>
-
-{#        navbar-inverse#}
+<body>
     <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
         <div class="container">
-{#            <div class="navbar-header">#}
-
             <div class="container-fluid">
                 <button type="button" class="navbar-toggle collapsed"
                         data-toggle="collapse" data-target=".navbar-collapse">
-{#                    <span class="sr-only">Toggle navigation</span>#}
-{#                    <span class="icon-bar"></span>#}
-{#                    <span class="icon-bar"></span>#}
-{#                    <span class="icon-bar"></span>#}
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
                 </button>
                 <a class="navbar-brand" href="/">All Mighty Reserve</a>
             </div>
@@ -47,45 +38,29 @@
                     </li>
                 </ul>
             </div>
-
         </div>
     </div>
 
 
-      <!-- [START greetings] -->
-{#      {% for greeting in greetings %}
-      <div class="row">
-        {% if greeting.author %}
-          <b>{{ greeting.author.email }}
-            {% if user and user.user_id() == greeting.author.identity %}
-              (You)
-            {% endif %}
-          </b> wrote:
-        {% else %}
-          An anonymous person wrote:
-        {% endif %}
-        <blockquote>{{ greeting.content }}</blockquote>
-      </div>
-      {% endfor %}#}
-      <!-- [END Nav] -->
-
     <div class="container" >
-
-        <br><br><br><br><br>
-
+        <br><br><br><br>
         {% block content %}
 
         {% endblock %}
     </div>
 
-  </body>
+</body>
 
-    <script
-      src="http://code.jquery.com/jquery-3.2.1.min.js"
-      integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
-      crossorigin="anonymous"></script>
+<script
+    src="http://code.jquery.com/jquery-3.2.1.min.js"
+    integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+    crossorigin="anonymous">
+</script>
 
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<script
+    src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js">
+</script>
 
 </html>
+
 {% endautoescape %}

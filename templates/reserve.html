@@ -1,83 +1,217 @@
-{% extends "reserveBase.html" %}
+<!DOCTYPE html>
+{% autoescape true %}
+<html>
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1"  charset="utf-8">
 
-{% block Reserve %}active{% endblock %}
-{% block Home %}/{% endblock %}
-
-{% block content %}
-
- <ul class="list-group">
- {% if resource.date >= today  and  resource.maxReservations - resource. numReservations >= 1 %}
-    <a href="#" class="list-group-item active list-group-item-heading">{{resource.name}}</a>
-{#    <a href="#" class="list-group-item list-group-item-info">list-group-item-info</a>#}
-{#    <a href="#" class="list-group-item list-group-item-success">list-group-item-success</a>#}
-{#    <a href="#" class="list-group-item list-group-item-text">list-group-item-text</a>#}
-{#    <a href="#" class="list-group-item list-group-item-danger">list-group-item-danger</a>#}
-{#    <a href="#" class="list-group-item list-group-item-warning">list-group-item-warning</a>#}
+        <link  rel="stylesheet" href="/static/css/bootstrap.min.css">
+        <link rel="stylesheet" href="./static/css/main.css">
+        <link rel="stylesheet" href="./static/css/bootstrap-datetimepicker.min.css"  media="screen">
 
 
 
+<script
+  src="http://code.jquery.com/jquery-3.2.1.min.js"
+  integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+  crossorigin="anonymous"></script>
 
-{#        <li class="list-group-item list-group-item-heading">{{resource.name}}</li>#}
-        <li class="list-group-item list-group-item-info">By: {{resource.author}}, Created: {{resource.pubDate}}, Last Modified: {{resource.modDate}}</li>
-        <li class="list-group-item list-group-item-info">Date: {{resource.date}}, Start Time: {{resource.startTime}}, End Time: {{resource.endTime}}</li>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+<script type="text/javascript" src="static/js/clock/bootstrap-datetimepicker.js" charset="UTF-8"></script>
+
+<script type="text/javascript">
+    $('.form_datetime').datetimepicker({
+        language:  'en',
+        weekStart: 1,
+        todayBtn:  1,
+		autoclose: 1,
+		todayHighlight: 1,
+		startView: 2,
+		forceParse: 0,
+        showMeridian: 1
+    });
+	$('.form_date').datetimepicker({
+        language:  'en',
+        weekStart: 1,
+        todayBtn:  1,
+		autoclose: 1,
+		todayHighlight: 1,
+		startView: 2,
+		minView: 2,
+		forceParse: 0
+    });
+	$('.form_time').datetimepicker({
+        language:  'en',
+        weekStart: 1,
+        todayBtn:  1,
+		autoclose: 1,
+		todayHighlight: 1,
+		startView: 1,
+		minView: 0,
+		maxView: 1,
+		forceParse: 0
+    });
+</script>
+
+<script type="text/javascript">
+    {# check name, if name is  empty, reload current page      #}
+    function checkName_reload(){
+        var name = document.getElementById("name").value;
+        if(name.trim() == ""){
+            alert("name can not be empty");
+{#                location.reload();#}
+        }
+    }
+
+    function checkName(){
+        var name = document.getElementById("name").value;
+        if(name.trim() == ""){
+            alert("name can not be empty");
+        }
+    }
+
+    function checkDate(){
+        var dateStr = document.getElementById("date").value;
+        myDate = new Date(Date.parse(dateStr))
+        var today = new Date();
+        if (myDate<today) {
+            alert("Ivalid Input: You can only create resources start after today!!!");
+{#                location.reload();#}
+        }
+    }
+
+    function checkTime(){
+        var startTimeStr = document.getElementById("startTime").value;
+        if(startTimeStr.length === 0){
+            alert("startTime input is null!");
+            return;
+        }
+        var endTimeStr = document.getElementById("endTime").value;
+        if(endTimeStr.length === 0){
+            alert("endTime input is null!");
+            return;
+        }
+        var startTime = parseInt(startTimeStr.replace(':',''));
+        var endTime = parseInt(endTimeStr.replace(':',''));
+        if (endTime<startTime) {
+            alert("Ivalid Input: Start Time should be after End Time.");
+{#                location.reload();#}
+        }
+
+    }
+
+    function try_altert(){
+         alert("try_altert");
+    }
+</script>
+</head>
+
+<body>
+    <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+        <div class="container">
+            <div class="container-fluid">
+                <button type="button" class="navbar-toggle collapsed"
+                        data-toggle="collapse" data-target=".navbar-collapse">
+                </button>
+                <a class="navbar-brand" href="/">All Mighty Reserve</a>
+            </div>
+
+            <div class="navbar-collapse collapse">
+                <ul class="nav navbar-nav">
+                    <li class="active"><a href="#">Reserve</a></li>
+                    <li ><a href="/">Home</a></li>
+                </ul>
+                <ul class="nav navbar-nav navbar-right">
+                    <li><a id="signInOut" class="btn pull-right" href="{{ url }}">{{ url_linktext }}</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
 
 
-         <div class="btn-toolbar" role="toolbar">
+    <div class="container" >
+        <br><br><br><br>
+
+    <form action="/Reserve" method="post">
+     {% if resource.date >= today  and  resource.maxReservations - resource. numReservations >= 1 %}
+        <a class="list-group-item active list-group-item-heading"
+            href="/CreateResource?resourceID={{ resource.key.urlsafe() }}"
+        >{{resource.name}}</a>
+
+        <li class="list-group-item list-group-item-info">
+            By: {{resource.author}}, Created: {{resource.pubDate}}, Last Modified: {{resource.modDate}}
+        </li>
+        <li class="list-group-item list-group-item-info">
+            Date: {{resource.date}}, Start Time: {{resource.startTime}}, End Time: {{resource.endTime}}
+        </li>
+
+
+        <div class="btn-toolbar" role="toolbar">
             <div class="btn-group">
-            {% for tag in resource.tags %}
-                    <a type="button" href="#"><span class="label label-warning">{{ tag }}</span></a>
-            {% endfor %}
+                {% for tag in resource.tags %}
+                        <a type="button" href="#"><span class="label label-warning">{{ tag }}</span></a>
+                {% endfor %}
             </div>
-         </div><br>
-
-
-        <form role="form">
-            <div class="form-group">
-                <label for="1">Num of Atendees</label>
-                <select id="1" class="form-control"  name="maxReservations">
-                {% for n in range(1,resource.numsAvailable + 1) %}<option>{{ n }}</option> {% endfor %}
-
-                </select>
-            </div>
-        </form>
-
+        </div><br>
 
 
         <div class="form-group">
+            <label class="control-label">Resource Name</label>
+            <div>
+                <input type="text" class="form-control" name="name" id="name"
+                       placeholder="Reservation Name" /required>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="1">Num of Atendees</label>
+            <select id="1" class="form-control"  name="maxReservations" value="1">
+                {% for n in range(1,resource.numsAvailable + 1) %}
+                    <option>{{ n }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+
+        <div class="form-group ">
             <label for="dtp_input2" >Start Time</label>
                 <div class="input-group date form_time" data-date="" data-date-format="hh:ii"
                      data-link-field="dtp_input2" data-link-format="hh:ii">
-
-                    <input class="form-control" id="startTime" name="startTime"
-                           {% if question %} value="{{resource.startTime}}" {% else %} value="" {% endif %}
-                           size="16" type="time" required/>
+                    <input class="form-control" id="startTime" name="startTime" size="16" type="time"
+                            value="{{resource.startTime.strftime("%H:%M")}}"
+                           required/>
                     <span class="input-group-addon"><span class="glyphicon glyphicon-remove"></span></span>
                     <span class="input-group-addon"><span class="glyphicon glyphicon-time"></span></span>
-
                 </div>
             <input type="hidden" id="dtp_input2"  />
         </div>
+
 
         <div class="form-group">
             <label for="dtp_input3" >End Time</label>
                 <div class="input-group date form_time" data-date="" data-date-format="hh:ii"
                      data-link-field="dtp_input3" data-link-format="hh:ii">
-                    <input class="form-control" id="endTime" name="endTime"
-                           {% if question %} value="{{resource.endTime}}" {% else %} value="" {% endif %}
-                           size="16" type="time" required/>
+                    <input class="form-control" id="endTime" name="endTime" size="16" type="time"
+                                value="{{resource.endTime.strftime("%H:%M")}}"
+                           required/>
                     <span class="input-group-addon"><span class="glyphicon glyphicon-remove"></span></span>
                     <span class="input-group-addon"><span class="glyphicon glyphicon-time"></span></span>
                 </div>
             <input type="hidden" id="dtp_input3"  />
         </div>
 
-                 <br><br><br><br><br><br><br><br><br><br>
-            <div>
+        <br><br><br><br><br><br><br><br><br><br>
 
-                <input class="btn btn-info btn-block"
-                       type="submit" value="Submit Reservation">
-                </div>
+        <div>
+            <input class="btn btn-info btn-block" type="submit" value="Submit Reservation">
+        </div>
 
-    {% endif %}
- </ul>
-{% endblock %}
+        {% endif %}
+    </form>
+    </div>
+</body>
+
+
+
+</html>
+{% endautoescape %}

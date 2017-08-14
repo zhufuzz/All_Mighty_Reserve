@@ -10,3 +10,11 @@ def checkUser(user, caller):
         url_linktext = 'Login'
         caller.redirect(url)
         return url, url_linktext
+        # if users.get_current_user():
+        # 	url = users.create_logout_url(self.request.uri)
+        # 	url_linktext = 'Logout'
+        # else:
+        # 	url = users.create_login_url(self.request.uri)
+        # 	url_linktext = 'Login'
+        # 	self.redirect(users.create_login_url(self.request.uri))
+        # user = users.get_current_user()

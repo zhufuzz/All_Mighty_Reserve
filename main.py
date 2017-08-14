@@ -78,14 +78,6 @@ class AllResources(webapp2.RequestHandler):
 ##########################################
 class MyResource(webapp2.RequestHandler):
 	def get(self):
-		# if users.get_current_user():
-		# 	url = users.create_logout_url(self.request.uri)
-		# 	url_linktext = 'Logout'
-		# else:
-		# 	url = users.create_login_url(self.request.uri)
-		# 	url_linktext = 'Login'
-		# 	self.redirect(users.create_login_url(self.request.uri))
-		# user = users.get_current_user()
 		user = users.get_current_user()
 		url, url_linktext = checkUser(user, self)
 
@@ -105,7 +97,7 @@ class MyResource(webapp2.RequestHandler):
 
 ##################################################################
 
-# @ndb.transactional(xg=True)
+# @ndb.transactional
 class CreateResource(webapp2.RequestHandler):
 	def get(self):
 		user = users.get_current_user()
@@ -158,9 +150,15 @@ class CreateResource(webapp2.RequestHandler):
 		# resource.pubDate =
 
 		resource.put()
+		# query_params = {'': ''}
 
 		# url = '/AllResources?resourceID=%s' % resource.key.urlsafe()
-		self.redirect('/AllResources')
+		query_params = {'resourceID': resource.key.urlsafe()}
+		# + urllib.urlencode(query_params)
+		# url = '/'
+
+		# self.redirect('/AllResources?'+urllib.urlencode(query_params))
+		self.redirect('/AllResources?'+urllib.urlencode(query_params))
 
 
 
@@ -177,8 +175,19 @@ class DeleteResource(webapp2.RequestHandler):
 			deleteResourceKey.delete()
 			# delete_Resource = deleteResourceKey.get()
 			# delete_Resource.key.delete()
-			# delete_Resource.put()
-		self.redirect('/AllResources')
+
+
+
+		template_values = {
+			'user': user,
+			'url': url,
+			'url_linktext': url_linktext,
+		}
+
+		template = JINJA_ENVIRONMENT.get_template('allResources.html')
+		self.response.write(template.render(template_values))
+
+
 #def get_url_safe_key(sandy_key):
 #     url_string = sandy_key.urlsafe()
 #     return url_string
@@ -233,7 +242,7 @@ class Reserve(webapp2.RequestHandler):
 		reservation.name = self.request.get('name')
 		reservation.numsOfAttendee = self.request.get('numsOfAttendee')
 		resource.numReservations = resource.numsOfAttendee + 1
-
+		resource.put()
 
 		dateStr = self.request.get('date')
 		startTimeStr = self.request.get('startTime')
@@ -246,7 +255,7 @@ class Reserve(webapp2.RequestHandler):
 
 
 		reservation.put()
-		resource.put
+
 
 		# url = '/AllResources?resourceID=%s' % resource.key.urlsafe()
 		self.redirect('/')
