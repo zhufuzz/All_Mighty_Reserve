@@ -4,27 +4,75 @@
 
 
 {% block content %}
+    <script type="text/javascript">
+        function checkDate(){
+            var today = new Date();
+            return today;
+        }
+    </script>
+{% if reservations  %}
 
-    <ul class="list-group">
-        <a href="#" class="list-group-item active list-group-item-heading">All My Reservations</a>
-        <a href="#" class="list-group-item list-group-item-info">list-group-item-info</a>
-        <a href="#" class="list-group-item list-group-item-success">list-group-item-success</a>
-        <a href="#" class="list-group-item list-group-item-text">list-group-item-text</a>
-        <a href="#" class="list-group-item list-group-item-danger">list-group-item-danger</a>
-        <a href="#" class="list-group-item list-group-item-warning">list-group-item-warning</a>
+{% for reservation in reservations %}
 
-        {% for reservation in reservations %}
-            {% if greeting.author %}
-              <a>{{ greeting.author.email }}
-                {% if user and user.user_id() == greeting.author.identity %}
-                  href="#" class="list-group-item"
-                {% endif %}
-              </a>
-            {% else %}
-              <a href="#" class="list-group-item">There is no reservation.</a>
-            {% endif %}
-            <blockquote>{{ greeting.content }}</blockquote>
+{#    <div class="form-group">#}
+{#    <a class="list-group-item active list-group-item-heading" herl="#">#}
+{#        Resource Name: {{reservation.key.parent().get().name}}#}
+{#        <span class="badge" href="#">{{ reservation.key.parent().get().numReservations }}/{{ reservation.key.parent().get().maxReservations }}</span>#}
+{#        {% if reservation.date <  today  %}<span class="label label-warning pull-right">expired</span>{% endif %}#}
+{#    </a>#}
+{#    </div>#}
+
+    <div class="form-group">
+    <li class="list-group-item list-group-item-success ">Reservation Name: {{reservation.name}}
+{#        {% if reservation.date < today  %} list-group-item-danger {% else %} active{% endif %}">#}
+{#        {% if reservation.date < today  %} list-group-item-danger {% else %} active{% endif %}">#}
+        <a class="badge badge-warning pull-right" herl="#">Resource Name: {{reservation.key.parent().get().name}}</a>
+{#        {% if reservation.date <  today  %}<span class="label label-warning pull-right" herl="#">Resource Name: {{reservation.key.parent().get().name}}</span>{% endif %}#}
+    </li>
+
+
+
+    <li class="list-group-item list-group-item-info">
+        By: {{reservation.author}},
+          Created: {{reservation.pubDate.strftime("%Y-%m-%d %H:%M")}},
+          Last Modified: {{reservation.modDate.strftime("%Y-%m-%d %H:%M")}}
+    </li>
+
+    <li class="list-group-item list-group-item-info">
+        Date: {{reservation.date.strftime("%Y-%m-%d %H:%M")}},
+          Start Time: {{reservation.startTime.strftime("%Y-%m-%d %H:%M")}},
+          End Time: {{reservation.endTime}}
+    </li>
+
+    <li class="list-group-item list-group-item-info">
+        Description: {{reservation.key.parent().get().description}}
+    </li>
+
+    <li class="list-group-item list-group-item-info">
+        <div class="btn-group">
+        {% for tag in reservation.key.parent().get().tags %}
+                <a type="button" href="#"><span class="label label-warning">{{ tag }}</span></a>
         {% endfor %}
-     </ul>
+        </div>
+    </li>
+
+    <li class="list-group-item list-group-item-info">
+
+        <div class="btn-group" >
+            {% if user and user == reservation.author %}
+                <a  class="btn btn-danger" type="submit"
+                href="/DeleteReservation?reservationID={{ reservation.key.urlsafe() }}"
+                >
+                Delete
+                  </a>
+            {% endif %}
+        </div>
+    </li>
+    </div>
+<br>
+{% endfor %}
+
+
+{% endif %}
 
 {% endblock %}

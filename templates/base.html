@@ -26,6 +26,7 @@
                 <ul class="nav navbar-nav">
                     <li class="{% block Reservations %}{% endblock %}"><a href="/">My Reservations</a></li>
                    <li  class="{% block AllResources %}{% endblock %}"><a href="/AllResources" >All Resources</a></li>
+                    {% block Reserve %}{% endblock %}
                    <li class="{% block MyResource %} {% endblock %}"><a href="/MyResource">My Resources</a></li>
                 <li class="{% block CreateResource %}{% endblock %}"><a href="/CreateResource">Create Resources</a></li>
                     <li class="nav-divider"></li>

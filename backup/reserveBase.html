@@ -1,7 +1,5 @@
 {% extends "base.html" %}
 {% block AllResources %}active{% endblock %}
-
-
 {% block content %}
     <script type="text/javascript">
         function checkDate(){
@@ -10,10 +8,22 @@
         }
     </script>
 
+{#    <div class="container">#}
+{#    <hr>#}
+{#    <ul class="list-group">#}
+{#        {% for resource in resources %}#}
+{#            <a href="#" class="list-group-item active list-group-item-heading">#}
+{#                {{ resource.name   }} || {{ resource.pubDate }} || {{ resource.date }} ||#}
+{#            {{ resource.startTime }} || {{ resource.endTime }}#}
+{#            </a>#}
+{#        {% endfor %}#}
+{#    </ul>#}
+{#    </div>#}
 
-{#<div class="container">#}
+
+
+<div class="container">
     {% for resource in resources %}
-        <div class="form-group">
         <li class="list-group-item list-unstyled
                 {% if resource.date <  today  %} list-group-item-danger {% else %} active{% endif %}">
             {{resource.name}}
@@ -51,7 +61,7 @@
             <div class="btn-group" >
                 {% if resource.date >= today %}
                 <a  class="btn btn-success" type="submit"
-                href="/Reserve?resourceID={{resource.key.urlsafe()}}"
+                href="/Reserve?resourceID={{ resource.key.urlsafe() }}"
                 >Reserve</a>
                 {% endif %}
             </div>
@@ -78,10 +88,9 @@
                 {% endif %}
             </div>
         </li>
-        </div>
-<br>
+
 {% endfor %}
 
-{#</div>#}
+</div>
 
 {% endblock %}

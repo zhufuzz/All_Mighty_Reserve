@@ -3,11 +3,12 @@
 
 {% block content %}
 
-<div class="container">
+
     {% for resource in resources %}
     {% if user and user == resource.author %}
 {#    <ul>#}
-        <li class="list-group-item
+        <div class="form-group">
+        <li class="list-group-item list-unstyled
                 {% if resource.date <  today  %} list-group-item-danger {% else %} active{% endif %}">
             {{resource.name}}
             <span class="badge" href="#">{{ resource.numReservations }}/{{ resource.maxReservations }}</span>
@@ -72,12 +73,13 @@
                 {% endif %}
             </div>
         </li>
+        </div>
 {#    </ul>#}
  {% endif %}
         <br>
 {% endfor %}
 
-</div>
+
 
 
 {% endblock %}

@@ -4,8 +4,8 @@
     <head>
         <meta name="viewport" content="width=device-width, initial-scale=1"  charset="utf-8">
         {% block clock %} {% endblock %}
-        <link type="text/css" rel="stylesheet" href="./static/css/bootstrap.css">
-        <link type="text/css" rel="stylesheet" href="./static/css/main.css">
+        <link type="text/css" rel="stylesheet" href="../static/css/bootstrap.css">
+        <link type="text/css" rel="stylesheet" href="../static/css/main.css">
     </head>
 
 <body>
@@ -15,13 +15,13 @@
                 <button type="button" class="navbar-toggle collapsed"
                         data-toggle="collapse" data-target=".navbar-collapse">
                 </button>
-                <a class="navbar-brand" href="/">All Mighty Reserve</a>
+                <a class="navbar-brand" href="/static/js">All Mighty Reserve</a>
             </div>
 
             <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
                     <li class="{% block Reserve %}{% endblock %}"><a href="#">Reserve</a></li>
-                    <li ><a href="/">Home</a></li>
+                    <li ><a href="/static">Home</a></li>
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
                     <li><a id="signInOut" class="btn pull-right" href="{{ url }}">{{ url_linktext }}</a></li>

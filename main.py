@@ -39,12 +39,18 @@ class MainPage(webapp2.RequestHandler):
 		user = users.get_current_user()
 		url, url_linktext = checkUser(user, self)
 
+		reservation_query = Reservation.query(user == Reservation.author).order(-Reservation.endTime)
+		# resource_query = Resource.query(Reservation.)
+		# .filter(Reservation.endTime.date() >= date.today())
+		reservations = reservation_query.fetch()
+
 		template_values = {
+			'reservations': reservations,
 			'user': user,
 			'url': url,
 			'url_linktext': url_linktext,
+			'today': date.today()
 		}
-
 		template = JINJA_ENVIRONMENT.get_template('index.html')
 		self.response.write(template.render(template_values))
 
@@ -173,10 +179,6 @@ class DeleteResource(webapp2.RequestHandler):
 		if deleteResourceStr != '':
 			deleteResourceKey = ndb.Key(urlsafe=deleteResourceStr)
 			deleteResourceKey.delete()
-			# delete_Resource = deleteResourceKey.get()
-			# delete_Resource.key.delete()
-
-
 
 		template_values = {
 			'user': user,
@@ -187,7 +189,24 @@ class DeleteResource(webapp2.RequestHandler):
 		template = JINJA_ENVIRONMENT.get_template('allResources.html')
 		self.response.write(template.render(template_values))
 
+class DeleteReservation(webapp2.RequestHandler):
+	def get(self):
+		user = users.get_current_user()
+		url, url_linktext = checkUser(user, self)
 
+		deleteReservationStr = self.request.get('reservationID')
+		if deleteReservationStr != '':
+			deleteResourceKey = ndb.Key(urlsafe=deleteReservationStr)
+			deleteResourceKey.delete()
+
+		template_values = {
+			'user': user,
+			'url': url,
+			'url_linktext': url_linktext,
+		}
+
+		template = JINJA_ENVIRONMENT.get_template('index.html')
+		self.response.write(template.render(template_values))
 #def get_url_safe_key(sandy_key):
 #     url_string = sandy_key.urlsafe()
 #     return url_string
@@ -225,39 +244,39 @@ class Reserve(webapp2.RequestHandler):
 		self.response.write(template.render(template_values))
 
 	def post(self):
-		if self.request.get('resourceID'):
-			resourceID = self.request.get('resourceID')
-			resource = ndb.Key(urlsafe=resourceID).get()
-		else:
-			resource = Resource()
+		resourceID = self.request.get('resourceID')
+		resource = ndb.Key(urlsafe = resourceID).get()
 
-		if self.request.get('reservationID'):
-			reservationID = self.request.get('reservationID')
-			reservation = ndb.Key(urlsafe=reservationID).get()
-		else:
-			reservation = Reservation()
+		reservation = Reservation(parent = resource.key)
+		reservation.author = user = users.get_current_user()
 
+		reservation.numsOfAttendee = int(self.request.get('numsOfAttendee'))
+		resource.numsAvailable = resource.numsAvailable - int(self.request.get('numsOfAttendee'))
+
+		resource.numReservations = resource.numReservations + int(self.request.get('numsOfAttendee'))
+
+		resource.put()
 
 		reservation.author = users.get_current_user()
 		reservation.name = self.request.get('name')
-		reservation.numsOfAttendee = self.request.get('numsOfAttendee')
-		resource.numReservations = resource.numsOfAttendee + 1
-		resource.put()
-
-		dateStr = self.request.get('date')
+		# dateStr = self.request.get('date').strip()
 		startTimeStr = self.request.get('startTime')
 		endTimeStr = self.request.get('endTime')
 
+		dateStr = resource.date.strftime('%Y/%m/%d')
+
 		reservation.date = datetime.strptime(dateStr, '%Y/%m/%d')
+
 		reservation.startTime = datetime.strptime(dateStr + ' ' + startTimeStr, '%Y/%m/%d %H:%M')
 		reservation.endTime = datetime.strptime(dateStr + ' ' + endTimeStr, '%Y/%m/%d %H:%M')
-		# reservation.duration = reservation.endTime - reservation.startTime
+
+		reservation.duration = (reservation.endTime - reservation.startTime).seconds
 
 
 		reservation.put()
 
 
-		# url = '/AllResources?resourceID=%s' % resource.key.urlsafe()
+		url = '/?resourceID=%s' % resource.key.urlsafe()
 		self.redirect('/')
 ##################################################################
 class ReserveBase(webapp2.RequestHandler):
@@ -375,6 +394,7 @@ app = webapp2.WSGIApplication([
 	('/DeleteResource', DeleteResource),
 	('/Reserve', Reserve),
 	('/MyResource', MyResource),
+	('/DeleteReservation', DeleteReservation),
 	('/ReserveBase', ReserveBase)
 
 ], debug=True)
