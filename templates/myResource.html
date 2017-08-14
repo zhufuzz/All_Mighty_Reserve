@@ -3,82 +3,81 @@
 
 {% block content %}
 
-    <div class="container">
-
-    	{% for resource in resources %}
-             {% if resource.date >= today and user and user == resource.author %}
-            <blockquote>
-            <div class="row">
-            <div class="col">
-
-            <a href="#" class="list-group-item list-group-item-success
-                    {% if resource.date <  today  %} disabled {% endif %}">
-                {{resource.name}}
-                <span class="badge" href="#">{{ resource.numReservations }}/{{ resource.maxReservations }}</span>
-            {% if resource.date <  today  %}<span class="label label-warning pull-right">expired</span>{% endif %}
-
-              </a>
+<div class="container">
+    {% for resource in resources %}
+    {% if user and user == resource.author %}
+{#    <ul>#}
+        <li class="list-group-item
+                {% if resource.date <  today  %} list-group-item-danger {% else %} active{% endif %}">
+            {{resource.name}}
+            <span class="badge" href="#">{{ resource.numReservations }}/{{ resource.maxReservations }}</span>
+        {% if resource.date <  today  %}<span class="label label-warning pull-right">expired</span>{% endif %}
+        </li>
 
 
+        <li class="list-group-item list-group-item-info">
+            By: {{resource.author}},
+              Created: {{resource.pubDate.strftime("%Y-%m-%d %H:%M")}},
+              Last Modified: {{resource.modDate.strftime("%Y-%m-%d %H:%M")}}
+        </li>
+
+        <li class="list-group-item list-group-item-info">
+            Date: {{resource.date.strftime("%Y-%m-%d %H:%M")}},
+              Start Time: {{resource.startTime.strftime("%Y-%m-%d %H:%M")}},
+              End Time: {{resource.endTime}}
+        </li>
+
+        <li class="list-group-item list-group-item-info">
+            Description: {{resource.description}}
+        </li>
+
+
+        <li class="list-group-item list-group-item-info">
+            <div class="btn-group">
+            {% for tag in resource.tags %}
+                    <a type="button" href="#"><span class="label label-warning">{{ tag }}</span></a>
+            {% endfor %}
+            </div>
+        </li>
+
+
+        <li class="list-group-item list-group-item-info">
+            <div class="btn-group" >
+                {% if resource.date >= today %}
+                <a  class="btn btn-success" type="submit"
+                href="/Reserve?resourceID={{ resource.key.urlsafe() }}"
+                >Reserve</a>
+                {% endif %}
             </div>
 
 
-              <em><small>By: {{resource.author}}, Created: {{resource.pubDate}}, Last Modified: {{resource.modDate}}</small></em>
-              <em><small>Date: {{resource.date}}, Start Time: {{resource.startTime}}, End Time: {{resource.endTime}}</small></em>
-              <em><small>{{resource.description }}</small></em>
-
-
-             <div class="btn-toolbar" role="toolbar">
-                <div class="btn-group">
-                {% for tag in resource.tags %}
-                        <a type="button" href="#"><span class="label label-warning">{{ tag }}</span></a>
-                {% endfor %}
-                </div>
-             </div>
-
-            <br>
-            <div class="btn-toolbar" role="toolbar">
-                <div class="btn-group" >
-                     {% if resource.date >= today %}
-                        <a  class="btn btn-success" type="submit"
-                        href="/Reserve?resourceID={{ resource.key.urlsafe() }}"
-                        >
-                        Reserve
-                          </a>
-                    {% endif %}
-                </div>
-
-
-
-
-                <div class="btn-group" >
-                    {% if user and user == resource.author %}
-                        <a  class="btn btn-primary" type="submit"
-                        href="/CreateResource?resourceID={{ resource.key.urlsafe() }}"
-                        >
-                        Edit
-                          </a>
-                    {% endif %}
-                </div>
-
-                <div class="btn-group" >
-                    {% if user and user == resource.author %}
-                        <a  class="btn btn-danger" type="submit"
-                        href="/DeleteResource?resourceID={{ resource.key.urlsafe() }}"
-                        >
-                        Delete
-                          </a>
-                    {% endif %}
-                </div>
-
+            <div class="btn-group" >
+                {% if user and user == resource.author %}
+                    <a  class="btn btn-primary" type="submit"
+                    href="/CreateResource?resourceID={{ resource.key.urlsafe() }}"
+                    >
+                    Edit
+                      </a>
+                {% endif %}
             </div>
 
 
+            <div class="btn-group" >
+                {% if user and user == resource.author %}
+                    <a  class="btn btn-danger" type="submit"
+                    href="/DeleteResource?resourceID={{ resource.key.urlsafe() }}"
+                    >
+                    Delete
+                      </a>
+                {% endif %}
             </div>
-            </blockquote>
-            {% endif %}
-        {% endfor %}
-    </div>
+        </li>
+{#    </ul>#}
+ {% endif %}
+        <br>
+{% endfor %}
+
+</div>
 
 
 {% endblock %}

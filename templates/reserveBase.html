@@ -14,27 +14,17 @@
             <div class="container-fluid">
                 <button type="button" class="navbar-toggle collapsed"
                         data-toggle="collapse" data-target=".navbar-collapse">
-                    <span class="sr-only">Toggle navigation</span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
                 </button>
                 <a class="navbar-brand" href="/">All Mighty Reserve</a>
             </div>
 
             <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
-                    <li class="{% block Reservations %}{% endblock %}"><a href="/">My Reservations</a></li>
-                   <li  class="{% block AllResources %}{% endblock %}"><a href="/AllResources" >All Resources</a></li>
-                   <li class="{% block MyResource %} {% endblock %}"><a href="/MyResource">My Resources</a></li>
-                <li class="{% block CreateResource %}{% endblock %}"><a href="/CreateResource">Create Resources</a></li>
-                    <li class="nav-divider"></li>
+                    <li class="{% block Reserve %}{% endblock %}"><a href="#">Reserve</a></li>
+                    <li ><a href="/">Home</a></li>
                 </ul>
-
                 <ul class="nav navbar-nav navbar-right">
-                    <li>
-                        <a id="signInOut" class="btn pull-right" href="{{ url }}">{{ url_linktext }}</a>
-                    </li>
+                    <li><a id="signInOut" class="btn pull-right" href="{{ url }}">{{ url_linktext }}</a></li>
                 </ul>
             </div>
         </div>
@@ -47,6 +37,8 @@
 
         {% endblock %}
     </div>
+
+
 
 </body>
 

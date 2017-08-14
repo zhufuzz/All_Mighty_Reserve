@@ -22,45 +22,47 @@
 
 
 
-    <div class="container">
-
-    	{% for resource in resources %}
-            <blockquote>
-            <div class="row">
-
-            <div class="col">
-                <a href="#" class="list-group-item list-group-item-success
-                        {% if resource.date <  today  %} disabled {% endif %}">
-                    {{resource.name}}
-                    <span class="badge" href="#">{{ resource.numReservations }}/{{ resource.maxReservations }}</span>
-                {% if resource.date <  today  %}<span class="label label-warning pull-right">expired</span>{% endif %}
-              </a>
-            </div>
+<div class="container">
+    {% for resource in resources %}
+        <li class="list-group-item list-unstyled
+                {% if resource.date <  today  %} list-group-item-danger {% else %} active{% endif %}">
+            {{resource.name}}
+            <span class="badge" href="#">{{ resource.numReservations }}/{{ resource.maxReservations }}</span>
+        {% if resource.date <  today  %}<span class="label label-warning pull-right">expired</span>{% endif %}
+        </li>
 
 
-            <em><small>By: {{resource.author}},
+        <li class="list-group-item list-group-item-info">
+            By: {{resource.author}},
               Created: {{resource.pubDate.strftime("%Y-%m-%d %H:%M")}},
-              Last Modified: {{resource.modDate.strftime("%Y-%m-%d %H:%M")}}</small></em>
-            <em><small>Date: {{resource.date.strftime("%Y-%m-%d %H:%M")}},
+              Last Modified: {{resource.modDate.strftime("%Y-%m-%d %H:%M")}}
+        </li>
+
+        <li class="list-group-item list-group-item-info">
+            Date: {{resource.date.strftime("%Y-%m-%d %H:%M")}},
               Start Time: {{resource.startTime.strftime("%Y-%m-%d %H:%M")}},
-              End Time: {{resource.endTime}}</small></em>
-            <em><small>{{resource.description }}</small></em>
+              End Time: {{resource.endTime}}
+        </li>
+
+        <li class="list-group-item list-group-item-info">
+            Description: {{resource.description}}
+        </li>
+
+        <li class="list-group-item list-group-item-info">
+            <div class="btn-group">
+            {% for tag in resource.tags %}
+                    <a type="button" href="#"><span class="label label-warning">{{ tag }}</span></a>
+            {% endfor %}
+            </div>
+        </li>
 
 
-            <div class="btn-toolbar" role="toolbar">
-                <div class="btn-group">
-                {% for tag in resource.tags %}
-                        <a type="button" href="#"><span class="label label-warning">{{ tag }}</span></a>
-                {% endfor %}
-                </div>
-            </div><br>
-
-            <div class="btn-toolbar" role="toolbar">
-                <div class="btn-group" >
-                    {% if resource.date >= today %}
-                    <a  class="btn btn-success" type="submit"
-                    href="/Reserve?resourceID={{ resource.key.urlsafe() }}"
-                    >Reserve</a>
+        <li class="list-group-item list-group-item-info">
+            <div class="btn-group" >
+                {% if resource.date >= today %}
+                <a  class="btn btn-success" type="submit"
+                href="/Reserve?resourceID={{ resource.key.urlsafe() }}"
+                >Reserve</a>
                 {% endif %}
             </div>
 
@@ -85,11 +87,10 @@
                       </a>
                 {% endif %}
             </div>
+        </li>
 
-        </div>
-    </div>
-    </blockquote>
-    {% endfor %}
+{% endfor %}
+
 </div>
 
 {% endblock %}

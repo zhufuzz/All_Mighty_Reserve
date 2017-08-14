@@ -66,8 +66,10 @@
 {% block content %}
 
     <form action="/CreateResource" method="post">
+
         <div class="form-group">
-            <label class="control-label">Resource Name</label>
+{#            <li class="list-group-item active">Resource Name<span class="badge" >required</span></li>#}
+            <li class="list-group-item active">Resource Name<span class="label label-danger pull-right">required</span></li>
             <div>
                 <input type="text" class="form-control" name="name" id="name"
                    {% if resource %} value="{{resource.name}}" {% else %} placeholder="Resource Name ..."{% endif %}
@@ -75,48 +77,12 @@
             </div>
         </div>
 
-        <div class="form-group">
-            <label class=" control-label">Tag</label>
-            <div>
-                <input type="text" class="form-control" name="tags" id="tags"
-                {% if resource %}
-                       value="{% for tag in resource.tags %}{{ tag }}, {% endfor %}"
-                {% else %} placeholder="Tag ... seperated by ,"
-                {% endif %}
-                   >
-            </div>
-        </div>
-
-        <div class="form-group">
-            <label class=" control-label">Max Reservations</label>
-            <div>
-                <input type="text" type="number" class="form-control" name="maxReservations" id="maxReservations"
-                        {% if resource %} value="{{resource.maxReservations}}"
-                        {% else %}placeholder="maxReservations...."
-                        {% endif %}
-                    /required>
-            </div>
-        </div>
-
 
 
         <div class="form-group">
-            <label class="control-label">Description</label>
-            <div>
-
-                <input  class="form-control"  rows="5" name="description" id="description"
-                {% if resource %} value="{{resource.description.strip()}}"
-                {% else %}placeholder="Description...."
-                {% endif %}
-
-                >
-
-                </input>
-            </div>
-        </div>
-
-        <div class="form-group">
-            <label for="dtp_input1">Date Picking</label>
+{#          <label for="dtp_input1">Date Picking</label>#}
+{#            <li class="list-group-item list-group-item-success">Date Picking<span class="badge" >required</span></li>#}
+            <li class="list-group-item list-group-item-success">Date Picking<span class="label label-danger pull-right">required</span></li>
                 <div class="input-group date form_date"
                      data-date="" data-date-format="yyyy/mm/dd"
                      data-link-field="dtp_input1" data-link-format="yyyy/mm/dd">
@@ -137,7 +103,10 @@
 
 
         <div class="form-group ">
-            <label for="dtp_input2" >Start Time</label>
+{#            <label for="dtp_input2" >Start Time</label>#}
+            <li class="list-group-item list-group-item-success">Start Time<span class="label label-danger pull-right">required</span></li>
+{#            <li class="list-group-item list-group-item-success">Date Picking<span class="label label-danger">required</span></li>#}
+
                 <div class="input-group date form_time" data-date="" data-date-format="hh:ii"
                      data-link-field="dtp_input2" data-link-format="hh:ii">
                     <input class="form-control" id="startTime" name="startTime" size="16" type="time"
@@ -154,7 +123,8 @@
 
 
         <div class="form-group">
-            <label for="dtp_input3" >End Time</label>
+{#            <label for="dtp_input3" >End Time</label>#}
+            <li class="list-group-item list-group-item-success">End Time<span class="label label-danger pull-right">required</span></li>
                 <div class="input-group date form_time" data-date="" data-date-format="hh:ii"
                      data-link-field="dtp_input3" data-link-format="hh:ii">
                     <input class="form-control" id="endTime" name="endTime" size="16" type="time"
@@ -168,28 +138,57 @@
             <input type="hidden" id="dtp_input3"  />
         </div>
 
-            {#<label for="name">City</label>
-            <input type="text" class="form-control" id="City" placeholder="City ...">
+
+        <div class="form-group">
+            <li class="list-group-item list-group-item-success">Max Reservations<span class="label label-danger pull-right">required</span></li>
+            <div>
+                <input type="text" type="number" class="form-control" name="maxReservations" id="maxReservations"
+                        {% if resource %} value="{{resource.maxReservations}}"
+                        {% else %}placeholder="maxReservations...."
+                        {% endif %}
+                    /required>
+            </div>
+        </div>
+
+
+
+        <div class="form-group">
+            <li class="list-group-item list-group-item-success">Tags</li>
+            <div>
+                <input type="text" class="form-control" name="tags" id="tags"
+                {% if resource %}
+                       value="{% for tag in resource.tags %}{{ tag }}, {% endfor %}"
+                {% else %} placeholder="Tag ... seperated by ,"
+                {% endif %}
+                   >
+            </div>
+        </div>
 
 
 
 
 
-            <label for="name">Max Attendees</label>
-            <input type="text" class="form-control" id="MaxAttendees" placeholder="Max Attendees ...">
+        <div class="form-group">
+{#            <label class="control-label">Description</label>#}
+            <li class="list-group-item list-group-item-success">Description</li>
+            <div>
 
-            <label for="name">Description</label>
-            <input type="text" class="form-control" id="Description" placeholder="Description ...">
+                <input  class="form-control"  rows="5" name="description" id="description"
+                {% if resource %} value="{{resource.description.strip()}}"
+                {% else %}placeholder="Description...."
+                {% endif %}
+
+                >
+
+                </input>
+            </div>
+        </div>
 
 
 
-
-#}
-{#            <hr><hr><hr><hr><hr><hr><hr><hr><hr><hr>#}
-            <br><br><br><br><br><br><br><br><br><br>
+            <br><br>
             <div>
                 {% if resource %}
-{#                <input type="hidden" name="resourceID" value="{{resource.key.urlsafe()}}">#}
                 <input class="btn btn-info btn-block"
                        type="submit" value="Update Resource">
                 {% else %}
@@ -197,17 +196,6 @@
                        type="submit" value="Submit Resource">
                 {% endif %}
             </div>
-
-
-
-{#            <button type="button" class="btn btn-info btn-block" type="submit" value="提交">Submit</button>#}
-
-
-
-
-
-{#        <button type="submit" class="btn btn-default">Submit</button>#}
-
 
     </form>
 
