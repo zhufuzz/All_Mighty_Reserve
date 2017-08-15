@@ -1,0 +1,123 @@
+{% extends "resource_base.html" %}
+
+{% block Reserve %}active{% endblock %}
+
+
+{% block content %}
+
+    <form action="/Reserve" method="post">
+    {#     {% if resource.date >= today  and  resource.maxReservations - resource.numReservations >= 1 %}#}
+    {#     {% if resource.date >= today  and  resource.maxReservations - resource.numReservations >= 1 %}#}
+
+         <div class="form-group">
+            <li class="list-group-item list-group-item-success">Reservation Name</li>
+            <div>
+                <input type="text" class="form-control" name="name" id="name"
+                       placeholder="Reservation Name ..."
+                /required>
+            </div>
+        </div>
+
+
+        <div class="form-group">
+            {#    <label for="dtp_input2" >Start Time</label>#}
+                <li class="list-group-item list-group-item-info">Start Time<span class="label label-danger pull-right">required</span></li>
+                <div class="input-group date form_time" data-date="" data-date-format="hh:ii" data-link-field="dtp_input1" data-link-format="hh:ii">
+                    <input class="form-control" size="16" id="startTime" name="startTime" type="time"
+
+{#                           {% if resource %} placeholder="{{resource.startTime.strftime("%H:%M")}}"#}
+{#                            {% else %}#}
+{#                            {% endif %}#}
+                           required/>
+                    <span class="input-group-addon"><span class="glyphicon glyphicon-remove"></span></span>
+                    <span class="input-group-addon"><span class="glyphicon glyphicon-time"></span></span>
+                </div>
+            <input type="hidden" id="dtp_input1"/>
+        </div>
+
+
+         <div class="form-group">
+            <li class="list-group-item list-group-item-info">End Time<span class="label label-danger pull-right">required</span></li>
+                <div class="input-group date form_time" data-date="" data-date-format="hh:ii" data-link-field="dtp_input2" data-link-format="hh:ii">
+                    <input class="form-control" size="16" id="endTime" name="endTime" type="time"
+{#                       {% if resource %} placeholder="{{resource.startTime.strftime("%H:%M")}}"#}
+{#                        {% else %}#}
+{#                        {% endif %}#}
+                       required/>
+                    <span class="input-group-addon"><span class="glyphicon glyphicon-remove"></span></span>
+                    <span class="input-group-addon"><span class="glyphicon glyphicon-time"></span></span>
+                </div>
+            <input type="hidden" id="dtp_input2"  />
+        </div>
+
+
+         <div class="form-group">
+         <li class="list-group-item list-group-item-info">Num of Atendees<span class="label label-danger pull-right">required</span></li>
+            <select id="1" class="form-control"  name="numsOfAttendee" >
+                {% for n in range(1,resource.numsAvailable + 1) %}
+                    <option>{{ n }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+
+         <div>
+            <a class="list-group-item active list-group-item"
+                href="/CreateResource?resourceID={{ resource.key.urlsafe() }}"
+            >{{resource.name}}
+            <span class="badge" href="#">{{ resource.numReservations }}/{{ resource.maxReservations }}</span>
+{#            <a class="badge badge-warning pull-right" herl="#">Resource: {{resource.name}}</a>#}
+
+            </a>
+
+            <li class="list-group-item list-group-item-info">
+                Date: {{resource.date.strftime("%Y-%m-%d %H:%M")}},
+                  Start Time: {{resource.startTime.strftime("%Y-%m-%d %H:%M")}},
+                  End Time: {{resource.endTime}}
+            </li>
+
+
+            <li class="list-group-item list-group-item-info" role="toolbar">
+                <div class="btn-group">
+                    {% for tag in resource.tags %}
+                            <a type="button" href="#"><span class="label label-warning">{{ tag }}</span></a>
+                    {% endfor %}
+                </div>
+            </li>
+        </div>
+
+
+        <br><br><br>
+
+        <div>
+            <input type="hidden" name="resourceID" value="{{ resource.key.urlsafe() }}">
+            <input class="btn btn-info btn-block" type="submit" value="Submit Reservation">
+        </div>
+
+{#        {% endif %}#}
+    </form>
+
+ {% endblock %}
+
+</body>
+
+{#############################}
+
+ <script
+src="http://code.jquery.com/jquery-3.2.1.min.js"
+integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+crossorigin="anonymous"></script>
+
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+<script type="text/javascript" src="static/js/clock/bootstrap-datetimepicker.js" charset="UTF-8"></script>
+
+<script type="text/javascript" src="static/js/clock/clock.js" charset="UTF-8"></script>
+
+
+</html>
+
+{% endautoescape %}
+
+
+

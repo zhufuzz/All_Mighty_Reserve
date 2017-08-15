@@ -1,6 +1,7 @@
-{% extends "base.html" %}
+{% extends "resource_base.html" %}
 
-{% block MyReservations %}active{% endblock %}
+{% block Reservations %}active{% endblock %}
+
 
 
 {% block content %}
@@ -10,8 +11,9 @@
             return today;
         }
     </script>
-{% if reservations  %}
 
+
+{% if reservations  %}
 {% for reservation in reservations %}
 
 {#    <div class="form-group">#}
@@ -70,9 +72,9 @@
     </li>
     </div>
 <br>
+
 {% endfor %}
-
-
 {% endif %}
+
 
 {% endblock %}
