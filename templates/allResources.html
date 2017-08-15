@@ -38,7 +38,7 @@
         <li class="list-group-item list-group-item-info">
             <div class="btn-group">Tags:
             {% for tag in resource.tags %}
-                <a type="button" href="/ResourcesWithTag?tag={{tag}}"><span class="label label-warning">{{ tag }}</span></a>
+                <a type="button" href="/ResourcesWithTag?tag={{tag.strip()}}"><span class="label label-warning">{{tag.strip()}}</span></a>
             {% endfor %}
             </div>
         </li>

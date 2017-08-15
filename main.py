@@ -1,8 +1,4 @@
-"""
-main.py
-
-"""
-
+"""main.py"""
 import os
 import re
 import urllib
@@ -13,16 +9,12 @@ import webapp2
 from time import sleep
 from datetime import datetime, time, timedelta, date
 from email import utils
-
 from google.appengine.ext import ndb
 from google.appengine.api import users
 from google.appengine.api import memcache
 from google.appengine.api import taskqueue
-
-
 from models import Resource
 from models import Reservation
-
 from utils import checkUser
 
 JINJA_ENVIRONMENT = jinja2.Environment(
@@ -30,7 +22,6 @@ JINJA_ENVIRONMENT = jinja2.Environment(
 		os.path.join(os.path.dirname(__file__), 'templates')),
 	extensions=['jinja2.ext.autoescape'],
 	autoescape=True)
-
 DEFAULT_RESOURCE_NAME = 'default_resource_name'
 
 #Route to index page and present user's reservation
@@ -48,12 +39,18 @@ class MainPage(webapp2.RequestHandler):
 		nowStr = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 		now = datetime.strptime(nowStr, '%Y-%m-%d %H:%M:%S')
 
-		deleteReservationStr = self.request.get('deleteReservationID')
 
+		# update the numReservations and numsAvailable of this resource when delete the reservation
+		deleteReservationStr = self.request.get('deleteReservationID')
 		if deleteReservationStr != '':
 			deleteReservationKey = ndb.Key(urlsafe=deleteReservationStr)
+			thisReservation = deleteReservationKey.get()
+			thisResource = deleteReservationKey.parent().get()
+			thisResource.numReservations = thisResource.numReservations - thisReservation.numsOfAttendee
+			# thisResource.numReservations = thisResource.numReservations - thisReservation.numsOfAttendee
+			thisResource.numsAvailable = thisResource.maxReservations - thisResource.numReservations
+			thisResource.put()
 			deleteReservationKey.delete()
-			#self.redirect('/')
 
 		reservations = Reservation.query(user == Reservation.author).order(-Reservation.pubDate)
 		reservations = reservations.fetch()
@@ -69,15 +66,13 @@ class MainPage(webapp2.RequestHandler):
 			'user': user,
 			'url': url,
 			'url_linktext': url_linktext,
+
 			'now': now
 		}
 		template = JINJA_ENVIRONMENT.get_template('index.html')
 		self.response.write(template.render(template_values))
 
 ##################################################################################
-
-
-
 
 class AllResources(webapp2.RequestHandler):
 	def get(self):
@@ -97,7 +92,7 @@ class AllResources(webapp2.RequestHandler):
 		if deleteResourceStr != '':
 			deleteResourceKey = ndb.Key(urlsafe=deleteResourceStr)
 
-			ndb.delete_multi(ancestor=deleteResourceKey)
+			# ndb.delete_multi(deleteResourceKey)
 
 			deleteResourceKey.delete()
 
@@ -115,7 +110,6 @@ class AllResources(webapp2.RequestHandler):
 
 		template = JINJA_ENVIRONMENT.get_template('allResources.html')
 		self.response.write(template.render(template_values))
-
 
 ##########################################
 
@@ -145,8 +139,6 @@ class MyResource(webapp2.RequestHandler):
 		}
 		template = JINJA_ENVIRONMENT.get_template('myResource.html')
 		self.response.write(template.render(template_values))
-
-
 
 ##################################################################
 
@@ -195,7 +187,6 @@ class CreateResource(webapp2.RequestHandler):
 
 		url = '/ResourceContent?resourceID=%s' % resource.key.urlsafe()
 		self.redirect(url)
-
 
 ######################################################
 
@@ -257,7 +248,6 @@ class CreateResource(webapp2.RequestHandler):
 #     return key, ident, kind_string
 
 ##########################################################
-
 
 class Reserve(webapp2.RequestHandler):
 	def get(self):
@@ -359,7 +349,6 @@ class Reserve(webapp2.RequestHandler):
 
 ##################################################################
 
-
 class EditResource(webapp2.RequestHandler):
 	def get(self):
 		if users.get_current_user():
@@ -422,14 +411,29 @@ class ResourceContent(webapp2.RequestHandler):
 		nowStr = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 		now = datetime.strptime(nowStr, '%Y-%m-%d %H:%M:%S')
 
+		# update the numReservations and numsAvailable of this resource when delete the reservation
+		deleteReservationStr = self.request.get('deleteReservationID')
+		if deleteReservationStr != '':
+			deleteReservationKey = ndb.Key(urlsafe=deleteReservationStr)
+			thisReservation = deleteReservationKey.get()
+			thisResource = deleteReservationKey.parent().get()
+			thisResource.numReservations = thisResource.numReservations - thisReservation.numsOfAttendee
+			# thisResource.numReservations = thisResource.numReservations - thisReservation.numsOfAttendee
+			thisResource.numsAvailable = thisResource.maxReservations - thisResource.numReservations
+			thisResource.put()
+			deleteReservationKey.delete()
+
 		resourceID = self.request.get('resourceID')
 		resource = ndb.Key(urlsafe=resourceID).get()
+
+		reservations = Reservation.query(ancestor=resource.key).order(-Reservation.pubDate).fetch()
 
 		template_values = {
 			'user': user,
 			'url': url,
 			'url_linktext': url_linktext,
 			'resource':resource,
+			'reservations':reservations,
 			'now': now
 		}
 

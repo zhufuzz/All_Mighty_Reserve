@@ -20,14 +20,12 @@
         <div class="form-group">
              <li for="dtp_input1" class="control-label list-group-item list-group-item-info">
                  Start DateTime Picking<span class="label label-danger pull-right">required</span></li>
-
             <div class="input-group date form_datetime" data-date="{{ now }}"
                  data-date-format="yyyy-mm-dd hh:ii:ss" data-link-field="dtp_input1">
                 <input class="form-control" type="text" name="startDateTime"
 {#                       value="{{ resource.startDateTime }}"#}
 {#                onchange="checkDate()"#}
-                name="startDateTime"
-                >
+                /required>
                 <span class="input-group-addon"><span class="glyphicon glyphicon-remove"></span></span>
                 <span class="input-group-addon"><span class="glyphicon glyphicon-th"></span></span>
             </div>
@@ -39,14 +37,12 @@
         <div class="form-group">
              <li for="dtp_input1" class=" control-label list-group-item list-group-item-info">
                  End DateTime Picking<span class="label label-danger pull-right">required</span></li>
-
             <div class="input-group date form_datetime" data-date="{{ now }}"
                  data-date-format="yyyy-mm-dd hh:ii:ss" data-link-field="dtp_input2">
                 <input class="form-control"  type="text" name="endDateTime"
                 {#                onchange="checkDate()"#}
 {#                        value="{{ resource.endDateTime  }}"#}
-                name="endDateTime"
-                >
+                /required>
                 <span class="input-group-addon"><span class="glyphicon glyphicon-remove"></span></span>
                 <span class="input-group-addon"><span class="glyphicon glyphicon-th"></span></span>
             </div>
