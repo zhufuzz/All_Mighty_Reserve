@@ -1,87 +1,64 @@
 {% extends "resource_base.html" %}
 
 {% block EditResource %}active{% endblock %}
+{#{% block EditResourceA %}?resouceID={{ resource.key.urlsafe() }}{% endblock %}#}
+{% block content %}
 
-
-    <form action="/CreateResource" method="post">
+    <form action="/EditResource" method="post">
 
         <div class="form-group">
-{#            <li class="list-group-item active">Resource Name<span class="badge" >required</span></li>#}
             <li class="list-group-item active">Resource Name<span class="label label-danger pull-right">required</span></li>
             <div>
-                <input type="text" class="form-control" name="name" id="name"
-                   {% if resource %} value="{{resource.name}}" {% else %} placeholder="Resource Name ..."{% endif %}
+                <input type="text" class="form-control" name="name" id="name"  value="{{resource.name}}"
+{#                   {% if resource %} value="{{resource.name}}" {% else %} placeholder="Resource Name ..."{% endif %}#}
                 /required>
             </div>
         </div>
 
 
-
         <div class="form-group">
-{#          <label for="dtp_input1">Date Picking</label>#}
-{#            <li class="list-group-item list-group-item-info">Date Picking<span class="badge" >required</span></li>#}
-            <li class="list-group-item list-group-item-info">Date Picking<span class="label label-danger pull-right">required</span></li>
-                <div class="input-group date form_date"
-                     data-date="" data-date-format="yyyy/mm/dd"
-                     data-link-field="dtp_input1" data-link-format="yyyy/mm/dd">
-                    <input class="form-control"
-{#                                                              onchange="checkDate()"#}
-                           id="date" name="date" type="text"
+             <li for="dtp_input1" class="control-label list-group-item list-group-item-info">
+                 Start DateTime Picking<span class="label label-danger pull-right">required</span></li>
 
-                            {% if resource %} value="{{resource.date.strftime("%Y/%m/%d")}}"
-                            {% else %}
-                            {% endif %}
-                           required/>
-                    <span class="input-group-addon"><span class="glyphicon glyphicon-remove"></span></span>
-                    <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>
-                </div>
-            <input type="hidden" id="dtp_input1"/>
+            <div class="input-group date form_datetime" data-date="1979-09-16T05:25:07Z"
+                 data-date-format="yyyy-mm-dd - hh:ii" data-link-field="dtp_input1">
+                <input class="form-control" type="text" name="startTime"
+                       value="{{ resource.startDateTime }}"
+{#                onchange="checkDate()"#}
+                name="startDateTime"
+                >
+                <span class="input-group-addon"><span class="glyphicon glyphicon-remove"></span></span>
+                <span class="input-group-addon"><span class="glyphicon glyphicon-th"></span></span>
+            </div>
+            <input type="hidden" id="dtp_input1"  />
         </div>
 
 
+        <div class="form-group">
+             <li for="dtp_input1" class=" control-label list-group-item list-group-item-info">
+                 End DateTime Picking<span class="label label-danger pull-right">required</span></li>
 
-        <div class="form-group ">
-{#            <label for="dtp_input2" >Start Time</label>#}
-            <li class="list-group-item list-group-item-info">Start Time<span class="label label-danger pull-right">required</span></li>
-                <div class="input-group date form_time" data-date="" data-date-format="hh:ii"
-                     data-link-field="dtp_input2" data-link-format="hh:ii">
-                    <input class="form-control" id="startTime" name="startTime" size="16" type="time"
-
-                            {% if resource %} value="{{resource.startTime.strftime("%H:%M")}}"
-                            {% else %}
-                            {% endif %}
-                           required/>
-                    <span class="input-group-addon"><span class="glyphicon glyphicon-remove"></span></span>
-                    <span class="input-group-addon"><span class="glyphicon glyphicon-time"></span></span>
-                </div>
+            <div class="input-group date form_datetime" data-date="1979-09-16T05:25:07Z"
+                 data-date-format="yyyy-mm-dd - hh:ii" data-link-field="dtp_input2">
+                <input class="form-control"  type="text" name="endTime"
+                {#                onchange="checkDate()"#}
+                        value="{{ resource.endDateTime }}"
+                name="endDateTime"
+                >
+                <span class="input-group-addon"><span class="glyphicon glyphicon-remove"></span></span>
+                <span class="input-group-addon"><span class="glyphicon glyphicon-th"></span></span>
+            </div>
             <input type="hidden" id="dtp_input2"  />
         </div>
 
 
         <div class="form-group">
-{#            <label for="dtp_input3" >End Time</label>#}
-            <li class="list-group-item list-group-item-info">End Time<span class="label label-danger pull-right">required</span></li>
-                <div class="input-group date form_time" data-date="" data-date-format="hh:ii"
-                     data-link-field="dtp_input3" data-link-format="hh:ii">
-                    <input class="form-control" id="endTime" name="endTime" size="16" type="time"
-                            {% if resource %} value="{{resource.endTime.strftime("%H:%M")}}"
-                            {% else %}
-                            {% endif %}
-                           required/>
-                    <span class="input-group-addon"><span class="glyphicon glyphicon-remove"></span></span>
-                    <span class="input-group-addon"><span class="glyphicon glyphicon-time"></span></span>
-                </div>
-            <input type="hidden" id="dtp_input3"  />
-        </div>
-
-
-        <div class="form-group">
-            <li class="list-group-item list-group-item-info">Max Reservations<span class="label label-danger pull-right">required</span></li>
+            <li class="list-group-item list-group-item-info">Max Reservations
+                <span class="label label-danger pull-right">required</span>
+            </li>
             <div>
                 <input type="text" type="number" class="form-control" name="maxReservations" id="maxReservations"
-                        {% if resource %} value="{{resource.maxReservations}}"
-                        {% else %}placeholder="maxReservations...."
-                        {% endif %}
+                       value="{{ resource.maxReservations }}"
                     /required>
             </div>
         </div>
@@ -92,10 +69,7 @@
             <li class="list-group-item list-group-item-info">Tags</li>
             <div>
                 <input type="text" class="form-control" name="tags" id="tags"
-                {% if resource %}
-                       value="{% for tag in resource.tags %}{{ tag }}, {% endfor %}"
-                {% else %} placeholder="Tag ... seperated by ,"
-                {% endif %}
+                       value="{% for tag in resource.tags %}{{ tag  }}, {% endfor %}"
                    >
             </div>
         </div>
@@ -105,34 +79,24 @@
 
 
         <div class="form-group">
-{#            <label class="control-label">Description</label>#}
             <li class="list-group-item list-group-item-info">Description</li>
             <div>
-
                 <input  class="form-control"  rows="5" name="description" id="description"
-                {% if resource %} value="{{resource.description.strip()}}"
-                {% else %}placeholder="Description...."
-                {% endif %}
-
+                    {% if resource %} value="{{resource.description.strip()}}"
+                    {% endif %}
+                    placeholder="Description...."
                 >
-
                 </input>
             </div>
         </div>
 
 
-
-            <br><br>
+        <br><br>
+        <div class="form-group">
             <div>
-                {% if resource %}
-                <input class="btn btn-info btn-block"
-                       type="submit" value="Update Resource">
-                {% else %}
-                <input class="btn btn-info btn-block"
-                       type="submit" value="Submit Resource">
-                {% endif %}
+                <input class="btn btn-info btn-block" name="resourceID" type="submit" value="Update Resource">
             </div>
-
+        </div>
     </form>
 
 

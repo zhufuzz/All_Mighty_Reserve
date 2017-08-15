@@ -20,9 +20,29 @@
 
             <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
-                    <li class="{% block Reservations %}{% endblock %}"><a href="/Reservations">Reservations</a></li>
-                    <li  class="{% block Reserve %}{% endblock %}"><a href="/Reserve" >Reserve</a></li>
-                    <li  class="{% block EditResource %}{% endblock %}"><a href="/EditResource" >Edit Resource</a></li>
+                    <li class="{% block ResourceContent %}{% endblock %}">
+                        <a href="/ResourceContent{% if resource %}?resourceID={{resource.key.urlsafe()}}{% endif %}">
+                            Resource Content
+                        </a>
+                    </li>
+
+                    <li  class="{% block Reserve %}{% endblock %}">
+                        <a href="/Reserve{% if resource %}?resourceID={{resource.key.urlsafe()}}{% endif %}">
+                            Reserve
+                        </a>
+                    </li>
+
+                     <li class="{% block Reservations %}{% endblock %}">
+                         <a href="/Reservations{% if resource %}?resourceID={{resource.key.urlsafe()}}{% endif %}">
+                         </a>
+                     </li>
+
+                    <li  class="{% block EditResource %}{% endblock %}" >
+                        <a href="/EditResource{% if resource %}?resourceID={{resource.key.urlsafe()}}{% endif %}" >
+                            Edit Resource
+                        </a>
+                    </li>
+
                     <li><a href="/">Home</a></li>
                 </ul>
                 <ul class="nav navbar-nav navbar-right">

@@ -3,24 +3,22 @@
 
 
 {% block content %}
-    <script type="text/javascript">
-        function checkDate(){
-            var today = new Date();
-            return today.getDate();
-        }
-    </script>
+
 
 
 {#<div class="container">#}
+
     {% for resource in resources %}
         <div class="form-group">
-        <li class="list-group-item list-unstyled
-                {% if resource.date <  today  %} list-group-item-danger {% else %} active{% endif %}">
+
+        <a class="list-group-item
+            {% if resource.startDateTime <  today  %} list-group-item-danger {% else %} active{% endif %}"
+            href="/ResourceContent?resourceID={{resource.key.urlsafe()}}"
+        >
             {{resource.name}}
             <span class="badge" href="#">{{ resource.numReservations }}/{{ resource.maxReservations }}</span>
-        {% if resource.date <  today  %}<span class="label label-warning pull-right">expired</span>{% endif %}
-        </li>
-
+        {% if resource.startDateTime <  today  %}<span class="label label-warning pull-right">expired</span>{% endif %}
+        </a>
 
         <li class="list-group-item list-group-item-info">
             By: {{resource.author}},
@@ -29,9 +27,8 @@
         </li>
 
         <li class="list-group-item list-group-item-info">
-            Date: {{resource.date.strftime("%Y-%m-%d %H:%M")}},
-              Start Time: {{resource.startTime.strftime("%Y-%m-%d %H:%M")}},
-              End Time: {{resource.endTime}}
+              Start Time: {{resource.startDateTime.strftime("%Y-%m-%d %H:%M")}},
+              End Time: {{resource.endDateTime.strftime("%Y-%m-%d %H:%M")}}
         </li>
 
         <li class="list-group-item list-group-item-info">
@@ -39,9 +36,9 @@
         </li>
 
         <li class="list-group-item list-group-item-info">
-            <div class="btn-group">
+            <div class="btn-group">Tags:
             {% for tag in resource.tags %}
-                    <a type="button" href="#"><span class="label label-warning">{{ tag }}</span></a>
+                <a type="button" href="/ResourcesWithTag?tag={{tag}}"><span class="label label-warning">{{ tag }}</span></a>
             {% endfor %}
             </div>
         </li>
@@ -49,7 +46,7 @@
 
         <li class="list-group-item list-group-item-info">
             <div class="btn-group" >
-                {% if resource.date >= today %}
+                {% if resource.startDateTime >= today %}
                 <a  class="btn btn-success" type="submit"
                 href="/Reserve?resourceID={{resource.key.urlsafe()}}"
                 >Reserve</a>
@@ -60,7 +57,7 @@
             <div class="btn-group" >
                 {% if user and user == resource.author %}
                     <a  class="btn btn-primary" type="submit"
-                    href="/CreateResource?resourceID={{ resource.key.urlsafe() }}"
+                    href="/EditResource?resourceID={{ resource.key.urlsafe() }}"
                     >
                     Edit
                       </a>
@@ -71,7 +68,7 @@
             <div class="btn-group" >
                 {% if user and user == resource.author %}
                     <a  class="btn btn-danger" type="submit"
-                    href="/DeleteResource?resourceID={{ resource.key.urlsafe() }}"
+                    href="/AllResources?delResourceID={{ resource.key.urlsafe() }}"
                     >
                     Delete
                       </a>
@@ -82,6 +79,5 @@
 <br>
 {% endfor %}
 
-{#</div>#}
 
 {% endblock %}

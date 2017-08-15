@@ -6,8 +6,6 @@
 {% block content %}
 
     <form action="/Reserve" method="post">
-    {#     {% if resource.date >= today  and  resource.maxReservations - resource.numReservations >= 1 %}#}
-    {#     {% if resource.date >= today  and  resource.maxReservations - resource.numReservations >= 1 %}#}
 
          <div class="form-group">
             <li class="list-group-item list-group-item-success">Reservation Name</li>
@@ -20,33 +18,38 @@
 
 
         <div class="form-group">
-            {#    <label for="dtp_input2" >Start Time</label>#}
-                <li class="list-group-item list-group-item-info">Start Time<span class="label label-danger pull-right">required</span></li>
-                <div class="input-group date form_time" data-date="" data-date-format="hh:ii" data-link-field="dtp_input1" data-link-format="hh:ii">
-                    <input class="form-control" size="16" id="startTime" name="startTime" type="time"
+             <li for="dtp_input1" class="control-label list-group-item list-group-item-info">
+                 Start DateTime Picking<span class="label label-danger pull-right">required</span></li>
 
-{#                           {% if resource %} placeholder="{{resource.startTime.strftime("%H:%M")}}"#}
-{#                            {% else %}#}
-{#                            {% endif %}#}
-                           required/>
-                    <span class="input-group-addon"><span class="glyphicon glyphicon-remove"></span></span>
-                    <span class="input-group-addon"><span class="glyphicon glyphicon-time"></span></span>
-                </div>
-            <input type="hidden" id="dtp_input1"/>
+            <div class="input-group date form_datetime" data-date="1979-09-16T05:25:07Z"
+                 data-date-format="yyyy-mm-dd - hh:ii" data-link-field="dtp_input1">
+                <input class="form-control" type="text" name="startDateTime"
+                       value="{{ resource.startDateTime }}"
+{#                onchange="checkDate()"#}
+                name="startDateTime"
+                >
+                <span class="input-group-addon"><span class="glyphicon glyphicon-remove"></span></span>
+                <span class="input-group-addon"><span class="glyphicon glyphicon-th"></span></span>
+            </div>
+            <input type="hidden" id="dtp_input1"  />
         </div>
 
 
-         <div class="form-group">
-            <li class="list-group-item list-group-item-info">End Time<span class="label label-danger pull-right">required</span></li>
-                <div class="input-group date form_time" data-date="" data-date-format="hh:ii" data-link-field="dtp_input2" data-link-format="hh:ii">
-                    <input class="form-control" size="16" id="endTime" name="endTime" type="time"
-{#                       {% if resource %} placeholder="{{resource.startTime.strftime("%H:%M")}}"#}
-{#                        {% else %}#}
-{#                        {% endif %}#}
-                       required/>
-                    <span class="input-group-addon"><span class="glyphicon glyphicon-remove"></span></span>
-                    <span class="input-group-addon"><span class="glyphicon glyphicon-time"></span></span>
-                </div>
+
+        <div class="form-group">
+             <li for="dtp_input1" class=" control-label list-group-item list-group-item-info">
+                 End DateTime Picking<span class="label label-danger pull-right">required</span></li>
+
+            <div class="input-group date form_datetime" data-date="1979-09-16T05:25:07Z"
+                 data-date-format="yyyy-mm-dd - hh:ii" data-link-field="dtp_input2">
+                <input class="form-control"  type="text" name="endDateTime"
+                {#                onchange="checkDate()"#}
+                        value="{{ resource.endDateTime  }}"
+                name="endDateTime"
+                >
+                <span class="input-group-addon"><span class="glyphicon glyphicon-remove"></span></span>
+                <span class="input-group-addon"><span class="glyphicon glyphicon-th"></span></span>
+            </div>
             <input type="hidden" id="dtp_input2"  />
         </div>
 
@@ -71,19 +74,20 @@
             </a>
 
             <li class="list-group-item list-group-item-info">
-                Date: {{resource.date.strftime("%Y-%m-%d %H:%M")}},
-                  Start Time: {{resource.startTime.strftime("%Y-%m-%d %H:%M")}},
-                  End Time: {{resource.endTime}}
+{#                Date: {{resource.date.strftime("%Y-%m-%d %H:%M")}},#}
+                  Start Time: {{resource.startDateTime.strftime("%Y-%m-%d %H:%M")}},
+                  End Time: {{resource.endDateTime}}
             </li>
 
 
-            <li class="list-group-item list-group-item-info" role="toolbar">
-                <div class="btn-group">
-                    {% for tag in resource.tags %}
-                            <a type="button" href="#"><span class="label label-warning">{{ tag }}</span></a>
-                    {% endfor %}
-                </div>
-            </li>
+
+         <li class="list-group-item list-group-item-info">
+            <div class="btn-group">Tags:
+            {% for tag in resource.tags %}
+                <a type="button" href="/ResourcesWithTag?tag={{tag}}"><span class="label label-warning">{{ tag }}</span></a>
+            {% endfor %}
+            </div>
+        </li>
         </div>
 
 
@@ -97,27 +101,10 @@
 {#        {% endif %}#}
     </form>
 
- {% endblock %}
-
-</body>
-
-{#############################}
-
- <script
-src="http://code.jquery.com/jquery-3.2.1.min.js"
-integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
-crossorigin="anonymous"></script>
-
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-
-<script type="text/javascript" src="static/js/clock/bootstrap-datetimepicker.js" charset="UTF-8"></script>
-
-<script type="text/javascript" src="static/js/clock/clock.js" charset="UTF-8"></script>
 
 
-</html>
 
-{% endautoescape %}
+{% endblock %}
 
 
 

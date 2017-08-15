@@ -1,17 +1,15 @@
-{% extends "base.html" %}
-{% block MyResource %}active{% endblock %}
+{% extends "resource_base.html" %}
+
+{% block ResourceContent %}active{% endblock %}
+
+
 
 {% block content %}
 
-
-    {% for resource in resources %}
-{#    <ul>#}
         <div class="form-group">
 
-        <a class="list-group-item
-            {% if resource.startDateTime <  today  %} list-group-item-danger {% else %} active{% endif %}"
-            href="/ResourceContent?resourceID={{resource.key.urlsafe()}}"
-        >
+        <a class="list-group-item list-unstyled
+                {% if resource.startDateTime <  today  %} list-group-item-danger {% else %} active{% endif %}">
             {{resource.name}}
             <span class="badge" href="#">{{ resource.numReservations }}/{{ resource.maxReservations }}</span>
         {% if resource.startDateTime <  today  %}<span class="label label-warning pull-right">expired</span>{% endif %}
@@ -75,11 +73,5 @@
             </div>
         </li>
         </div>
-{#    </ul>#}
-        <br>
-{% endfor %}
-
-
-
 
 {% endblock %}
