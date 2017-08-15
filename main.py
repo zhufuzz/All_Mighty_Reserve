@@ -36,44 +36,70 @@ DEFAULT_RESOURCE_NAME = 'default_resource_name'
 #Route to index page and present user's reservation
 class MainPage(webapp2.RequestHandler):
 	def get(self):
+		if users.get_current_user():
+			url = users.create_logout_url(self.request.uri)
+			url_linktext = 'Logout'
+		else:
+			url = users.create_login_url(self.request.uri)
+			url_linktext = 'Login'
+			self.redirect(users.create_login_url(self.request.uri))
 		user = users.get_current_user()
-		url, url_linktext = checkUser(user, self)
 
-		# reservations = Reservation.query(user == Reservation.author).order(-Reservation.pubDate).fetch()
+		nowStr = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+		now = datetime.strptime(nowStr, '%Y-%m-%d %H:%M:%S')
 
-		nowStr = datetime.now().strftime("%Y-%m-%d - %H:%M")
-		nowDateTime = datetime.strptime(nowStr, "%Y-%m-%d - %H:%M")
+		deleteReservationStr = self.request.get('deleteReservationID')
+
+		if deleteReservationStr != '':
+			deleteReservationKey = ndb.Key(urlsafe=deleteReservationStr)
+			deleteReservationKey.delete()
+			#self.redirect('/')
+
+		reservations = Reservation.query(user == Reservation.author).order(-Reservation.pubDate)
+		reservations = reservations.fetch()
+
+		# nowStr = datetime.now().strftime("%Y-%m-%d - %H:%M")
+		# nowDateTime = datetime.strptime(nowStr, "%Y-%m-%d - %H:%M")
 		# resource_query = Resource.query(Reservation.)
 		# .filter(Reservation.endTime.date() >= date.today())
 
 
 		template_values = {
-			# 'reservations': reservations,
+			'reservations': reservations,
 			'user': user,
 			'url': url,
 			'url_linktext': url_linktext,
-			'nowDateTime': nowDateTime
+			'now': now
 		}
 		template = JINJA_ENVIRONMENT.get_template('index.html')
 		self.response.write(template.render(template_values))
 
-	# [END main_page]
-		
-
-##########################################
+##################################################################################
 
 
 
 
 class AllResources(webapp2.RequestHandler):
 	def get(self):
+		if users.get_current_user():
+			url = users.create_logout_url(self.request.uri)
+			url_linktext = 'Logout'
+		else:
+			url = users.create_login_url(self.request.uri)
+			url_linktext = 'Login'
+			self.redirect(users.create_login_url(self.request.uri))
 		user = users.get_current_user()
-		url, url_linktext = checkUser(user, self)
+
+		nowStr = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+		now = datetime.strptime(nowStr, '%Y-%m-%d %H:%M:%S')
 
 		deleteResourceStr = self.request.get('delResourceID')
 		if deleteResourceStr != '':
-			deleteResourceKey = ndb.Key(urlsafe=deleteResourceStr).delete()
+			deleteResourceKey = ndb.Key(urlsafe=deleteResourceStr)
 
+			ndb.delete_multi(ancestor=deleteResourceKey)
+
+			deleteResourceKey.delete()
 
 		resource_query = Resource.query().order(-Resource.modDate)
 		resources = resource_query.fetch()
@@ -83,7 +109,7 @@ class AllResources(webapp2.RequestHandler):
 			'user': user,
 			'url': url,
 			'url_linktext': url_linktext,
-			'today': datetime.now()
+			'now': now
 
 		}
 
@@ -102,18 +128,20 @@ class MyResource(webapp2.RequestHandler):
 			url = users.create_login_url(self.request.uri)
 			url_linktext = 'Login'
 			self.redirect(users.create_login_url(self.request.uri))
-
 		user = users.get_current_user()
 
+		nowStr = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+		now = datetime.strptime(nowStr, '%Y-%m-%d %H:%M:%S')
+
 		resource_query = Resource.query(user == Resource.author).order(-Resource.modDate)
-		resources = resource_query.fetch()
+		resources = resource_query.filter().fetch()
 
 		template_values = {
 			'resources': resources,
 			'user': user,
 			'url': url,
 			'url_linktext': url_linktext,
-			'today': datetime.now()
+			'now': now
 		}
 		template = JINJA_ENVIRONMENT.get_template('myResource.html')
 		self.response.write(template.render(template_values))
@@ -125,11 +153,17 @@ class MyResource(webapp2.RequestHandler):
 # @ndb.transactional
 class CreateResource(webapp2.RequestHandler):
 	def get(self):
+		if users.get_current_user():
+			url = users.create_logout_url(self.request.uri)
+			url_linktext = 'Logout'
+		else:
+			url = users.create_login_url(self.request.uri)
+			url_linktext = 'Login'
+			self.redirect(users.create_login_url(self.request.uri))
 		user = users.get_current_user()
-		url, url_linktext = checkUser(user, self)
 
-		nowStr = datetime.now().strftime("%Y-%m-%d - %H:%M")
-		now = datetime.strptime(nowStr, "%Y-%m-%d - %H:%M")
+		nowStr = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+		now = datetime.strptime(nowStr, '%Y-%m-%d %H:%M:%S')
 
 		template_values = {
 			'user': user,
@@ -138,21 +172,10 @@ class CreateResource(webapp2.RequestHandler):
 			'now': now
 		}
 
-		# if self.request.get('resourceID'):
-		# 	resourceID = self.request.get('resourceID')
-		# 	resource = ndb.Key(urlsafe=resourceID).get()
-		# 	template_values['resource'] = resource
-
 		template = JINJA_ENVIRONMENT.get_template('createResource.html')
 		self.response.write(template.render(template_values))
 
-
 	def post(self):
-		# if self.request.get('resourceID'):
-		# 	resourceID = self.request.get('resourceID')
-		# 	resource = ndb.Key(urlsafe=resourceID).get()
-		# else:
-		# 	resource = Resource()
 		resource = Resource()
 		resource.author = users.get_current_user()
 		resource.name = self.request.get('name')
@@ -160,41 +183,18 @@ class CreateResource(webapp2.RequestHandler):
 		resource.maxReservations = int(self.request.get('maxReservations'))
 		resource.numsAvailable = int(self.request.get('maxReservations'))
 		resource.numReservations = 0
-
 		resource.description = self.request.get('description')
 
-		# dateStr = self.request.get('date')
 		startDateTimeStr = self.request.get('startTime')
 		endDateTimeStr = self.request.get('endTime')
-
-		# resource.date = datetime.strptime(dateStr, '%Y/%m/%d')
-		# resource.startTime = datetime.strptime(dateStr + ' ' + startTimeStr, '%Y/%m/%d %H:%M')
-		# resource.endTime = datetime.strptime(dateStr + ' ' + endTimeStr, '%Y/%m/%d %H:%M')
-
-		resource.startDateTime = datetime.strptime(startDateTimeStr, '%Y-%m-%d - %H:%M')
-		resource.endDateTime = datetime.strptime(endDateTimeStr, '%Y-%m-%d - %H:%M')
+		resource.startDateTime = datetime.strptime(startDateTimeStr, '%Y-%m-%d %H:%M:%S')
+		resource.endDateTime = datetime.strptime(endDateTimeStr, '%Y-%m-%d %H:%M:%S')
 
 		resource.duration = (resource.endDateTime - resource.startDateTime).seconds
-		# resource.city = self.request.get('City')
-		# resource.maxReservations = self.request.get('MaxAttendees')
-		# resource.description = self.request.get('Description')
-
-		# resource.pubDate =
-
 		resource.put()
-		# query_params = {'': ''}
 
-		# url = '/AllResources?resourceID=%s' % resource.key.urlsafe()
-		# query_params = {'resourceID': resource.key.urlsafe()}
-		# + urllib.urlencode(query_params)
-		# url = '/'
-
-		# self.redirect('/AllResources?'+urllib.urlencode(query_params))
-		# self.redirect('/AllResources?'+urllib.urlencode(query_params))
-		# url = '/AllResources?resourceID=%s' % resource.key.urlsafe()
-		url = '/AllResources'
+		url = '/ResourceContent?resourceID=%s' % resource.key.urlsafe()
 		self.redirect(url)
-
 
 
 ######################################################
@@ -261,13 +261,22 @@ class CreateResource(webapp2.RequestHandler):
 
 class Reserve(webapp2.RequestHandler):
 	def get(self):
+		if users.get_current_user():
+			url = users.create_logout_url(self.request.uri)
+			url_linktext = 'Logout'
+		else:
+			url = users.create_login_url(self.request.uri)
+			url_linktext = 'Login'
+			self.redirect(users.create_login_url(self.request.uri))
 		user = users.get_current_user()
-		url, url_linktext = checkUser(user, self)
+
+		nowStr = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+		now = datetime.strptime(nowStr, '%Y-%m-%d %H:%M:%S')
 
 		resourceIDStr = self.request.get('resourceID')
 		resourceID = ndb.Key(urlsafe=resourceIDStr)
 		resource = resourceID.get()
-		# resource.numsAvailable = resource.maxReservations - resource.numReservations
+		resource.numsAvailable = resource.maxReservations - resource.numReservations
 		resource.put()
 
 		template_values = {
@@ -275,41 +284,32 @@ class Reserve(webapp2.RequestHandler):
 			'url': url,
 			'url_linktext': url_linktext,
 			'resource': resource,
-			'today': datetime.now()
+			'now': now
 		}
+
 		template = JINJA_ENVIRONMENT.get_template('resource_reserve.html')
 		self.response.write(template.render(template_values))
 
 	def post(self):
 		resourceID = self.request.get('resourceID')
 		resource = ndb.Key(urlsafe = resourceID).get()
-
 		reservation = Reservation(parent = resource.key)
 		reservation.author = user = users.get_current_user()
-
 		reservation.numsOfAttendee = int(self.request.get('numsOfAttendee'))
 		resource.numsAvailable = resource.numsAvailable - int(self.request.get('numsOfAttendee'))
-
 		resource.numReservations = resource.numReservations + int(self.request.get('numsOfAttendee'))
-
 		resource.put()
 
 		reservation.author = users.get_current_user()
 		reservation.name = self.request.get('name')
-		# dateStr = self.request.get('date').strip()
-		startTimeStr = self.request.get('startDateTime')
-		endTimeStr = self.request.get('endDateTime')
-
-		dateStr = resource.date.strftime('%Y/%m/%d')
-
-
-		reservation.startTime = datetime.strptime(startTimeStr, '%Y/%m/%d %H:%M')
-		reservation.endTime = datetime.strptime(endTimeStr, '%Y/%m/%d %H:%M')
-
-		reservation.duration = (reservation.endTime - reservation.startTime).seconds
+		startDateTimeStr = self.request.get('startDateTime')
+		endDateTimeStr = self.request.get('endDateTime')
+		reservation.startDateTime = datetime.strptime(startDateTimeStr, '%Y-%m-%d %H:%M:%S')
+		reservation.endStartTime = datetime.strptime(endDateTimeStr, '%Y-%m-%d %H:%M:%S')
+		reservation.duration = (reservation.endStartTime - reservation.startDateTime).seconds
 		reservation.put()
 
-		url = '/ResourceContent?resourceID=%s' % resource.key.urlsafe()
+		# url = '/ResourceContent?resourceID=%s' % resource.key.urlsafe()
 		self.redirect('/')
 
 ##################################################################
@@ -366,14 +366,14 @@ class EditResource(webapp2.RequestHandler):
 			url = users.create_logout_url(self.request.uri)
 			url_linktext = 'Logout'
 		else:
+			url = users.create_login_url(self.request.uri)
+			url_linktext = 'Login'
 			self.redirect(users.create_login_url(self.request.uri))
-
 		user = users.get_current_user()
 
-		# if self.request.get('resourceID'):
-		# 	resourceID = self.request.get('resourceID')
-		# 	resource = ndb.Key(urlsafe=resourceID).get()
-		# 	template_values['resource'] = resource
+		nowStr = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+		now = datetime.strptime(nowStr, '%Y-%m-%d %H:%M:%S')
+
 		resourceID = self.request.get('resourceID')
 		resource = ndb.Key(urlsafe=resourceID).get()
 
@@ -382,7 +382,7 @@ class EditResource(webapp2.RequestHandler):
 			'url': url,
 			'url_linktext': url_linktext,
 			'resource':resource,
-			'now': datetime.now()
+			'now': now
 		}
 
 		template = JINJA_ENVIRONMENT.get_template('resource_edit.html')
@@ -396,61 +396,20 @@ class EditResource(webapp2.RequestHandler):
 		resource.maxReservations = int(self.request.get('maxReservations'))
 		resource.numsAvailable = int(self.request.get('maxReservations'))
 		resource.numReservations = 0
-
 		resource.description = self.request.get('description')
-		startDateTimeStr = self.request.get('startTime')
-		endDateTimeStr = self.request.get('endTime')
-		resource.startDateTime = datetime.strptime(startDateTimeStr, '%Y-%m-%d - %H:%M')
-		resource.endDateTime = datetime.strptime(endDateTimeStr, '%Y-%m-%d - %H:%M')
+
+		startDateTimeStr = self.request.get('startDateTime')
+		endDateTimeStr = self.request.get('endDateTime')
+		resource.startDateTime = datetime.strptime(startDateTimeStr, '%Y-%m-%d %H:%M:%S')
+		resource.endDateTime = datetime.strptime(endDateTimeStr, '%Y-%m-%d %H:%M:%S')
 		resource.duration = (resource.endDateTime - resource.startDateTime).seconds
 		resource.put()
 
 		url = '/ResourceContent?resourceID=%s' % resource.key.urlsafe()
 		self.redirect(url)
-#
-#
-# 	def post(self):
-# 		if self.request.get('resourceID'):
-# 			resourceID = self.request.get('resourceID')
-# 			resource = ndb.Key(urlsafe=resourceID).get()
-# 		else:
-# 			resource = Resource()
-#
-# 		resource.author = users.get_current_user()
-# 		resource.name = self.request.get('name')
-# 		resource.tags = self.request.get('tags').strip().split(',')
-# 		resource.maxReservations = int(self.request.get('maxReservations'))
-# 		resource.numsAvailable = int(self.request.get('maxReservations'))
-# 		resource.numReservations = 0
-#
-# 		resource.description = self.request.get('description')
-#
-# 		dateStr = self.request.get('date')
-# 		startTimeStr = self.request.get('startTime')
-# 		endTimeStr = self.request.get('endTime')
-#
-# 		resource.date = datetime.strptime(dateStr, '%Y/%m/%d')
-# 		resource.startTime = datetime.strptime(dateStr + ' ' + startTimeStr, '%Y/%m/%d %H:%M')
-# 		resource.endTime = datetime.strptime(dateStr + ' ' + endTimeStr, '%Y/%m/%d %H:%M')
-#
-#
-# 		# resource.city = self.request.get('City')
-# 		# resource.maxReservations = self.request.get('MaxAttendees')
-# 		# resource.description = self.request.get('Description')
-#
-# 		# resource.pubDate =
-#
-# 		resource.put()
-# 		# query_params = {'': ''}
-#
-# 		# url = '/AllResources?resourceID=%s' % resource.key.urlsafe()
-# 		query_params = {'resourceID': resource.key.urlsafe()}
-# 		# + urllib.urlencode(query_params)
-# 		# url = '/'
-#
-# 		# self.redirect('/AllResources?'+urllib.urlencode(query_params))
-# 		self.redirect('/AllResources?'+urllib.urlencode(query_params))
-#
+
+#############################
+
 class ResourceContent(webapp2.RequestHandler):
 	def get(self):
 		if users.get_current_user():
@@ -458,8 +417,10 @@ class ResourceContent(webapp2.RequestHandler):
 			url_linktext = 'Logout'
 		else:
 			self.redirect(users.create_login_url(self.request.uri))
-
 		user = users.get_current_user()
+
+		nowStr = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+		now = datetime.strptime(nowStr, '%Y-%m-%d %H:%M:%S')
 
 		resourceID = self.request.get('resourceID')
 		resource = ndb.Key(urlsafe=resourceID).get()
@@ -469,7 +430,7 @@ class ResourceContent(webapp2.RequestHandler):
 			'url': url,
 			'url_linktext': url_linktext,
 			'resource':resource,
-			'today': datetime.now()
+			'now': now
 		}
 
 		# if self.request.get('resourceID'):
@@ -487,12 +448,12 @@ class ResourcesWithTag(webapp2.RequestHandler):
 			url_linktext = 'Logout'
 		else:
 			self.redirect(users.create_login_url(self.request.uri))
-
 		user = users.get_current_user()
 
-		tagIDStr = self.request.get('tag')
-		# tag = ndb.Key(urlsafe=tagIDStr).get()
+		nowStr = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+		now = datetime.strptime(nowStr, '%Y-%m-%d %H:%M:%S')
 
+		tagIDStr = self.request.get('tag')
 		resources = Resource.query(tagIDStr == Resource.tags).fetch()
 
 		template_values = {
@@ -500,7 +461,7 @@ class ResourcesWithTag(webapp2.RequestHandler):
 			'url': url,
 			'url_linktext': url_linktext,
 			'resources': resources,
-			'today': datetime.now()
+			'now': now
 		}
 
 		template = JINJA_ENVIRONMENT.get_template('tag.html')
@@ -515,7 +476,6 @@ app = webapp2.WSGIApplication([
 	('/CreateResource', CreateResource),
 	('/AllResources', AllResources),
 	# ('/DeleteResource', DeleteResource),
-    #
 	# ('/MyResource', MyResource),
 	('/MyResource', MyResource),
 	# ('/DeleteReservation', DeleteReservation),

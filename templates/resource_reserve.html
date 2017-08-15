@@ -21,10 +21,10 @@
              <li for="dtp_input1" class="control-label list-group-item list-group-item-info">
                  Start DateTime Picking<span class="label label-danger pull-right">required</span></li>
 
-            <div class="input-group date form_datetime" data-date="1979-09-16T05:25:07Z"
-                 data-date-format="yyyy-mm-dd - hh:ii" data-link-field="dtp_input1">
+            <div class="input-group date form_datetime" data-date="{{ now }}"
+                 data-date-format="yyyy-mm-dd hh:ii:ss" data-link-field="dtp_input1">
                 <input class="form-control" type="text" name="startDateTime"
-                       value="{{ resource.startDateTime }}"
+{#                       value="{{ resource.startDateTime }}"#}
 {#                onchange="checkDate()"#}
                 name="startDateTime"
                 >
@@ -40,11 +40,11 @@
              <li for="dtp_input1" class=" control-label list-group-item list-group-item-info">
                  End DateTime Picking<span class="label label-danger pull-right">required</span></li>
 
-            <div class="input-group date form_datetime" data-date="1979-09-16T05:25:07Z"
-                 data-date-format="yyyy-mm-dd - hh:ii" data-link-field="dtp_input2">
+            <div class="input-group date form_datetime" data-date="{{ now }}"
+                 data-date-format="yyyy-mm-dd hh:ii:ss" data-link-field="dtp_input2">
                 <input class="form-control"  type="text" name="endDateTime"
                 {#                onchange="checkDate()"#}
-                        value="{{ resource.endDateTime  }}"
+{#                        value="{{ resource.endDateTime  }}"#}
                 name="endDateTime"
                 >
                 <span class="input-group-addon"><span class="glyphicon glyphicon-remove"></span></span>
@@ -66,7 +66,7 @@
 
          <div>
             <a class="list-group-item active list-group-item"
-                href="/CreateResource?resourceID={{ resource.key.urlsafe() }}"
+                href="/ResourceContent?resourceID={{resource.key.urlsafe()}}"
             >{{resource.name}}
             <span class="badge" href="#">{{ resource.numReservations }}/{{ resource.maxReservations }}</span>
 {#            <a class="badge badge-warning pull-right" herl="#">Resource: {{resource.name}}</a>#}

@@ -9,22 +9,22 @@
         <div class="form-group">
 
         <a class="list-group-item list-unstyled
-                {% if resource.startDateTime <  today  %} list-group-item-danger {% else %} active{% endif %}">
+                {% if resource.startDateTime <  now  %} list-group-item-danger {% else %} active{% endif %}">
             {{resource.name}}
             <span class="badge" href="#">{{ resource.numReservations }}/{{ resource.maxReservations }}</span>
-        {% if resource.startDateTime <  today  %}<span class="label label-warning pull-right">expired</span>{% endif %}
+        {% if resource.startDateTime <  now  %}<span class="label label-warning pull-right">expired</span>{% endif %}
         </a>
 
 
         <li class="list-group-item list-group-item-info">
             By: {{resource.author}},
-              Created: {{resource.pubDate.strftime("%Y-%m-%d %H:%M")}},
-              Last Modified: {{resource.modDate.strftime("%Y-%m-%d %H:%M")}}
+              Created: {{resource.pubDate.strftime("%Y-%m-%d %H:%M:%S")}},
+              Last Modified: {{resource.modDate.strftime("%Y-%m-%d %H:%M:%S")}}
         </li>
 
         <li class="list-group-item list-group-item-info">
-              Start Time: {{resource.startDateTime.strftime("%Y-%m-%d %H:%M")}},
-              End Time: {{resource.endDateTime.strftime("%Y-%m-%d %H:%M")}}
+              Start Time: {{resource.startDateTime.strftime("%Y-%m-%d %H:%M:%S")}},
+              End Time: {{resource.endDateTime.strftime("%Y-%m-%d %H:%M:%S")}}
         </li>
 
         <li class="list-group-item list-group-item-info">
@@ -43,7 +43,7 @@
 
         <li class="list-group-item list-group-item-info">
             <div class="btn-group" >
-                {% if resource.startDateTime >= today %}
+                {% if resource.startDateTime >= now %}
                 <a  class="btn btn-success" type="submit"
                 href="/Reserve?resourceID={{ resource.key.urlsafe() }}"
                 >Reserve</a>

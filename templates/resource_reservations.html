@@ -20,28 +20,28 @@
 {#    <a class="list-group-item active list-group-item-heading" herl="#">#}
 {#        Resource Name: {{reservation.key.parent().get().name}}#}
 {#        <span class="badge" href="#">{{ reservation.key.parent().get().numReservations }}/{{ reservation.key.parent().get().maxReservations }}</span>#}
-{#        {% if reservation.date <  today  %}<span class="label label-warning pull-right">expired</span>{% endif %}#}
+{#        {% if reservation.date <  now  %}<span class="label label-warning pull-right">expired</span>{% endif %}#}
 {#    </a>#}
 {#    </div>#}
 
     <div class="form-group">
     <li class="list-group-item list-group-item-success ">Reservation Name: {{reservation.name}}
-{#        {% if reservation.date < today  %} list-group-item-danger {% else %} active{% endif %}">#}
-{#        {% if reservation.date < today  %} list-group-item-danger {% else %} active{% endif %}">#}
+{#        {% if reservation.date < now  %} list-group-item-danger {% else %} active{% endif %}">#}
+{#        {% if reservation.date < now  %} list-group-item-danger {% else %} active{% endif %}">#}
         <a class="badge badge-warning pull-right" herl="#">Resource Name: {{reservation.key.parent().get().name}}</a>
-{#        {% if reservation.date <  today  %}<span class="label label-warning pull-right" herl="#">Resource Name: {{reservation.key.parent().get().name}}</span>{% endif %}#}
+{#        {% if reservation.date <  now  %}<span class="label label-warning pull-right" herl="#">Resource Name: {{reservation.key.parent().get().name}}</span>{% endif %}#}
     </li>
 
 
 
     <li class="list-group-item list-group-item-info">
         By: {{reservation.author}},
-          Created: {{reservation.pubDate.strftime("%Y-%m-%d %H:%M")}},
-          Last Modified: {{reservation.modDate.strftime("%Y-%m-%d %H:%M")}}
+          Created: {{reservation.pubDate.strftime("%Y-%m-%d %H:%M:%S")}},
+          Last Modified: {{reservation.modDate.strftime("%Y-%m-%d %H:%M:%S")}}
     </li>
 
     <li class="list-group-item list-group-item-info">
-          Start Time: {{reservation.startTime.strftime("%Y-%m-%d %H:%M")}},
+          Start Time: {{reservation.startTime.strftime("%Y-%m-%d %H:%M:%S")}},
           End Time: {{reservation.endTime}}
     </li>
 

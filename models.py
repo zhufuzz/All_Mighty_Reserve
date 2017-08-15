@@ -38,8 +38,8 @@ class Reservation(ndb.Model):
 	modDate = ndb.DateTimeProperty(auto_now=True)
 
 	date = ndb.DateProperty()
-	startTime = ndb.DateTimeProperty()
-	endTime = ndb.DateTimeProperty()
+	startDateTime = ndb.DateTimeProperty()
+	endDateTime = ndb.DateTimeProperty()
 	duration = ndb.IntegerProperty(indexed=False)
 
 	numsOfAttendee = ndb.IntegerProperty(indexed=False)
