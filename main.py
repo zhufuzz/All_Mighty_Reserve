@@ -1,21 +1,15 @@
 """main.py"""
 import os
-import re
-import urllib
-import time
-import uuid
+from datetime import datetime
+from time import sleep
+
 import jinja2
 import webapp2
-from time import sleep
-from datetime import datetime, time, timedelta, date
-from email import utils
-from google.appengine.ext import ndb
 from google.appengine.api import users
-from google.appengine.api import memcache
-from google.appengine.api import taskqueue
-from models import Resource
+from google.appengine.ext import ndb
+
 from models import Reservation
-from utils import checkUser
+from models import Resource
 
 JINJA_ENVIRONMENT = jinja2.Environment(
 	loader=jinja2.FileSystemLoader(
@@ -47,22 +41,28 @@ class MainPage(webapp2.RequestHandler):
 			thisReservation = deleteReservationKey.get()
 			thisResource = deleteReservationKey.parent().get()
 			thisResource.numReservations = thisResource.numReservations - thisReservation.numsOfAttendee
-			# thisResource.numReservations = thisResource.numReservations - thisReservation.numsOfAttendee
-
 			thisResource.numsAvailable = thisResource.maxReservations - thisResource.numReservations
 			thisResource.put()
-
-
 			deleteReservationKey.delete()
-			sleep(0.1)
+			sleep(0.2)
 
-		reservations = Reservation.query(user == Reservation.author).order(-Reservation.pubDate)
-		reservations = reservations.fetch()
 
-		# nowStr = datetime.now().strftime("%Y-%m-%d - %H:%M")
-		# nowDateTime = datetime.strptime(nowStr, "%Y-%m-%d - %H:%M")
-		# resource_query = Resource.query(Reservation.)
-		# .filter(Reservation.endTime.date() >= date.today())
+		# resource_query = Resource.query(
+		# 	Resource.startDateTime
+		# 	>=
+		# 	datetime.now()
+		# ).order(-Resource.startDateTime).order(-Resource.modDate)
+
+
+		# reservations = Reservation.query(user == Reservation.author)
+		# reservations = reservations.filter(Reservation.startDateTime > datetime.now())
+		# reservations = reservations.order(-Reservation.pubDate)
+		# reservations = reservations.fetch()
+
+		deleteReservationKeys = Reservation.query(Reservation.endDateTime > datetime.now()).fetch(keys_only=True)
+		ndb.delete_multi(deleteReservationKeys)
+
+		reservations = Reservation.query(user == Reservation.author).order(-Reservation.pubDate).fetch()
 
 
 		template_values = {
@@ -98,18 +98,25 @@ class AllResources(webapp2.RequestHandler):
 		deleteResourceStr = self.request.get('delResourceID')
 		if deleteResourceStr != '':
 			deleteResourceKey = ndb.Key(urlsafe=deleteResourceStr)
-
 			deleteReservationKeys = Reservation.query(ancestor = deleteResourceKey).fetch(keys_only=True)
-
 			# ndb.delete_multi(deleteResourceKey)
 			# ndb.put_multi()
 			# list_of_keys = ndb.Key(deleteReservations)
-
 			# list_of_entities = ndb.get_multi(deleteReservationKeys)
-
 			ndb.delete_multi(deleteReservationKeys)
-
 			deleteResourceKey.delete()
+
+		# nowDateTime = ndb.DateTimeProperty(auto_now_add=True)
+		# startDateTime = ndb.DateTimeProperty()
+		# 	datetime.strptime(Resource.startDateTime.strftime('%Y-%m-%d %H:%M:%S'), '%Y-%m-%d %H:%M:%S')
+		# ).order(-Resource.modDate)
+		# seconds = (datetime.now() - art.created).seconds
+
+		# resource_query = Resource.query(
+		# 	Resource.startDateTime
+		# 	>=
+		# 	datetime.now()
+		# ).order(-Resource.startDateTime).order(-Resource.modDate)
 
 		resource_query = Resource.query().order(-Resource.modDate)
 		resources = resource_query.fetch()
@@ -186,20 +193,23 @@ class CreateResource(webapp2.RequestHandler):
 		resource = Resource()
 		resource.author = users.get_current_user()
 		resource.name = self.request.get('name')
-		resource.tags = self.request.get('tags').strip().split(',')
+		tagList1 = self.request.get('tags').strip().split(',')
+		for tag in tagList1:
+			if (tag is not None) and (tag.strip() != ""):
+				resource.tags.append(tag.strip())
 		resource.maxReservations = int(self.request.get('maxReservations'))
 		resource.numsAvailable = int(self.request.get('maxReservations'))
 		resource.numReservations = 0
 		resource.description = self.request.get('description')
 
-		startDateTimeStr = self.request.get('startTime')
-		endDateTimeStr = self.request.get('endTime')
+		startDateTimeStr = self.request.get('startDateTime')
+		endDateTimeStr = self.request.get('endDateTime')
 		resource.startDateTime = datetime.strptime(startDateTimeStr, '%Y-%m-%d %H:%M:%S')
 		resource.endDateTime = datetime.strptime(endDateTimeStr, '%Y-%m-%d %H:%M:%S')
 
 		resource.duration = (resource.endDateTime - resource.startDateTime).seconds
 		resource.put()
-		sleep(0.1)
+		sleep(0.2)
 
 		url = '/ResourceContent?resourceID=%s' % resource.key.urlsafe()
 		self.redirect(url)
@@ -284,7 +294,7 @@ class Reserve(webapp2.RequestHandler):
 		resource = resourceID.get()
 		resource.numsAvailable = resource.maxReservations - resource.numReservations
 		resource.put()
-		sleep(0.1)
+		sleep(0.2)
 
 		template_values = {
 			'user': user,
@@ -306,17 +316,17 @@ class Reserve(webapp2.RequestHandler):
 		resource.numsAvailable = resource.numsAvailable - int(self.request.get('numsOfAttendee'))
 		resource.numReservations = resource.numReservations + int(self.request.get('numsOfAttendee'))
 		resource.put()
-		sleep(0.1)
+		sleep(0.2)
 
 		reservation.author = users.get_current_user()
 		reservation.name = self.request.get('name')
 		startDateTimeStr = self.request.get('startDateTime')
 		endDateTimeStr = self.request.get('endDateTime')
 		reservation.startDateTime = datetime.strptime(startDateTimeStr, '%Y-%m-%d %H:%M:%S')
-		reservation.endStartTime = datetime.strptime(endDateTimeStr, '%Y-%m-%d %H:%M:%S')
-		reservation.duration = (reservation.endStartTime - reservation.startDateTime).seconds
+		reservation.endDateTime = datetime.strptime(endDateTimeStr, '%Y-%m-%d %H:%M:%S')
+		reservation.duration = (reservation.endDateTime - reservation.startDateTime).seconds
 		reservation.put()
-		sleep(0.1)
+		sleep(0.2)
 		# url = '/ResourceContent?resourceID=%s' % resource.key.urlsafe()
 		self.redirect('/')
 
@@ -395,11 +405,19 @@ class EditResource(webapp2.RequestHandler):
 		template = JINJA_ENVIRONMENT.get_template('resource_edit.html')
 		self.response.write(template.render(template_values))
 
+
+
 	def post(self):
+
+		resourceID = self.request.get('resourceID')
 		resource = Resource()
 		resource.author = users.get_current_user()
 		resource.name = self.request.get('name')
-		resource.tags = self.request.get('tags').strip().split(',')
+		tagList1 = self.request.get('tags').strip().split(',')
+		for tag in tagList1:
+			if (tag is not None) and (tag.strip() != ""):
+				resource.tags.append(tag.strip())
+
 		resource.maxReservations = int(self.request.get('maxReservations'))
 		resource.numsAvailable = int(self.request.get('maxReservations'))
 		resource.numReservations = 0
@@ -411,7 +429,7 @@ class EditResource(webapp2.RequestHandler):
 		resource.endDateTime = datetime.strptime(endDateTimeStr, '%Y-%m-%d %H:%M:%S')
 		resource.duration = (resource.endDateTime - resource.startDateTime).seconds
 		resource.put()
-		sleep(0.1)
+		sleep(0.2)
 
 		url = '/ResourceContent?resourceID=%s' % resource.key.urlsafe()
 		self.redirect(url)
@@ -443,12 +461,19 @@ class ResourceContent(webapp2.RequestHandler):
 			resource.put()
 
 			deleteReservationKey.delete()
-			sleep(0.1)
+			sleep(0.2)
 		else:
+			# resourceID = self.request.get('resourceID')
+			# resource = Resource.query(urlsafe=resourceID).get()
 			resourceID = self.request.get('resourceID')
 			resource = ndb.Key(urlsafe=resourceID).get()
 
-		reservations = Reservation.query(ancestor=resource.key).fetch()
+		# reservations = Reservation.query(ancestor=resource.key).fetch()
+
+		deleteReservationKeys = Reservation.query(Reservation.startDateTime > datetime.now()).fetch(keys_only=True)
+		ndb.delete_multi(deleteReservationKeys)
+
+		reservations = Reservation.query(ancestor=resource.key).order(-Reservation.pubDate).fetch()
 
 
 		template_values = {

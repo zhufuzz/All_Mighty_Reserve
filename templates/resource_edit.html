@@ -19,13 +19,11 @@
         <div class="form-group">
              <li for="dtp_input1" class="control-label list-group-item list-group-item-info">
                  Start DateTime Picking<span class="label label-danger pull-right">required</span></li>
-
+                {#data-date="1979-09-16T05:25:07Z"#}
             <div class="input-group date form_datetime" data-date="{{ now }}"
                  data-date-format="yyyy-mm-dd hh:ii:ss" data-link-field="dtp_input1">
-                <input class="form-control" type="text" name="startTime"
-                       value="{{ resource.startDateTime }}"
-{#                onchange="checkDate()"#}
-                name="startDateTime"
+                <input class="form-control" type="text" name="startDateTime" value="{{ resource.startDateTime }}"
+                       id="startDateTime" onchange="checkResourceStartDateTime()"
                 /required>
                 <span class="input-group-addon"><span class="glyphicon glyphicon-remove"></span></span>
                 <span class="input-group-addon"><span class="glyphicon glyphicon-th"></span></span>
@@ -37,13 +35,10 @@
         <div class="form-group">
              <li for="dtp_input1" class=" control-label list-group-item list-group-item-info">
                  End DateTime Picking<span class="label label-danger pull-right">required</span></li>
-
             <div class="input-group date form_datetime" data-date="{{ now }}"
                  data-date-format="yyyy-mm-dd hh:ii:ss" data-link-field="dtp_input2">
-                <input class="form-control"  type="text" name="endTime"
-                {#                onchange="checkDate()"#}
-                        value="{{ resource.endDateTime }}"
-                name="endDateTime"
+                <input class="form-control" type="text" name="endDateTime" value="{{ resource.endDateTime }}"
+                       id="endDateTime" onchange="checkResourceEndDateTime()"
                 /required>
                 <span class="input-group-addon"><span class="glyphicon glyphicon-remove"></span></span>
                 <span class="input-group-addon"><span class="glyphicon glyphicon-th"></span></span>
@@ -52,30 +47,27 @@
         </div>
 
 
+
         <div class="form-group">
             <li class="list-group-item list-group-item-info">Max Reservations
                 <span class="label label-danger pull-right">required</span>
             </li>
             <div>
-                <input type="text" type="number" class="form-control" name="maxReservations" id="maxReservations"
-                       value="{{ resource.maxReservations }}"
+                <input type="text" type="number" class="form-control" name="maxReservations" id="intInput"
+                       value="{{ resource.maxReservations }}" onchange="checkInt()"
                     /required>
             </div>
         </div>
-
 
 
         <div class="form-group">
             <li class="list-group-item list-group-item-info">Tags</li>
             <div>
                 <input type="text" class="form-control" name="tags" id="tags"
-                       value="{% for tag in resource.tags %}{{ tag  }}, {% endfor %}"
+                       value="{% for tag in resource.tags %}{{tag.strip()}}, {% endfor %}"
                    >
             </div>
         </div>
-
-
-
 
 
         <div class="form-group">
@@ -94,7 +86,8 @@
         <br><br>
         <div class="form-group">
             <div>
-                <input class="btn btn-info btn-block" name="resourceID" type="submit" value="Update Resource">
+                <input class="btn btn-info btn-block" name="resourceID" type="submit"
+                       value="Update Resource" onmouseover="checkDuratation()">
             </div>
         </div>
     </form>

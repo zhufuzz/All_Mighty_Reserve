@@ -1,0 +1,109 @@
+{% extends "resource_base.html" %}
+
+{% block Reserve %}active{% endblock %}
+
+
+{% block content %}
+{% if resource.startDateTime <  now  %}
+    <li class="list-group-item list-group-item-success">This resource has expired.</li>
+{% else %}
+
+    <form action="/Reserve" method="post">
+
+         <div class="form-group">
+            <li class="list-group-item list-group-item-success">Reservation Name</li>
+            <div>
+                <input type="text" class="form-control" name="name" id="name"
+                       placeholder="Reservation Name ..."
+                /required>
+            </div>
+        </div>
+
+
+        <div class="form-group">
+             <li for="dtp_input1" class="control-label list-group-item list-group-item-info">
+                 Start DateTime Picking<span class="label label-danger pull-right">required</span></li>
+            <div class="input-group date form_datetime" data-date="{{ now }}"
+                 data-date-format="yyyy-mm-dd hh:ii:ss" data-link-field="dtp_input1">
+                <input class="form-control" type="text" name="startDateTime"
+{#                       value="{{ resource.startDateTime }}"#}
+{#                onchange="checkDate()"#}
+                /required>
+                <span class="input-group-addon"><span class="glyphicon glyphicon-remove"></span></span>
+                <span class="input-group-addon"><span class="glyphicon glyphicon-th"></span></span>
+            </div>
+            <input type="hidden" id="dtp_input1"  />
+        </div>
+
+
+
+        <div class="form-group">
+             <li for="dtp_input1" class=" control-label list-group-item list-group-item-info">
+                 End DateTime Picking<span class="label label-danger pull-right">required</span></li>
+            <div class="input-group date form_datetime" data-date="{{ now }}"
+                 data-date-format="yyyy-mm-dd hh:ii:ss" data-link-field="dtp_input2">
+                <input class="form-control"  type="text" name="endDateTime"
+                {#                onchange="checkDate()"#}
+{#                        value="{{ resource.endDateTime  }}"#}
+                /required>
+                <span class="input-group-addon"><span class="glyphicon glyphicon-remove"></span></span>
+                <span class="input-group-addon"><span class="glyphicon glyphicon-th"></span></span>
+            </div>
+            <input type="hidden" id="dtp_input2"  />
+        </div>
+
+
+         <div class="form-group">
+         <li class="list-group-item list-group-item-info">Num of Atendees<span class="label label-danger pull-right">required</span></li>
+            <select id="1" class="form-control"  name="numsOfAttendee" >
+                {% for n in range(1,resource.numsAvailable + 1) %}
+                    <option>{{ n }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+
+         <div>
+            <a class="list-group-item active list-group-item"
+                href="/ResourceContent?resourceID={{resource.key.urlsafe()}}"
+            >{{resource.name}}
+            <span class="badge" href="#">{{ resource.numReservations }}/{{ resource.maxReservations }}</span>
+{#            <a class="badge badge-warning pull-right" herl="#">Resource: {{resource.name}}</a>#}
+
+            </a>
+
+            <li class="list-group-item list-group-item-info">
+{#                Date: {{resource.date.strftime("%Y-%m-%d %H:%M")}},#}
+                  Start Time: {{resource.startDateTime.strftime("%Y-%m-%d %H:%M")}},
+                  End Time: {{resource.endDateTime}}
+            </li>
+
+
+
+         <li class="list-group-item list-group-item-info">
+            <div class="btn-group">Tags:
+            {% for tag in resource.tags %}
+                <a type="button" href="/ResourcesWithTag?tag={{tag}}"><span class="label label-warning">{{ tag }}</span></a>
+            {% endfor %}
+            </div>
+        </li>
+        </div>
+
+
+        <br><br><br>
+
+        <div>
+            <input type="hidden" name="resourceID" value="{{ resource.key.urlsafe() }}">
+            <input class="btn btn-info btn-block" type="submit" value="Submit Reservation">
+        </div>
+
+{#        {% endif %}#}
+    </form>
+
+
+{% endif %}
+
+{% endblock %}
+
+
+
