@@ -135,17 +135,17 @@
             </div>
         </li>
 
-            <li class="list-group-item list-group-item-info">
-                <div class="btn-group" >
-                    {% if user and user == reservation.author %}
-                        <a  class="btn btn-danger" type="submit"
-                        href="/ResourceContent?deleteReservationID={{reservation.key.urlsafe()}}"
-                        >
-                        Delete
-                          </a>
-                    {% endif %}
-                </div>
-            </li>
+        <li class="list-group-item list-group-item-info">
+            <div class="btn-group" >
+                {% if user and user == reservation.author %}
+                    <a  class="btn btn-danger" type="submit"
+                    href="/ResourceContent?deleteReservationID={{reservation.key.urlsafe()}}"
+                    >
+                    Delete
+                      </a>
+                {% endif %}
+            </div>
+        </li>
 
             </div>
         <br>
