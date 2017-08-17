@@ -14,10 +14,11 @@ class Resource(ndb.Model):
 
 	pubDate = ndb.DateTimeProperty(auto_now_add=True)
 	modDate = ndb.DateTimeProperty(auto_now=True)
+	lastReserveDate = ndb.DateTimeProperty()
 
 	startDateTime = ndb.DateTimeProperty(auto_now_add=False)
 	endDateTime = ndb.DateTimeProperty(auto_now_add=False)
-	duration = ndb.IntegerProperty(indexed=False)
+	duration = ndb.StringProperty(indexed=False)
 
 	numReservations = ndb.IntegerProperty(indexed=False)
 	maxReservations = ndb.IntegerProperty(indexed=False)
@@ -40,7 +41,7 @@ class Reservation(ndb.Model):
 	date = ndb.DateProperty()
 	startDateTime = ndb.DateTimeProperty()
 	endDateTime = ndb.DateTimeProperty()
-	duration = ndb.IntegerProperty(indexed=False)
+	duration = ndb.StringProperty(indexed=False)
 
 	numsOfAttendee = ndb.IntegerProperty(indexed=False)
 

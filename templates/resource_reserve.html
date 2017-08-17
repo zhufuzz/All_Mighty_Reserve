@@ -4,7 +4,7 @@
 
 
 {% block content %}
-{% if resource.startDateTime <  now  %}
+{% if resource.startDateTime <=  now  %}
     <li class="list-group-item list-group-item-success">This resource has expired.</li>
 {% else %}
 
@@ -25,7 +25,7 @@
                  Start DateTime Picking<span class="label label-danger pull-right">required</span></li>
             <div class="input-group date form_datetime" data-date="{{ now }}"
                  data-date-format="yyyy-mm-dd hh:ii:ss" data-link-field="dtp_input1">
-                <input class="form-control" type="text" name="startDateTime"
+                <input class="form-control" type="text" name="startDateTime" id="reservationStartTime"
 {#                       value="{{ resource.startDateTime }}"#}
 {#                onchange="checkDate()"#}
                 /required>
@@ -42,7 +42,7 @@
                  End DateTime Picking<span class="label label-danger pull-right">required</span></li>
             <div class="input-group date form_datetime" data-date="{{ now }}"
                  data-date-format="yyyy-mm-dd hh:ii:ss" data-link-field="dtp_input2">
-                <input class="form-control"  type="text" name="endDateTime"
+                <input class="form-control"  type="text" name="endDateTime" id="reservationEndTime"
                 {#                onchange="checkDate()"#}
 {#                        value="{{ resource.endDateTime  }}"#}
                 /required>
@@ -64,29 +64,45 @@
 
 
          <div>
-            <a class="list-group-item active list-group-item"
+            <a class="list-group-item
+                {% if resource.startDateTime <  now  %} list-group-item-danger {% else %} active{% endif %}"
                 href="/ResourceContent?resourceID={{resource.key.urlsafe()}}"
-            >{{resource.name}}
-            <span class="badge" href="#">{{ resource.numReservations }}/{{ resource.maxReservations }}</span>
-{#            <a class="badge badge-warning pull-right" herl="#">Resource: {{resource.name}}</a>#}
-
+            >
+                {{resource.name}}
+                <span class="badge" href="#">{{ resource.numReservations }}/{{ resource.maxReservations }}</span>
+            {% if resource.startDateTime <  now  %}<span class="label label-warning pull-right">expired</span>{% endif %}
             </a>
 
+
             <li class="list-group-item list-group-item-info">
-{#                Date: {{resource.date.strftime("%Y-%m-%d %H:%M")}},#}
-                  Start Time: {{resource.startDateTime.strftime("%Y-%m-%d %H:%M")}},
-                  End Time: {{resource.endDateTime}}
+                By: {{resource.author}},
+                Created: {{resource.pubDate.strftime("%Y-%m-%d %H:%M:%S")}},
+                Last Modified: {{resource.modDate.strftime("%Y-%m-%d %H:%M:%S")}}
+            </li>
+
+            <li class="list-group-item list-group-item-info">
+                Last Reservation: {% if resource.lastReserveDate %}{{resource.lastReserveDate.strftime("%Y-%m-%d %H:%M:%S")}},
+                                    {% else %}No Reservation Yet{% endif %}
+            </li>
+
+            <li class="list-group-item list-group-item-info">
+                Start Time: {{resource.startDateTime.strftime("%Y-%m-%d %H:%M:%S")}},
+                End Time: {{resource.endDateTime.strftime("%Y-%m-%d %H:%M:%S")}},
+                Duration: {{resource.duration}}
+            </li>
+
+            <li class="list-group-item list-group-item-info">
+                Description: {{resource.description}}
             </li>
 
 
-
-         <li class="list-group-item list-group-item-info">
-            <div class="btn-group">Tags:
-            {% for tag in resource.tags %}
-                <a type="button" href="/ResourcesWithTag?tag={{tag}}"><span class="label label-warning">{{ tag }}</span></a>
-            {% endfor %}
-            </div>
-        </li>
+            <li class="list-group-item list-group-item-info">
+                <div class="btn-group">Tags:
+                {% for tag in resource.tags %}
+                    <a type="button" href="/ResourcesWithTag?tag={{tag}}"><span class="label label-warning">{{ tag }}</span></a>
+                {% endfor %}
+                </div>
+            </li>
         </div>
 
 

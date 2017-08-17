@@ -19,7 +19,7 @@ function checkResourceEndDateTime() {
     }
 }
 
-function checkDuratation() {
+function checkResourceDuratation() {
     var startStr = document.getElementById("startDateTime").value;
     var endStr = document.getElementById("endDateTime").value;
     start = new Date(Date.parse(startStr));

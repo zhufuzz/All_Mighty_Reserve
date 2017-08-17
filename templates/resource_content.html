@@ -9,22 +9,28 @@
     <div class="form-group">
 
         <li class="list-group-item
-                {% if resource.startDateTime <  now  %} list-group-item-danger {% else %} active{% endif %}">
+                {% if resource.startDateTime <=  now  %} list-group-item-danger {% else %} active{% endif %}">
             {{resource.name}}
             <span class="badge" >{{ resource.numReservations }}/{{ resource.maxReservations }}</span>
-        {% if resource.startDateTime <  now  %}<span class="label label-warning pull-right">expired</span>{% endif %}
+        {% if resource.startDateTime <=  now  %}<span class="label label-warning pull-right">expired</span>{% endif %}
         </li>
 
 
         <li class="list-group-item list-group-item-info">
             By: {{resource.author}},
-              Created: {{resource.pubDate.strftime("%Y-%m-%d %H:%M:%S")}},
-              Last Modified: {{resource.modDate.strftime("%Y-%m-%d %H:%M:%S")}}
+            Created: {{resource.pubDate.strftime("%Y-%m-%d %H:%M:%S")}},
+            Last Modified: {{resource.modDate.strftime("%Y-%m-%d %H:%M:%S")}}
         </li>
 
         <li class="list-group-item list-group-item-info">
-              Start Time: {{resource.startDateTime.strftime("%Y-%m-%d %H:%M:%S")}},
-              End Time: {{resource.endDateTime.strftime("%Y-%m-%d %H:%M:%S")}}
+            Last Reservation: {% if resource.lastReserveDate %}{{resource.lastReserveDate.strftime("%Y-%m-%d %H:%M:%S")}},
+                                {% else %}No Reservation Yet{% endif %}
+        </li>
+
+        <li class="list-group-item list-group-item-info">
+            Start Time: {{resource.startDateTime.strftime("%Y-%m-%d %H:%M:%S")}},
+            End Time: {{resource.endDateTime.strftime("%Y-%m-%d %H:%M:%S")}},
+            Duration: {{resource.duration}}
         </li>
 
         <li class="list-group-item list-group-item-info">
@@ -81,74 +87,60 @@
     <div class="form-group">
 
         {% if reservations  %}
+            {% for reservation in reservations %}
+                {% if reservation  %}
 
-        {% for reservation in reservations %}
-        {% if reservation  %}
-        {#    <div class="form-group">#}
-        {#    <a class="list-group-item active list-group-item-heading" herl="#">#}
-        {#        Resource Name: {{reservation.key.parent().get().name}}#}
-        {#        <span class="badge" href="#">{{ reservation.key.parent().get().numReservations }}/{{ reservation.key.parent().get().maxReservations }}</span>#}
-        {#        {% if reservation.date <  now  %}<span class="label label-warning pull-right">expired</span>{% endif %}#}
-        {#    </a>#}
-        {#    </div>#}
-
-            <div class="form-group">
-            <li class="list-group-item list-group-item-success ">Reservation Name: {{reservation.name}}
-        {#        {% if reservation.date < now  %} list-group-item-danger {% else %} active{% endif %}">#}
-        {#        {% if reservation.date < now  %} list-group-item-danger {% else %} active{% endif %}">#}
-                <a class="badge badge-warning pull-right"
-                   href="/ResourceContent?resourceID={{reservation.key.parent().get().key.urlsafe()}}">
-                    {{reservation.key.parent().get().name}}
-                </a>
-        {#        {% if reservation.date <  now  %}<span class="label label-warning pull-right" herl="#">Resource Name: {{reservation.key.parent().get().name}}</span>{% endif %}#}
-            </li>
+                    <div class="form-group">
+                        <li class="list-group-item list-group-item-success ">Reservation Name: {{reservation.name}}
+                            <a class="badge badge-warning pull-right"
+                               href="/ResourceContent?resourceID={{reservation.key.parent().get().key.urlsafe()}}">
+                                {{reservation.key.parent().get().name}}
+                            </a>
+                        </li>
 
 
 
-            <li class="list-group-item list-group-item-info">
-                  By: {{reservation.author}},
-        {#          Created: {{reservation.pubDate.strftime("%Y-%m-%d %H:%M")}},#}
-        {#          Last Modified: {{reservation.modDate.strftime("%Y-%m-%d %H:%M")}}#}
-                Created: {{reservation.pubDate.strftime("%Y-%m-%d %H:%M:%S")}},
+                    <li class="list-group-item list-group-item-info">
+                        By: {{reservation.author}},
+                        Created: {{reservation.pubDate.strftime("%Y-%m-%d %H:%M:%S")}},
+                        Last Modified: {{reservation.modDate.strftime("%Y-%m-%d %H:%M:%S")}}
+                    </li>
 
-                  Last Modified: {{reservation.modDate.strftime("%Y-%m-%d %H:%M:%S")}}
+                    <li class="list-group-item list-group-item-info">
+                        Start Time: {{reservation.startDateTime}},
+                        End Time: {{reservation.endDateTime}}
+                        Duration: {{reservation.duration}}
+                    </li>
 
-            </li>
+                    <li class="list-group-item list-group-item-info">
+                        Description: {{reservation.key.parent().get().description}}
+                    </li>
 
-            <li class="list-group-item list-group-item-info">
-        {#          Start Time: {{reservation.startDateTime.strftime("%Y-%m-%d %H:%M")}},#}
-                  Start Time: {{reservation.startDateTime}},
-                  End Time: {{reservation.endDateTime}}
-            </li>
+                    <li class="list-group-item list-group-item-info">
+                        <div class="btn-group">Tags:
+                        {% for tag in resource.tags %}
+                            <a type="button" href="/ResourcesWithTag?tag={{tag.strip()}}"><span class="label label-warning">{{tag.strip()}}</span></a>
+                        {% endfor %}
+                        </div>
+                    </li>
 
-            <li class="list-group-item list-group-item-info">
-                Description: {{reservation.key.parent().get().description}}
-            </li>
 
-        <li class="list-group-item list-group-item-info">
-            <div class="btn-group">Tags:
-            {% for tag in resource.tags %}
-                <a type="button" href="/ResourcesWithTag?tag={{tag.strip()}}"><span class="label label-warning">{{tag.strip()}}</span></a>
-            {% endfor %}
-            </div>
-        </li>
+                    {% if user and user == reservation.author %}
+                        <li class="list-group-item list-group-item-info">
+                            <div class="btn-group" >
+                                    <a  class="btn btn-danger" type="submit"
+                                    href="/ResourceContent?deleteReservationID={{reservation.key.urlsafe()}}"
+                                    >
+                                    Delete
+                                    </a>
+                            </div>
+                        </li>
+                    {% endif %}
 
-        <li class="list-group-item list-group-item-info">
-            <div class="btn-group" >
-                {% if user and user == reservation.author %}
-                    <a  class="btn btn-danger" type="submit"
-                    href="/ResourceContent?deleteReservationID={{reservation.key.urlsafe()}}"
-                    >
-                    Delete
-                      </a>
+                    </div>
+                <br>
                 {% endif %}
-            </div>
-        </li>
-
-            </div>
-        <br>
-        {% endif %}
-        {% endfor %}
+            {% endfor %}
 
 
         {% endif %}

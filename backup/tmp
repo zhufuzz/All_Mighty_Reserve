@@ -1,7 +1,0 @@
-		if user:
-			url = users.create_logout_url(self.request.uri)
-			url_linktext = 'Logout'
-		else:
-			url = users.create_login_url(self.request.uri)
-			url_linktext = 'Login'
-			self.redirect(users.create_login_url(self.request.uri))

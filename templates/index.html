@@ -12,26 +12,24 @@
 
     <div class="form-group">
         <li class="list-group-item list-group-item-success ">Reservation Name: {{reservation.name}}
-    {#        {% if reservation.date < now  %} list-group-item-danger {% else %} active{% endif %}">#}
-    {#        {% if reservation.date < now  %} list-group-item-danger {% else %} active{% endif %}">#}
             <a class="badge badge-warning pull-right"
                href="/ResourceContent?resourceID={{reservation.key.parent().get().key.urlsafe()}}">
                 {{reservation.key.parent().get().name}}
             </a>
-    {#        {% if reservation.date <  now  %}<span class="label label-warning pull-right" herl="#">Resource Name: {{reservation.key.parent().get().name}}</span>{% endif %}#}
         </li>
-
 
 
         <li class="list-group-item list-group-item-info">
             By: {{reservation.author}},
             Created: {{reservation.pubDate.strftime("%Y-%m-%d %H:%M:%S")}},
             Last Modified: {{reservation.modDate.strftime("%Y-%m-%d %H:%M:%S")}}
+
         </li>
 
         <li class="list-group-item list-group-item-info">
-              Start Time: {{reservation.startDateTime}},
-              End Time: {{reservation.endDateTime}}
+            Start Time: {{reservation.startDateTime}},
+            End Time: {{reservation.endDateTime}}
+            Duration: {{reservation.duration}}
         </li>
 
         <li class="list-group-item list-group-item-info">
@@ -48,18 +46,17 @@
             </div>
         </li>
 
-
-        <li class="list-group-item list-group-item-info">
-            <div class="btn-group" >
-                {% if user and user == reservation.author %}
-                    <a  class="btn btn-danger" type="submit"
-                    href="/?deleteReservationID={{reservation.key.urlsafe()}}"
-                    >
-                    Delete
-                      </a>
-                {% endif %}
-            </div>
-        </li>
+        {% if user and user == reservation.author %}
+            <li class="list-group-item list-group-item-info">
+                <div class="btn-group" >
+                        <a  class="btn btn-danger" type="submit"
+                        href="/?deleteReservationID={{reservation.key.urlsafe()}}"
+                        >
+                        Delete
+                        </a>
+                </div>
+            </li>
+        {% endif %}
 
     </div>
 
