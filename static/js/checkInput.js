@@ -39,5 +39,66 @@ function checkInt(){
     }
 }
 
+//
+// function checkReservationStartDateTime(resourceStartDateTime, resourceEndDateTime) {
+//     var reservationStartTimeStr = document.getElementById("reservationStartTime").value;
+//
+//     reservationStartTime = new Date(Date.parse(reservationStartTimeStr));
+//     // var today = new Date();
+//
+//     if (reservationStartTime < resourceStartDateTime) {
+//         document.getElementById("reservationStartTime").value = null;
+//         alert("Ivalid Input: Reservation must start after resource start time!!!");
+//     }
+//
+//     if (reservationStartTime > resourceEndDateTime) {
+//         document.getElementById("reservationStartTime").value = null;
+//         alert("Ivalid Input: Reservation must end before resource end time!!!");
+//     }
+// }
+
+
+function checkReservationStartDateTime(resourceStartDateTimeStr, resourceEndDateTimeStr) {
+    var reservationStartTimeStr = document.getElementById("reservationStartTime").value;
+
+    reservationStartTime = new Date(Date.parse(reservationStartTimeStr));
+
+    resourceStartDateTime = new Date(Date.parse(resourceStartDateTimeStr));
+    resourceEndDateTime = new Date(Date.parse(resourceEndDateTimeStr));
+
+    // var today = new Date();
+
+    if (reservationStartTime < resourceStartDateTime) {
+        document.getElementById("reservationStartTime").value = null;
+        alert("Ivalid Input: Reservation must start after resource start time!!!");
+    }
+
+    if (reservationStartTime > resourceEndDateTime) {
+        document.getElementById("reservationStartTime").value = null;
+        alert("Ivalid Input: Reservation must end before resource end time!!!");
+    }
+}
+
+function checkReservationEndDateTime(resourceStartDateTimeStr, resourceEndDateTimeStr) {
+    var reservationEndTimeStr = document.getElementById("reservationEndTime").value;
+
+    reservationEndTime = new Date(Date.parse(reservationEndTimeStr));
+
+    resourceStartDateTime = new Date(Date.parse(resourceStartDateTimeStr));
+    resourceEndDateTime = new Date(Date.parse(resourceEndDateTimeStr));
+
+    if (reservationEndTime < resourceStartDateTime) {
+        document.getElementById("reservationEndTime").value = null;
+        alert("Ivalid Input: Reservation must start after resource start time!!!");
+    }
+
+    if (reservationEndTime > resourceEndDateTime) {
+        document.getElementById("reservationEndTime").value = null;
+        alert("Ivalid Input: Reservation must end before resource end time!!!");
+    }
+}
+
+
+
 
 

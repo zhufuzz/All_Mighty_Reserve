@@ -4,6 +4,8 @@
 
 
 {% block content %}
+    <script>resourceStart="{{ resource.startDateTime}}"; resourceEnd="{{ resource.endDateTime}}"</script>
+
 {% if resource.startDateTime <=  now  %}
     <li class="list-group-item list-group-item-success">This resource has expired.</li>
 {% else %}
@@ -26,8 +28,7 @@
             <div class="input-group date form_datetime" data-date="{{ now }}"
                  data-date-format="yyyy-mm-dd hh:ii:ss" data-link-field="dtp_input1">
                 <input class="form-control" type="text" name="startDateTime" id="reservationStartTime"
-{#                       value="{{ resource.startDateTime }}"#}
-{#                onchange="checkDate()"#}
+                       onchange="checkReservationStartDateTime(resourceStart, resourceEnd)"
                 /required>
                 <span class="input-group-addon"><span class="glyphicon glyphicon-remove"></span></span>
                 <span class="input-group-addon"><span class="glyphicon glyphicon-th"></span></span>
@@ -43,8 +44,7 @@
             <div class="input-group date form_datetime" data-date="{{ now }}"
                  data-date-format="yyyy-mm-dd hh:ii:ss" data-link-field="dtp_input2">
                 <input class="form-control"  type="text" name="endDateTime" id="reservationEndTime"
-                {#                onchange="checkDate()"#}
-{#                        value="{{ resource.endDateTime  }}"#}
+                        onchange="checkReservationEndDateTime(resourceStart, resourceEnd)"
                 /required>
                 <span class="input-group-addon"><span class="glyphicon glyphicon-remove"></span></span>
                 <span class="input-group-addon"><span class="glyphicon glyphicon-th"></span></span>
