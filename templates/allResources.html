@@ -5,9 +5,6 @@
 {% block content %}
 
 
-
-{#<div class="container">#}
-
     {% for resource in resources %}
         <div class="form-group">
 
@@ -21,10 +18,12 @@
         </a>
 
         <li class="list-group-item list-group-item-info">
-            By: {{resource.author}}, <a href="/ResourceRSS?resourceID={{resource.key.urlsafe()}}">RSS: </a>,
+            By: {{resource.author}},
             Created: {{resource.pubDate.strftime("%Y-%m-%d %H:%M:%S")}},
-            Last Modified: {{resource.modDate.strftime("%Y-%m-%d %H:%M:%S")}}
+            Last Modified: {{resource.modDate.strftime("%Y-%m-%d %H:%M:%S")}},
+            <a href="/ResourceRSS?resourceID={{resource.key.urlsafe()}}">RSS</a>
         </li>
+
 
         <li class="list-group-item list-group-item-info">
             Last Reservation: {% if resource.lastReserveDate %}{{resource.lastReserveDate.strftime("%Y-%m-%d %H:%M:%S")}},
@@ -63,7 +62,7 @@
             <div class="btn-group" >
                 {% if user and user == resource.author %}
                     <a  class="btn btn-primary" type="submit"
-                    href="/EditResource?resourceID={{ resource.key.urlsafe() }}"
+                    href="/EditResource?resourceID={{resource.key.urlsafe()}}"
                     >
                     Edit
                       </a>

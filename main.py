@@ -302,12 +302,13 @@ class EditResource(webapp2.RequestHandler):
 		self.response.write(template.render(template_values))
 
 	def post(self):
-		resourceID = self.request.get('resourceID')
-		# resource = Resource()
-		# resource = ndb.Key(urlsafe=resourceID).get()
-		resource = Resource.query(urlsafe=resourceID).fetch()[0]
+		deleteResourceKeyStr = self.request.get('resourceID')
+		deleteResourceKey = ndb.Key(urlsafe=deleteResourceKeyStr)
+		deleteReservationKeys = Reservation.query(ancestor=deleteResourceKey).fetch(keys_only=True)
+		ndb.delete_multi(deleteReservationKeys)
+		deleteResourceKey.delete()
 
-
+		resource = Resource()
 		resource.author = users.get_current_user()
 		# Get the resource info from page
 		resource.name = self.request.get('name').strip()
@@ -424,6 +425,8 @@ class ResourcesWithTag(webapp2.RequestHandler):
 		self.response.write(template.render(template_values))
 
 ##################################################################################
+
+# Create RSS for resources
 class ResourceRSS(webapp2.RequestHandler):
 	def get(self):
 		user = users.get_current_user()
@@ -492,12 +495,12 @@ class ResourceRSS(webapp2.RequestHandler):
 
 		rough_string = ElementTree.tostring(top, 'utf-8')
 		reparsed = minidom.parseString(rough_string)
-		xmlFile = reparsed.toprettyxml(indent="  ")
+		xml = reparsed.toprettyxml(indent="  ")
 
 		template_values = {
 			# 'reservations': reservations,
 			'user': user,
-			'xmlFile': xmlFile,
+			'xml': xml,
 		}
 		template = JINJA_ENVIRONMENT.get_template('RSS.html')
 		self.response.write(template.render(template_values))
