@@ -39,23 +39,6 @@ function checkInt(){
     }
 }
 
-//
-// function checkReservationStartDateTime(resourceStartDateTime, resourceEndDateTime) {
-//     var reservationStartTimeStr = document.getElementById("reservationStartTime").value;
-//
-//     reservationStartTime = new Date(Date.parse(reservationStartTimeStr));
-//     // var today = new Date();
-//
-//     if (reservationStartTime < resourceStartDateTime) {
-//         document.getElementById("reservationStartTime").value = null;
-//         alert("Ivalid Input: Reservation must start after resource start time!!!");
-//     }
-//
-//     if (reservationStartTime > resourceEndDateTime) {
-//         document.getElementById("reservationStartTime").value = null;
-//         alert("Ivalid Input: Reservation must end before resource end time!!!");
-//     }
-// }
 
 
 function checkReservationStartDateTime(resourceStartDateTimeStr, resourceEndDateTimeStr) {
@@ -95,6 +78,17 @@ function checkReservationEndDateTime(resourceStartDateTimeStr, resourceEndDateTi
     if (reservationEndTime > resourceEndDateTime) {
         document.getElementById("reservationEndTime").value = null;
         alert("Ivalid Input: Reservation must end before resource end time!!!");
+    }
+}
+
+function checkReservationDuratation() {
+    var startStr = document.getElementById("reservationStartTime").value;
+    var endStr = document.getElementById("reservationEndTime").value;
+    start = new Date(Date.parse(startStr));
+    end = new Date(Date.parse(endStr));
+    if (end - start <= 0) {
+        document.getElementById("reservationEndTime").value = null;
+        alert("Ivalid Input: End Time should be after Start Time.");
     }
 }
 

@@ -197,7 +197,8 @@ class CreateResource(webapp2.RequestHandler):
 
 ##################################################################################
 
-#Make reservation of a resource
+#Make reservation of a resource.
+#DateTime validation is done by the frontend, in the checkInput.js
 class Reserve(webapp2.RequestHandler):
 	def get(self):
 		if users.get_current_user():
@@ -238,17 +239,16 @@ class Reserve(webapp2.RequestHandler):
 		reservation.numsOfAttendee = int(self.request.get('numsOfAttendee'))
 		resource.numsAvailable = resource.numsAvailable - int(self.request.get('numsOfAttendee'))
 		resource.numReservations = resource.numReservations + int(self.request.get('numsOfAttendee'))
-
+		#Update the last Reserve Date of this resource
 		nowStr = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 		now = datetime.strptime(nowStr, '%Y-%m-%d %H:%M:%S')
 		resource.lastReserveDate = now
-
+		#Save the resource
 		resource.put()
-		sleep(0.2)
 
+		#Get the reservation info from page
 		reservation.author = users.get_current_user()
 		reservation.name = self.request.get('name').strip()
-
 		startDateTimeStr = self.request.get('startDateTime')
 		endDateTimeStr = self.request.get('endDateTime')
 		startDateTime = datetime.strptime(startDateTimeStr, '%Y-%m-%d %H:%M:%S')
@@ -257,7 +257,7 @@ class Reserve(webapp2.RequestHandler):
 		reservation.endDateTime = endDateTime
 		duration = str(endDateTime - startDateTime)
 		reservation.duration = duration
-
+		# Save the reservation
 		reservation.put()
 		sleep(0.2)
 
@@ -265,7 +265,8 @@ class Reserve(webapp2.RequestHandler):
 
 ##################################################################################
 
-#Edit resource. Previous data will be presented
+#Edit resource. Previous data will be presented.
+#DateTime validation is done by the frontend, in the checkInput.js
 class EditResource(webapp2.RequestHandler):
 	def get(self):
 		if users.get_current_user():
@@ -298,6 +299,7 @@ class EditResource(webapp2.RequestHandler):
 		resourceID = self.request.get('resourceID')
 		resource = Resource()
 		resource.author = users.get_current_user()
+		# Get the resource info from page
 		resource.name = self.request.get('name').strip()
 		tagList1 = self.request.get('tags').strip().split(',')
 		for tag in tagList1:
@@ -317,7 +319,7 @@ class EditResource(webapp2.RequestHandler):
 		resource.endDateTime = endDateTime
 		duration = str(endDateTime - startDateTime)
 		resource.duration = duration
-
+		#update the resource
 		resource.put()
 		sleep(0.2)
 
@@ -326,8 +328,8 @@ class EditResource(webapp2.RequestHandler):
 
 ##################################################################################
 
-#Present content of a resource, and all reservations of this resource.
-#Delete all expired reservations
+# Present content of a resource, and all reservations of this resource(including reservations of other users).
+# Delete all expired reservations before presenting the resource content
 class ResourceContent(webapp2.RequestHandler):
 	def get(self):
 		if users.get_current_user():
@@ -340,7 +342,9 @@ class ResourceContent(webapp2.RequestHandler):
 		nowStr = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 		now = datetime.strptime(nowStr, '%Y-%m-%d %H:%M:%S')
 
-		# update the numReservations and numsAvailable of this resource when delete the reservation
+		# Update the numReservations and numsAvailable of this resource when delete the reservation
+		# Only the owner of the reservation will be presented a 'delete' button
+		#
 		deleteReservationStr = self.request.get('deleteReservationID')
 		if deleteReservationStr != '':
 			deleteReservationKey = ndb.Key(urlsafe=deleteReservationStr)
@@ -349,15 +353,14 @@ class ResourceContent(webapp2.RequestHandler):
 			resource.numReservations = resource.numReservations - thisReservation.numsOfAttendee
 			resource.numsAvailable = resource.maxReservations - resource.numReservations
 			resource.put()
-
 			deleteReservationKey.delete()
-			sleep(0.2)
+			# sleep(0.2)
 		else:
 			resourceID = self.request.get('resourceID')
 			resource = ndb.Key(urlsafe=resourceID).get()
 
-		#delete expired reservations and update the resource of this reservation
-		#expiration is defined as the end of reservation is passed
+		# Delete expired reservations and update the resource of this reservation (numReservations and numsAvailable)
+		# Expiration is when the end of reservation is passed, so you can reserve even when the resource has started
 		deleteExpiredReservationsKeys = Reservation.query(Reservation.endDateTime <= datetime.now()).fetch(keys_only=True)
 		for deleteReservationKey in deleteExpiredReservationsKeys:
 			thisReservation = deleteReservationKey.get()
@@ -365,9 +368,9 @@ class ResourceContent(webapp2.RequestHandler):
 			resource.numReservations = resource.numReservations - thisReservation.numsOfAttendee
 			resource.numsAvailable = resource.maxReservations - resource.numReservations
 			resource.put()
-
 		ndb.delete_multi(deleteExpiredReservationsKeys)
 
+		# Query the reservations of this resource
 		reservations = Reservation.query(ancestor=resource.key).order(-Reservation.pubDate).fetch()
 
 		template_values = {

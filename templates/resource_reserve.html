@@ -54,7 +54,8 @@
 
 
          <div class="form-group">
-         <li class="list-group-item list-group-item-info">Num of Atendees<span class="label label-danger pull-right">required</span></li>
+         <li class="list-group-item list-group-item-info">
+             Num of Atendees<span class="label label-danger pull-right">required</span></li>
             <select id="1" class="form-control"  name="numsOfAttendee" >
                 {% for n in range(1,resource.numsAvailable + 1) %}
                     <option>{{ n }}</option>
@@ -70,7 +71,8 @@
             >
                 {{resource.name}}
                 <span class="badge" href="#">{{ resource.numReservations }}/{{ resource.maxReservations }}</span>
-            {% if resource.startDateTime <  now  %}<span class="label label-warning pull-right">expired</span>{% endif %}
+            {% if resource.startDateTime <  now  %}
+                <span class="label label-warning pull-right">expired</span>{% endif %}
             </a>
 
 
@@ -81,7 +83,8 @@
             </li>
 
             <li class="list-group-item list-group-item-info">
-                Last Reservation: {% if resource.lastReserveDate %}{{resource.lastReserveDate.strftime("%Y-%m-%d %H:%M:%S")}},
+                Last Reservation: {% if resource.lastReserveDate %}{
+                {resource.lastReserveDate.strftime("%Y-%m-%d %H:%M:%S")}},
                                     {% else %}No Reservation Yet{% endif %}
             </li>
 
@@ -99,7 +102,8 @@
             <li class="list-group-item list-group-item-info">
                 <div class="btn-group">Tags:
                 {% for tag in resource.tags %}
-                    <a type="button" href="/ResourcesWithTag?tag={{tag}}"><span class="label label-warning">{{ tag }}</span></a>
+                    <a type="button" href="/ResourcesWithTag?tag={{tag}}">
+                        <span class="label label-warning">{{ tag }}</span></a>
                 {% endfor %}
                 </div>
             </li>
@@ -110,7 +114,8 @@
 
         <div>
             <input type="hidden" name="resourceID" value="{{ resource.key.urlsafe() }}">
-            <input class="btn btn-info btn-block" type="submit" value="Submit Reservation">
+            <input class="btn btn-info btn-block" type="submit" value="Submit Reservation"
+            onmouseover="checkReservationDuratation()">
         </div>
 
 {#        {% endif %}#}
