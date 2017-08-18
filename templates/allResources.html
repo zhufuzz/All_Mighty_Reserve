@@ -21,7 +21,7 @@
         </a>
 
         <li class="list-group-item list-group-item-info">
-            By: {{resource.author}},
+            By: {{resource.author}}, <a href="/ResourceRSS?resourceID={{resource.key.urlsafe()}}">RSS: </a>,
             Created: {{resource.pubDate.strftime("%Y-%m-%d %H:%M:%S")}},
             Last Modified: {{resource.modDate.strftime("%Y-%m-%d %H:%M:%S")}}
         </li>

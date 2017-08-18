@@ -12,6 +12,12 @@ from google.appengine.ext import ndb
 from models import Reservation
 from models import Resource
 
+from xml.etree.ElementTree import Element, SubElement, Comment
+from xml.etree import ElementTree
+from xml.dom import minidom
+from email import utils
+
+
 JINJA_ENVIRONMENT = jinja2.Environment(
 	loader=jinja2.FileSystemLoader(
 		os.path.join(os.path.dirname(__file__), 'templates')),
@@ -297,7 +303,11 @@ class EditResource(webapp2.RequestHandler):
 
 	def post(self):
 		resourceID = self.request.get('resourceID')
-		resource = Resource()
+		# resource = Resource()
+		# resource = ndb.Key(urlsafe=resourceID).get()
+		resource = Resource.query(urlsafe=resourceID).fetch()[0]
+
+
 		resource.author = users.get_current_user()
 		# Get the resource info from page
 		resource.name = self.request.get('name').strip()
@@ -414,6 +424,84 @@ class ResourcesWithTag(webapp2.RequestHandler):
 		self.response.write(template.render(template_values))
 
 ##################################################################################
+class ResourceRSS(webapp2.RequestHandler):
+	def get(self):
+		user = users.get_current_user()
+
+		resourceID = self.request.get('resourceID')
+		resource = ndb.Key(urlsafe=resourceID).get()
+		reservations = Reservation.query(ancestor = resource.key).fetch()
+
+		weburl = self.request.url
+		urlSplit = weburl.split("/")
+		urlSplit.remove(urlSplit[len(urlSplit) - 1])
+		url = "/".join(urlSplit)+ "/ResourceContent?resourceID=%s" % resourceID
+		# url = url + "/ResourceContent?resourceID=%s" % resourceID
+
+		top = Element('rss')
+		top.set('version', '2.0')
+
+		channel = SubElement(top, 'channel')
+		title = SubElement(channel, 'title')
+		title.text = resource.name
+
+		description = SubElement(channel, 'description')
+		description.text = "Resrouce created by: " + str(resource.author)
+		link = SubElement(channel, 'link')
+		link.text = url
+
+		# resourcePubdate = resource.pubDate.timetuple()
+		# pubtimestamp = time.mktime(resourcePubdate)
+
+		pubDate = SubElement(channel, 'pubDate')
+		pubDate.text = resource.pubDate.strftime('%Y-%m-%d %H:%M:%S')
+
+		count = 1
+
+		for reservation in reservations:
+
+			item = SubElement(channel, 'item')
+
+			title = SubElement(item, 'title')
+			title.text = "Reservation" + str(count)
+
+			description = SubElement(item, 'description')
+			description.text = "This reservation is created by:" + str(reservation.author) + ". "\
+							   +  "Start time: " + reservation.startDateTime.strftime('%Y-%m-%d %H:%M:%S') \
+								+ "End time: " + reservation.endDateTime.strftime('%Y-%m-%d %H:%M:%S') \
+								+ " for duration:" + reservation.duration
+
+			# weburl = self.request.url
+			# urlSplit = weburl.split("/")
+			# urlSplit.remove(urlSplit[len(urlSplit) - 1])
+			# url = "/".join(urlSplit) + "/ResourceContent?resourceID=%s" % resourceID
+
+			link = SubElement(item, 'link')
+			link.text = url
+
+			# guid = SubElement(item, 'guid')
+			# guid.set('isPermaLink', 'false')
+			# guid.text = reservation.key.urlsafe()
+
+			pubDate = SubElement(item, 'pubDate')
+			pubDate.text = reservation.pubDate.strftime('%Y-%m-%d %H:%M:%S')
+
+			count = count + 1
+
+		# xmlFile = prettify(top)
+
+		rough_string = ElementTree.tostring(top, 'utf-8')
+		reparsed = minidom.parseString(rough_string)
+		xmlFile = reparsed.toprettyxml(indent="  ")
+
+		template_values = {
+			# 'reservations': reservations,
+			'user': user,
+			'xmlFile': xmlFile,
+		}
+		template = JINJA_ENVIRONMENT.get_template('RSS.html')
+		self.response.write(template.render(template_values))
+
 
 app = webapp2.WSGIApplication([
 	('/', MainPage),
@@ -424,5 +512,6 @@ app = webapp2.WSGIApplication([
 	('/EditResource', EditResource),
 	('/ResourceContent', ResourceContent),
 	('/ResourcesWithTag', ResourcesWithTag),
+	('/ResourceRSS', ResourceRSS)
 ], debug=True)
 
