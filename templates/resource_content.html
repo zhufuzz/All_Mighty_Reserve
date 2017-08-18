@@ -19,7 +19,8 @@
         <li class="list-group-item list-group-item-info">
             By: {{resource.author}},
             Created: {{resource.pubDate.strftime("%Y-%m-%d %H:%M:%S")}},
-            Last Modified: {{resource.modDate.strftime("%Y-%m-%d %H:%M:%S")}}
+            Last Modified: {{resource.modDate.strftime("%Y-%m-%d %H:%M:%S")}},
+            Duration: {{resource.duration}}, <a href="/ResourceRSS?resourceID={{resource.key.urlsafe()}}">RSS</a>
         </li>
 
         <li class="list-group-item list-group-item-info">
@@ -29,8 +30,7 @@
 
         <li class="list-group-item list-group-item-info">
             Start Time: {{resource.startDateTime.strftime("%Y-%m-%d %H:%M:%S")}},
-            End Time: {{resource.endDateTime.strftime("%Y-%m-%d %H:%M:%S")}},
-            Duration: {{resource.duration}}
+            End Time: {{resource.endDateTime.strftime("%Y-%m-%d %H:%M:%S")}}
         </li>
 
         <li class="list-group-item list-group-item-info">

@@ -439,22 +439,24 @@ class ResourceRSS(webapp2.RequestHandler):
 		urlSplit = weburl.split("/")
 		urlSplit.remove(urlSplit[len(urlSplit) - 1])
 		url = "/".join(urlSplit)+ "/ResourceContent?resourceID=%s" % resourceID
-		# url = url + "/ResourceContent?resourceID=%s" % resourceID
 
 		top = Element('rss')
 		top.set('version', '2.0')
 
 		channel = SubElement(top, 'channel')
+
 		title = SubElement(channel, 'title')
-		title.text = resource.name
+		title.text = str(resource.name)
+
+		author = SubElement(channel, 'author')
+		author.text = str(resource.author)
 
 		description = SubElement(channel, 'description')
 		description.text = "Resrouce created by: " + str(resource.author)
+
 		link = SubElement(channel, 'link')
 		link.text = url
 
-		# resourcePubdate = resource.pubDate.timetuple()
-		# pubtimestamp = time.mktime(resourcePubdate)
 
 		pubDate = SubElement(channel, 'pubDate')
 		pubDate.text = resource.pubDate.strftime('%Y-%m-%d %H:%M:%S')
@@ -465,43 +467,39 @@ class ResourceRSS(webapp2.RequestHandler):
 
 			item = SubElement(channel, 'item')
 
+			author = SubElement(item, 'author')
+			author.text = str(resource.author)
+
 			title = SubElement(item, 'title')
 			title.text = "Reservation" + str(count)
 
 			description = SubElement(item, 'description')
-			description.text = "This reservation is created by:" + str(reservation.author) + ". "\
+			description.text = "Reservation created by:" + str(reservation.author) + ". "\
 							   +  "Start time: " + reservation.startDateTime.strftime('%Y-%m-%d %H:%M:%S') \
 								+ "End time: " + reservation.endDateTime.strftime('%Y-%m-%d %H:%M:%S') \
-								+ " for duration:" + reservation.duration
+								+ " Duration:" + reservation.duration
 
-			# weburl = self.request.url
-			# urlSplit = weburl.split("/")
-			# urlSplit.remove(urlSplit[len(urlSplit) - 1])
-			# url = "/".join(urlSplit) + "/ResourceContent?resourceID=%s" % resourceID
+			guid = SubElement(item, 'guid')
+			guid.set('isPermaLink', 'false')
+			guid.text = reservation.key.urlsafe()
 
 			link = SubElement(item, 'link')
 			link.text = url
-
-			# guid = SubElement(item, 'guid')
-			# guid.set('isPermaLink', 'false')
-			# guid.text = reservation.key.urlsafe()
 
 			pubDate = SubElement(item, 'pubDate')
 			pubDate.text = reservation.pubDate.strftime('%Y-%m-%d %H:%M:%S')
 
 			count = count + 1
 
-		# xmlFile = prettify(top)
-
-		rough_string = ElementTree.tostring(top, 'utf-8')
-		reparsed = minidom.parseString(rough_string)
-		xml = reparsed.toprettyxml(indent="  ")
+		elementTreeStr = ElementTree.tostring(top, 'utf-8')
+		parsedElementTreeStr = minidom.parseString(elementTreeStr)
+		xml = parsedElementTreeStr.toprettyxml(indent="	")
 
 		template_values = {
-			# 'reservations': reservations,
 			'user': user,
 			'xml': xml,
 		}
+
 		template = JINJA_ENVIRONMENT.get_template('RSS.html')
 		self.response.write(template.render(template_values))
 

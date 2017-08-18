@@ -83,15 +83,14 @@
             </li>
 
             <li class="list-group-item list-group-item-info">
-                Last Reservation: {% if resource.lastReserveDate %}{
-                {resource.lastReserveDate.strftime("%Y-%m-%d %H:%M:%S")}},
-                                    {% else %}No Reservation Yet{% endif %}
+                Last Reservation: {% if resource.lastReserveDate %}{{resource.lastReserveDate.strftime("%Y-%m-%d %H:%M:%S")}}
+            {% else %}No Reservation Yet{% endif %}
             </li>
 
             <li class="list-group-item list-group-item-info">
                 Start Time: {{resource.startDateTime.strftime("%Y-%m-%d %H:%M:%S")}},
                 End Time: {{resource.endDateTime.strftime("%Y-%m-%d %H:%M:%S")}},
-                Duration: {{resource.duration}}
+                Duration: {{resource.duration}}, <a href="/ResourceRSS?resourceID={{resource.key.urlsafe()}}">RSS</a>
             </li>
 
             <li class="list-group-item list-group-item-info">
