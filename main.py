@@ -296,7 +296,12 @@ class EditResource(webapp2.RequestHandler):
 		self.response.write(template.render(template_values))
 
 	def post(self):
-		resourceID = self.request.get('resourceID')
+		deleteResourceKeyStr = self.request.get('resourceID')
+		deleteResourceKey = ndb.Key(urlsafe=deleteResourceKeyStr)
+		deleteReservationKeys = Reservation.query(ancestor=deleteResourceKey).fetch(keys_only=True)
+		ndb.delete_multi(deleteReservationKeys)
+		deleteResourceKey.delete()
+
 		resource = Resource()
 		resource.author = users.get_current_user()
 		# Get the resource info from page

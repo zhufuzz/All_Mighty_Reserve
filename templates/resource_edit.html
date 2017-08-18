@@ -4,7 +4,7 @@
 {#{% block EditResourceA %}?resouceID={{ resource.key.urlsafe() }}{% endblock %}#}
 {% block content %}
 
-    <form action="/EditResource" method="post">
+    <form action="/EditResource?resourceID={{resource.key.urlsafe()}}" method="post">
 
         <div class="form-group">
             <li class="list-group-item active">Resource Name<span class="label label-danger pull-right">required</span></li>
