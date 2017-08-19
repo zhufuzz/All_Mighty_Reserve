@@ -24,6 +24,8 @@ class Resource(ndb.Model):
 	maxReservations = ndb.IntegerProperty(indexed=False)
 	numsAvailable = ndb.IntegerProperty(indexed=False)
 
+	image = ndb.BlobProperty()
+
 	# @classmethod
 	# def query_resource(cls, ancestor_key):
 	# 	return cls.query(ancestor=ancestor_key).order(-cls.date)

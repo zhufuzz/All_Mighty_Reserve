@@ -8,6 +8,13 @@ import jinja2
 import webapp2
 from google.appengine.api import users
 from google.appengine.ext import ndb
+from google.appengine.api import mail
+from google.appengine.api import images
+from google.appengine.api import taskqueue
+from google.appengine.api import app_identity
+from google.appengine.ext.webapp import blobstore_handlers
+from google.appengine.ext import blobstore
+
 
 from models import Reservation
 from models import Resource
@@ -163,11 +170,14 @@ class CreateResource(webapp2.RequestHandler):
 		nowStr = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 		now = datetime.strptime(nowStr, '%Y-%m-%d %H:%M:%S')
 
+		upload_url = blobstore.create_upload_url('/upload_photo')
+
 		template_values = {
 			'user': user,
 			'url': url,
 			'url_linktext': url_linktext,
-			'now': now
+			'now': now,
+			'upload_url':upload_url
 		}
 
 		template = JINJA_ENVIRONMENT.get_template('createResource.html')
@@ -195,11 +205,57 @@ class CreateResource(webapp2.RequestHandler):
 		duration = str(endDateTime - startDateTime)
 		resource.duration = duration
 
+		# image = self.request.get("image")
+		# resource.image = images.resize(image, 200,200)
+
 		resource.put()
 		sleep(0.2)
 
+		send_create_mail('noreply@model-ripple-167901.appspotmail.com')
+
 		url = '/ResourceContent?resourceID=%s' % resource.key.urlsafe()
 		self.redirect(url)
+
+##################################################################################
+class PhotoUploadHandler(blobstore_handlers.BlobstoreUploadHandler):
+    def post(self):
+        try:
+            upload = self.get_uploads()[0]
+
+            user_photo = UserPhoto(
+                user=users.get_current_user().user_id(),
+                blob_key=upload.key())
+            user_photo.put()
+
+            self.redirect('/view_photo/%s' % upload.key())
+
+        except:
+            self.error(500)
+##################################################################################
+
+def send_create_mail(sender_address):# [START send_mail]
+	mail.send_mail(sender=sender_address,
+                   to=users.get_current_user().email(),
+                   subject="Your rescource has been created",
+                   body="""Dear User:
+
+	Your rescource has been created.
+
+All Mighty Reserve.
+""")
+
+def send_reserved_mail(sender_address):# [START send_mail]
+	mail.send_mail(sender=sender_address,
+                   to=users.get_current_user().email(),
+                   subject="Your reservation has been created",
+                   body="""Dear User:
+
+	Your reservation has been created.
+
+All Mighty Reserve.
+""")
+
+
 
 ##################################################################################
 
@@ -265,6 +321,8 @@ class Reserve(webapp2.RequestHandler):
 		reservation.duration = duration
 		# Save the reservation
 		reservation.put()
+		send_reserved_mail('noreply@model-ripple-167901.appspotmail.com')
+
 		sleep(0.2)
 
 		self.redirect('/')
@@ -513,6 +571,7 @@ app = webapp2.WSGIApplication([
 	('/EditResource', EditResource),
 	('/ResourceContent', ResourceContent),
 	('/ResourcesWithTag', ResourcesWithTag),
-	('/ResourceRSS', ResourceRSS)
+	('/ResourceRSS', ResourceRSS),
+	('/upload_photo', PhotoUploadHandler),
 ], debug=True)
 

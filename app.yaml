@@ -1,21 +1,32 @@
 runtime: python27
 api_version: 1
 threadsafe: true
-instance_class: B8
 
 
 handlers:
-- url: /css
-  static_dir: static/bootstrap/css
-
-- url: /js
-  static_dir: static/js
+#- url: /favicon\.ico
+#  static_files: favicon.ico
+#  upload: favicon\.ico
 
 - url: /static
   static_dir: static
 
+- url: /css
+  static_dir: static/css
+
+- url: /js
+  static_dir: static/js
+
 - url: /fonts
   static_dir: static/fonts
+#
+#- url: /templates
+#  static_dir: templates
+#
+#- url: /
+#  static_files: templates/index.html
+#  upload: templates/index\.html
+#  secure: always
 
 - url: /.*
   script: main.app
