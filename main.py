@@ -1,3 +1,4 @@
+# encoding: utf-8
 """main.py"""
 import os
 from datetime import datetime
@@ -170,14 +171,16 @@ class CreateResource(webapp2.RequestHandler):
 		nowStr = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 		now = datetime.strptime(nowStr, '%Y-%m-%d %H:%M:%S')
 
-		upload_url = blobstore.create_upload_url('/upload_photo')
+		# upload_url = blobstore.create_upload_url('/CreateResource')
+
+
 
 		template_values = {
 			'user': user,
 			'url': url,
 			'url_linktext': url_linktext,
 			'now': now,
-			'upload_url':upload_url
+			# 'upload_url':upload_url
 		}
 
 		template = JINJA_ENVIRONMENT.get_template('createResource.html')
@@ -208,6 +211,16 @@ class CreateResource(webapp2.RequestHandler):
 		# image = self.request.get("image")
 		# resource.image = images.resize(image, 200,200)
 
+		# try:
+		# 	upload = self.get_uploads()[0]
+		# 	resource.image_blob_key = upload.key()
+		# except:
+		# 	self.error(500)
+
+		imageStr = self.request.get('img')
+		image = images.resize(imageStr, 264, 264)
+		resource.image = image
+
 		resource.put()
 		sleep(0.2)
 
@@ -217,20 +230,20 @@ class CreateResource(webapp2.RequestHandler):
 		self.redirect(url)
 
 ##################################################################################
-class PhotoUploadHandler(blobstore_handlers.BlobstoreUploadHandler):
-    def post(self):
-        try:
-            upload = self.get_uploads()[0]
-
-            user_photo = UserPhoto(
-                user=users.get_current_user().user_id(),
-                blob_key=upload.key())
-            user_photo.put()
-
-            self.redirect('/view_photo/%s' % upload.key())
-
-        except:
-            self.error(500)
+# class PhotoUploadHandler(blobstore_handlers.BlobstoreUploadHandler):
+#     def post(self):
+#         try:
+#             upload = self.get_uploads()[0]
+#
+#             user_photo = UserPhoto(
+#                 user=users.get_current_user().user_id(),
+#                 blob_key=upload.key())
+#             user_photo.put()
+#
+#             self.redirect('/view_photo/%s' % upload.key())
+#
+#         except:
+#             self.error(500)
 ##################################################################################
 
 def send_create_mail(sender_address):# [START send_mail]
@@ -254,6 +267,8 @@ def send_reserved_mail(sender_address):# [START send_mail]
 
 All Mighty Reserve.
 """)
+
+
 
 
 
@@ -442,13 +457,28 @@ class ResourceContent(webapp2.RequestHandler):
 		# Query the reservations of this resource
 		reservations = Reservation.query(ancestor=resource.key).order(-Reservation.pubDate).fetch()
 
+		# blob_info = blobstore.get(resource.image)
+		# imgUrl = None
+		# if resource.image_blob_key:
+		# 	imgUrl = str(images.get_serving_url(resource.image_blob_key))
+
+			# img = images.Image(blob_key=resource.image)
+			# img.resize(width=80, height=100)
+			# img.im_feeling_lucky()
+			# thumbnail = img.execute_transforms(output_encoding=images.JPEG)
+            #
+			# self.response.headers['Content-Type'] = 'image/jpeg'
+			# self.response.out.write(thumbnail)
+			# return
+
 		template_values = {
 			'user': user,
 			'url': url,
 			'url_linktext': url_linktext,
 			'resource':resource,
 			'reservations':reservations,
-			'now': now
+			'now': now,
+			# 'imgUrl':imgUrl
 		}
 
 		template = JINJA_ENVIRONMENT.get_template('resource_content.html')
@@ -456,6 +486,7 @@ class ResourceContent(webapp2.RequestHandler):
 
 ##################################################################################
 
+# when click tag show the resources of certain tag
 class ResourcesWithTag(webapp2.RequestHandler):
 	def get(self):
 		if users.get_current_user():
@@ -469,7 +500,7 @@ class ResourcesWithTag(webapp2.RequestHandler):
 		now = datetime.strptime(nowStr, '%Y-%m-%d %H:%M:%S')
 
 		tagIDStr = self.request.get('tag')
-		resources = Resource.query(tagIDStr == Resource.tags).fetch()
+		resources = Resource.query(tagIDStr == Resource.tags).order(-Resource.lastReserveDate).fetch()
 
 		template_values = {
 			'user': user,
@@ -481,6 +512,36 @@ class ResourcesWithTag(webapp2.RequestHandler):
 
 		template = JINJA_ENVIRONMENT.get_template('tag.html')
 		self.response.write(template.render(template_values))
+
+
+##################################################################################
+
+# Search resource by name
+class SearchResource(webapp2.RequestHandler):
+	def get(self):
+		if users.get_current_user():
+			url = users.create_logout_url(self.request.uri)
+			url_linktext = 'Logout'
+		else:
+			self.redirect(users.create_login_url(self.request.uri))
+		user = users.get_current_user()
+		
+		nowStr = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+		now = datetime.strptime(nowStr, '%Y-%m-%d %H:%M:%S')
+		
+		resourceName = self.request.get('searchResource')
+		resource_query = Resource.query(Resource.name == resourceName).order(-Resource.lastReserveDate)
+		resources = resource_query.fetch()
+		template_values = {
+			'user': user,
+			'resources': resources,
+			'url': url,
+			'url_linktext': url_linktext,
+			'now': now
+		}
+		template = JINJA_ENVIRONMENT.get_template('searchResource.html')
+		self.response.write(template.render(template_values))
+
 
 ##################################################################################
 
@@ -562,6 +623,20 @@ class ResourceRSS(webapp2.RequestHandler):
 		self.response.write(template.render(template_values))
 
 
+
+##################################################################################
+class Image(webapp2.RequestHandler):
+    def get(self):
+        resource_key = ndb.Key(urlsafe=self.request.get('img_id'))
+        resource = resource_key.get()
+        if resource.image:
+            self.response.headers['Content-Type'] = 'image/png'
+            self.response.out.write(resource.image)
+        else:
+            self.response.out.write('No image')
+
+##################################################################################
+
 app = webapp2.WSGIApplication([
 	('/', MainPage),
 	('/CreateResource', CreateResource),
@@ -572,6 +647,7 @@ app = webapp2.WSGIApplication([
 	('/ResourceContent', ResourceContent),
 	('/ResourcesWithTag', ResourcesWithTag),
 	('/ResourceRSS', ResourceRSS),
-	('/upload_photo', PhotoUploadHandler),
+	('/SearchResource', SearchResource),
+	('/img', Image)
 ], debug=True)
 

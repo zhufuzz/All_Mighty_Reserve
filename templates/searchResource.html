@@ -25,7 +25,7 @@
 
             <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
-                    <li class="active"><a href="#">Resources With Tag</a></li>
+                    <li class="active"><a href="#">Resources Name</a></li>
 {#                   <li  class="{% block AllResources %}{% endblock %}"><a href="/AllResources" >All Resources</a></li>#}
 {#                    {% block Reserve %}{% endblock %}#}
 {#                   <li class="{% block MyResource %} {% endblock %}"><a href="/MyResource">My Resources</a></li>#}
@@ -33,6 +33,7 @@
 {#                    <li class="nav-divider"></li>#}
                     <li><a href="/">Home</a></li>
                 </ul>
+
 
             <ul class="nav navbar-nav">
                 <form action="/SearchResource" method="get"role="form">
@@ -58,7 +59,7 @@
     <div class="container" >
         <br><br><br><br>
         {% block content %}{% endblock %}
-
+{% if resources %}
     {% for resource in resources %}
         <div class="form-group">
 
@@ -130,7 +131,7 @@
         </div>
 <br>
 {% endfor %}
-
+{% endif %}
 
 
     </div>

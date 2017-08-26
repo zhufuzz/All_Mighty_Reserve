@@ -10,7 +10,7 @@
 
 {% block content %}
 
-    <form action="/CreateResource" method="post">
+    <form action="/CreateResource" enctype="multipart/form-data" method="post">
 
         <div class="form-group">
             <li class="list-group-item active">Resource Name<span class="label label-danger pull-right">required</span></li>
@@ -92,11 +92,14 @@
 
 
 
-        <form action="{{ upload_url }}" method="POST" enctype="multipart/form-data">
-          Upload File: <input type="file" name="file" id="image"><br>
-          <input type="submit" name="submit" value="Submit">
-        </form>
+{#        <div class="form-group">#}
+{#            <form action="{{ upload_url }}" method="POST" enctype="multipart/form-data">#}
+{#              Upload File: <input type="file" name="file" id="image"><br>#}
+{#              <input type="submit" name="submit" value="upload">#}
+{#            </form>#}
+{#        </div>#}
 
+            <div><input type="file" name="img" />upload</div>
 
 
         <br><br>

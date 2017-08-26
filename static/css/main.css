@@ -22,3 +22,16 @@ form {
     margin-top: 10px;
     overflow: scroll;
 }
+
+
+.copyright {
+    margin: auto;
+    position: fixed; /* or absolute */
+    top: 95%;
+    left: 39%;
+    /*width: 60%;*/
+    /*border: 3px solid #73AD21;*/
+    padding: 10px;
+    /*padding-bottom: 40px;*/
+}
+

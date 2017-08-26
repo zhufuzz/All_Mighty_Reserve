@@ -39,9 +39,9 @@
 
 
 
-        <div c>
-            <img src="{{ resource.image }}" class="img-responsive">
-        </div>
+{#        <div c>#}
+{#            <img src="{{ resource.image }}" class="img-responsive">#}
+{#        </div>#}
 
 
 
@@ -86,7 +86,14 @@
                       </a>
                 {% endif %}
             </div>
+
         </li>
+    </div>
+
+    <div>
+        {% if resource.image %}
+            <img src="/img?img_id={{ resource.key.urlsafe() }}"></img>
+        {% endif %}
     </div>
 
 {#    ############################################################}

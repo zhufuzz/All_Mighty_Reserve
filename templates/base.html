@@ -30,14 +30,42 @@
                    <li  class="{% block AllResources %}{% endblock %}"><a href="/AllResources" >All Resources</a></li>
                     {% block Reserve %}{% endblock %}
                    <li class="{% block MyResource %} {% endblock %}"><a href="/MyResource">My Resources</a></li>
-                <li class="{% block CreateResource %}{% endblock %}"><a href="/CreateResource">Create Resources</a></li>
-                    <li class="nav-divider"></li>
+                    <li class="{% block CreateResource %}{% endblock %}"><a href="/CreateResource">Create Resources</a></li>
+{#                    <li class="nav-divider"></li>#}
                 </ul>
 
+            <ul class="nav navbar-nav">
+                <form action="/SearchResource" method="get"role="form">
+                    <li class="nav navbar-nav">
+                       <input type="text" class="form-control" id="focusedInput" name="searchResource" placeholder="Resouce Name" value="">
+                    </li>
+
+                    <li class="nav navbar-nav">
+                        <button type="submit" class="btn btn-link">Search</button>
+                    </li>
+                 </form>
+
+            </ul>
+{#                <li class="nav-divider"></li>#}
                 <ul class="nav navbar-nav navbar-right">
                     <li><a id="signInOut" class="btn pull-right" href="{{ url }}">{{ url_linktext }}</a></li>
                 </ul>
             </div>
+
+
+{#            <div class="navbar-collapse collapse">
+                <ul class="nav navbar-nav">
+                        <form action="/SarchResource" method="get"role="form">
+                            <div class="form-group">
+                                <label for="name">标签</label>
+                                <input type="text" class="form-control" name="searchResource" placeholder="Resouce Name">
+                                <input type="submit" value="Submit">
+                            </div>
+                        </form>
+                    <li class="nav-divider"></li>
+                </ul>
+            </div>#}
+
         </div>
     </div>
 
@@ -49,7 +77,11 @@
         {% endblock %}
     </div>
 
-
+    <tr >
+        <td>
+            <p><small class="copyright">&#169; 2017 TIANHUI ZHU ALL RIGHTS RESERVED</small></p>
+        </td>
+    </tr>
 </body>
 
 

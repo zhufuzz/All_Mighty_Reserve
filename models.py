@@ -1,3 +1,4 @@
+# encoding: utf-8
 """
 models.py
 
@@ -24,7 +25,8 @@ class Resource(ndb.Model):
 	maxReservations = ndb.IntegerProperty(indexed=False)
 	numsAvailable = ndb.IntegerProperty(indexed=False)
 
-	image = ndb.BlobProperty()
+	# image_blob_key = ndb.BlobKeyProperty(indexed=False)
+	image = ndb.BlobProperty(indexed=False)
 
 	# @classmethod
 	# def query_resource(cls, ancestor_key):
