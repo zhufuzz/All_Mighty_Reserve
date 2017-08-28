@@ -8,12 +8,15 @@ A git brunch with no RSS was made.
 
 All required features are implements. 
 
-All expired reservations will be deleted from the Cloud Datastore before presenting to the front end. 
-All expired resource will be highlighted and disabled from making reservations.
-To edit or delete a resource, all reservations made for this resource will be deleted.
-By clicking the the title of the resource, it can lead to the resource content page. 
-Although the requirement was just resource within a day, this app made it spanning days, 
+1. All expired reservations will be deleted from the Cloud Datastore before presenting to the front end. 
+2. All expired resource will be highlighted and disabled from making reservations.
+3. To edit or delete a resource, all reservations made for this resource will be deleted.
+4. By clicking the the title of the resource, it can lead to the resource content page. 
+5. Although the requirement was just resource within a day, this app made it spanning days, 
 which is harder and more convenient to use as a real app.
+6. Resources are ordered by the last reservation time. 
+The creating time of the resource will be given as the first reservation time.
+
 
 
 Additional Features:
@@ -23,7 +26,7 @@ Additional Features:
 a confirmation email will be sent to the user.
 4.Max of Attendee: The number of max attendee is required for creating a resource.
 5.Num of Attendee: The front end only shows the number of available attendee.
-If there is no spot available, no further reservations can be made.
+If there is no spot available, no reservations can be made.
 
 
 Requirements:
