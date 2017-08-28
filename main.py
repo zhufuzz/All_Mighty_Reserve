@@ -208,6 +208,12 @@ class CreateResource(webapp2.RequestHandler):
 		duration = str(endDateTime - startDateTime)
 		resource.duration = duration
 
+
+		nowStr = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+		now = datetime.strptime(nowStr, '%Y-%m-%d %H:%M:%S')
+		resource.lastReserveDate = now
+
+
 		# image = self.request.get("image")
 		# resource.image = images.resize(image, 200,200)
 
@@ -403,7 +409,16 @@ class EditResource(webapp2.RequestHandler):
 		resource.endDateTime = endDateTime
 		duration = str(endDateTime - startDateTime)
 		resource.duration = duration
+
+		nowStr = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+		now = datetime.strptime(nowStr, '%Y-%m-%d %H:%M:%S')
+		resource.lastReserveDate = now
 		#update the resource
+
+		imageStr = self.request.get('img')
+		image = images.resize(imageStr, 264, 264)
+		resource.image = image
+
 		resource.put()
 		sleep(0.2)
 
@@ -500,7 +515,14 @@ class ResourcesWithTag(webapp2.RequestHandler):
 		now = datetime.strptime(nowStr, '%Y-%m-%d %H:%M:%S')
 
 		tagIDStr = self.request.get('tag')
-		resources = Resource.query(tagIDStr == Resource.tags).order(-Resource.lastReserveDate).fetch()
+		resources = None
+		if tagIDStr != "" and Resource and Resource.tags:
+			if Resource.tags:
+				resource_query_byTags = Resource.query(tagIDStr == Resource.tags)
+				if Resource.lastReserveDate:
+					resource_inOrder = resource_query_byTags.order(-Resource.lastReserveDate)
+					if resource_inOrder:
+						resources = resource_inOrder.fetch()
 
 		template_values = {
 			'user': user,
@@ -528,16 +550,24 @@ class SearchResource(webapp2.RequestHandler):
 		
 		nowStr = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 		now = datetime.strptime(nowStr, '%Y-%m-%d %H:%M:%S')
-		
-		resourceName = self.request.get('searchResource')
-		resource_query = Resource.query(Resource.name == resourceName).order(-Resource.lastReserveDate)
-		resources = resource_query.fetch()
+
+		resources = None
+
+		resourceName = self.request.get('searchResource').strip()
+		if resourceName != "" and Resource:
+			if Resource.name:
+				resource_query_byName = Resource.query(Resource.name == resourceName)
+				if 	Resource.lastReserveDate:
+					resource_query_orderByName = resource_query_byName.order(-Resource.lastReserveDate)
+					if resource_query_orderByName:
+						resources = resource_query_orderByName.fetch()
+
 		template_values = {
 			'user': user,
-			'resources': resources,
 			'url': url,
 			'url_linktext': url_linktext,
-			'now': now
+			'now': now,
+			'resources': resources
 		}
 		template = JINJA_ENVIRONMENT.get_template('searchResource.html')
 		self.response.write(template.render(template_values))

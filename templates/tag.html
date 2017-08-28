@@ -58,7 +58,7 @@
     <div class="container" >
         <br><br><br><br>
         {% block content %}{% endblock %}
-
+{% if resources %}
     {% for resource in resources %}
         <div class="form-group">
 
@@ -130,7 +130,7 @@
         </div>
 <br>
 {% endfor %}
-
+{% endif %}
 
 
     </div>

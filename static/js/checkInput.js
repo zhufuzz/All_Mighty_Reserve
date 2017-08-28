@@ -92,6 +92,13 @@ function checkReservationDuratation() {
     }
 }
 
+/*function checkSearchInput() {
+     var searchStr = document.getElementById("focusedInput").valueOf();
+     if (searchStr.trim() == ""){
+          alert("Ivalid Input: can not search empty!!!");
+     }
+}*/
+
 
 
 

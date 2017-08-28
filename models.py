@@ -7,15 +7,15 @@ from google.appengine.ext import ndb
 
 class Resource(ndb.Model):
 	"""Resource: ..."""
-	author = ndb.UserProperty()
+	author = ndb.UserProperty(indexed=True)
 
-	name = ndb.StringProperty()
-	tags = ndb.StringProperty(repeated = True)
+	name = ndb.StringProperty(indexed=True)
+	tags = ndb.StringProperty(indexed=True, repeated = True)
 	description = ndb.TextProperty(indexed=False)
 
 	pubDate = ndb.DateTimeProperty(auto_now_add=True)
 	modDate = ndb.DateTimeProperty(auto_now=True)
-	lastReserveDate = ndb.DateTimeProperty()
+	lastReserveDate = ndb.DateTimeProperty(indexed=True)
 
 	startDateTime = ndb.DateTimeProperty(auto_now_add=False)
 	endDateTime = ndb.DateTimeProperty(auto_now_add=False)
@@ -35,9 +35,9 @@ class Resource(ndb.Model):
 
 class Reservation(ndb.Model):
 	"""Resource: ..."""
-	author = ndb.UserProperty()
+	author = ndb.UserProperty(indexed=True)
 
-	name = ndb.StringProperty()
+	name = ndb.StringProperty(indexed=True)
 
 	pubDate = ndb.DateTimeProperty(auto_now_add=True)
 	modDate = ndb.DateTimeProperty(auto_now=True)
