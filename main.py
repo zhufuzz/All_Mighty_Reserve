@@ -224,8 +224,9 @@ class CreateResource(webapp2.RequestHandler):
 		# 	self.error(500)
 
 		imageStr = self.request.get('img')
-		image = images.resize(imageStr, 264, 264)
-		resource.image = image
+		if imageStr != None and imageStr != "":
+			image = images.resize(imageStr, 264, 264)
+			resource.image = image
 
 		resource.put()
 		sleep(0.2)
