@@ -59,7 +59,7 @@ class MainPage(webapp2.RequestHandler):
 			thisResource.numsAvailable = thisResource.maxReservations - thisResource.numReservations
 			thisResource.put()
 			deleteReservationKey.delete()
-			sleep(0.2)
+			# sleep(0.2)
 
 		# The expired reservations will be deleted from data store before presenting
 		deleteExpiredReservationsKeys = Reservation.query(Reservation.endDateTime <= datetime.now()).fetch(keys_only=True)
@@ -209,9 +209,9 @@ class CreateResource(webapp2.RequestHandler):
 		resource.duration = duration
 
 
-		nowStr = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-		now = datetime.strptime(nowStr, '%Y-%m-%d %H:%M:%S')
-		resource.lastReserveDate = now
+		# nowStr = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+		# now = datetime.strptime(nowStr, '%Y-%m-%d %H:%M:%S')
+		# resource.lastReserveDate = now
 
 
 		# image = self.request.get("image")
@@ -229,7 +229,7 @@ class CreateResource(webapp2.RequestHandler):
 			resource.image = image
 
 		resource.put()
-		sleep(0.2)
+		# sleep(0.2)
 
 		send_create_mail('noreply@model-ripple-167901.appspotmail.com')
 
@@ -302,7 +302,7 @@ class Reserve(webapp2.RequestHandler):
 		resource = resourceID.get()
 		resource.numsAvailable = resource.maxReservations - resource.numReservations
 		resource.put()
-		sleep(0.2)
+		# sleep(0.2)
 
 		template_values = {
 			'user': user,
@@ -345,7 +345,7 @@ class Reserve(webapp2.RequestHandler):
 		reservation.put()
 		send_reserved_mail('noreply@model-ripple-167901.appspotmail.com')
 
-		sleep(0.2)
+		# sleep(0.2)
 
 		self.redirect('/')
 
@@ -411,9 +411,9 @@ class EditResource(webapp2.RequestHandler):
 		duration = str(endDateTime - startDateTime)
 		resource.duration = duration
 
-		nowStr = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-		now = datetime.strptime(nowStr, '%Y-%m-%d %H:%M:%S')
-		resource.lastReserveDate = now
+		# nowStr = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+		# now = datetime.strptime(nowStr, '%Y-%m-%d %H:%M:%S')
+		# resource.lastReserveDate = now
 		#update the resource
 
 		imageStr = self.request.get('img')
@@ -421,7 +421,7 @@ class EditResource(webapp2.RequestHandler):
 		resource.image = image
 
 		resource.put()
-		sleep(0.2)
+		# sleep(0.2)
 
 		url = '/ResourceContent?resourceID=%s' % resource.key.urlsafe()
 		self.redirect(url)
@@ -454,7 +454,7 @@ class ResourceContent(webapp2.RequestHandler):
 			resource.numsAvailable = resource.maxReservations - resource.numReservations
 			resource.put()
 			deleteReservationKey.delete()
-			# sleep(0.2)
+			# # sleep(0.2)
 		else:
 			resourceID = self.request.get('resourceID')
 			resource = ndb.Key(urlsafe=resourceID).get()

@@ -6,7 +6,7 @@ A Google App Engine based website for reserving, written in Python2.7 and Jinja2
 Google Cloud Datastore is used to store date.
 A git brunch with no RSS was made.
 
-All required features are implements. 
+All required features are implemented. 
 
 1. All expired reservations will be deleted from the Cloud Datastore before presenting to the front end. 
 2. All expired resource will be highlighted and disabled from making reservations.
@@ -15,13 +15,12 @@ All required features are implements.
 5. Although the requirement was just resource within a day, this app made it spanning days, 
 which is harder and more convenient to use as a real app.
 6. Resources are ordered by the last reservation time. 
-The creating time of the resource will be given as the first reservation time.
 
 
 
 Additional Features:
 1.Search Resource: User can search resource by resource name.
-2.Upload Image: User can upload a image to a resource and the image will be presented when 
+2.Upload Image: User can upload a image to a resource and the image will be presented in resource content. 
 3.Send Confirmation Email: When a resource is created and when a reservation is made, 
 a confirmation email will be sent to the user.
 4.Max of Attendee: The number of max attendee is required for creating a resource.
@@ -35,3 +34,7 @@ pillow and PIL
 
 To install pillow: sudo pip install pillow
 To install PIL: sudo easy_install --find-links http://www.pythonware.com/products/pil/ Imaging
+
+Attention:
+Some error only show
+
