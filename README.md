@@ -1,6 +1,8 @@
 # All_Mighty_Reserve
 https://model-ripple-167901.appspot.com
+
 Author: Tianhui Zhu
+Email: tz406@nyu.edu
 
 This app is a Google App Engine based website designed to create resource and make reservations.
 

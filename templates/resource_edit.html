@@ -61,7 +61,7 @@
 
 
         <div class="form-group">
-            <li class="list-group-item list-group-item-info">Tags</li>
+            <li class="list-group-item list-group-item-info">Tags (separate tag with ,)</li>
             <div>
                 <input type="text" class="form-control" name="tags" id="tags"
                        value="{% for tag in resource.tags %}{{tag.strip()}}, {% endfor %}"
