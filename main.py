@@ -34,7 +34,7 @@ JINJA_ENVIRONMENT = jinja2.Environment(
 DEFAULT_RESOURCE_NAME = 'default_resource_name'
 
 
-#Route to index page and present user's reservations
+# Route to index page and present user's reservations
 class MainPage(webapp2.RequestHandler):
 	def get(self):
 		if users.get_current_user():
@@ -46,8 +46,7 @@ class MainPage(webapp2.RequestHandler):
 			self.redirect(users.create_login_url(self.request.uri))
 		user = users.get_current_user()
 
-		nowStr = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-		now = datetime.strptime(nowStr, '%Y-%m-%d %H:%M:%S')
+
 
 		# update the numReservations and numsAvailable of this resource when delete the reservation
 		deleteReservationStr = self.request.get('deleteReservationID')
@@ -69,18 +68,19 @@ class MainPage(webapp2.RequestHandler):
 			resource.numReservations = resource.numReservations - thisReservation.numsOfAttendee
 			resource.numsAvailable = resource.maxReservations - resource.numReservations
 			resource.put()
-
 		ndb.delete_multi(deleteExpiredReservationsKeys)
 
 		#query reservations of the current user, order them based the reservation time('pubDate')
 		reservations = Reservation.query(user == Reservation.author).order(-Reservation.pubDate).fetch()
+
+		nowStr = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+		now = datetime.strptime(nowStr, '%Y-%m-%d %H:%M:%S')
 
 		template_values = {
 			'reservations': reservations,
 			'user': user,
 			'url': url,
 			'url_linktext': url_linktext,
-
 			'now': now
 		}
 		template = JINJA_ENVIRONMENT.get_template('index.html')
@@ -88,7 +88,7 @@ class MainPage(webapp2.RequestHandler):
 
 ##################################################################################
 
-#query all resources in the system
+# Query all resources in the system
 class AllResources(webapp2.RequestHandler):
 	def get(self):
 		if users.get_current_user():
@@ -100,9 +100,8 @@ class AllResources(webapp2.RequestHandler):
 			self.redirect(users.create_login_url(self.request.uri))
 		user = users.get_current_user()
 
-		nowStr = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-		now = datetime.strptime(nowStr, '%Y-%m-%d %H:%M:%S')
-
+		# delete the resource and its reservations when click the 'delete' button
+		# the delete button is only present when the user is the creator
 		deleteResourceStr = self.request.get('delResourceID')
 		if deleteResourceStr != '':
 			deleteResourceKey = ndb.Key(urlsafe=deleteResourceStr)
@@ -110,8 +109,18 @@ class AllResources(webapp2.RequestHandler):
 			ndb.delete_multi(deleteReservationKeys)
 			deleteResourceKey.delete()
 
-		resource_query = Resource.query().order(-Resource.lastReserveDate)
-		resources = resource_query.fetch()
+		# query all resources and order the by the lastReserveDate
+		resources = None
+		if Resource:
+			if Resource.lastReserveDate:
+				resource_query = Resource.query().order(-Resource.lastReserveDate)
+				resources = resource_query.fetch()
+			elif Resource.modDate:
+				resource_query = Resource.query().order(-Resource.modDate)
+				resources = resource_query.fetch()
+
+		nowStr = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+		now = datetime.strptime(nowStr, '%Y-%m-%d %H:%M:%S')
 
 		template_values = {
 			'resources': resources,
@@ -126,7 +135,7 @@ class AllResources(webapp2.RequestHandler):
 
 ##########################################
 
-#query resources created by the current user
+# query resources created by the current user
 class MyResource(webapp2.RequestHandler):
 	def get(self):
 		if users.get_current_user():
@@ -138,11 +147,21 @@ class MyResource(webapp2.RequestHandler):
 			self.redirect(users.create_login_url(self.request.uri))
 		user = users.get_current_user()
 
-		nowStr = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-		now = datetime.strptime(nowStr, '%Y-%m-%d %H:%M:%S')
-
+		# query resources created by the current user
 		resource_query = Resource.query(user == Resource.author).order(-Resource.lastReserveDate)
 		resources = resource_query.filter().fetch()
+
+		resources = None
+		if Resource:
+			if Resource.lastReserveDate:
+				resource_query = Resource.query(user == Resource.author).order(-Resource.lastReserveDate)
+				resources = resource_query.fetch()
+			elif Resource.modDate:
+				resource_query = Resource.query(user == Resource.author).order(-Resource.modDate)
+				resources = resource_query.fetch()
+
+		nowStr = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+		now = datetime.strptime(nowStr, '%Y-%m-%d %H:%M:%S')
 
 		template_values = {
 			'resources': resources,
@@ -171,10 +190,6 @@ class CreateResource(webapp2.RequestHandler):
 		nowStr = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 		now = datetime.strptime(nowStr, '%Y-%m-%d %H:%M:%S')
 
-		# upload_url = blobstore.create_upload_url('/CreateResource')
-
-
-
 		template_values = {
 			'user': user,
 			'url': url,
@@ -186,6 +201,7 @@ class CreateResource(webapp2.RequestHandler):
 		template = JINJA_ENVIRONMENT.get_template('createResource.html')
 		self.response.write(template.render(template_values))
 
+	# Get all the resource info from front end and create resouce
 	def post(self):
 		resource = Resource()
 		resource.author = users.get_current_user()
@@ -208,51 +224,29 @@ class CreateResource(webapp2.RequestHandler):
 		duration = str(endDateTime - startDateTime)
 		resource.duration = duration
 
-
-		# nowStr = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-		# now = datetime.strptime(nowStr, '%Y-%m-%d %H:%M:%S')
-		# resource.lastReserveDate = now
-
-
-		# image = self.request.get("image")
-		# resource.image = images.resize(image, 200,200)
-
-		# try:
-		# 	upload = self.get_uploads()[0]
-		# 	resource.image_blob_key = upload.key()
-		# except:
-		# 	self.error(500)
-
-		imageStr = self.request.get('img')
-		if imageStr != None and imageStr != "":
-			image = images.resize(imageStr, 264, 264)
-			resource.image = image
+		# imageStr = None
+		try:
+			imageStr = self.request.get('img')
+			if imageStr and imageStr != "":
+				image = images.resize(imageStr, 264, 264)
+				resource.image = image
+		except:
+			self.error(500)
 
 		resource.put()
 		# sleep(0.2)
 
+		# Send email to the creator
 		send_create_mail('noreply@model-ripple-167901.appspotmail.com')
 
+		# Redirect to the resource content page
 		url = '/ResourceContent?resourceID=%s' % resource.key.urlsafe()
 		self.redirect(url)
 
-##################################################################################
-# class PhotoUploadHandler(blobstore_handlers.BlobstoreUploadHandler):
-#     def post(self):
-#         try:
-#             upload = self.get_uploads()[0]
-#
-#             user_photo = UserPhoto(
-#                 user=users.get_current_user().user_id(),
-#                 blob_key=upload.key())
-#             user_photo.put()
-#
-#             self.redirect('/view_photo/%s' % upload.key())
-#
-#         except:
-#             self.error(500)
+
 ##################################################################################
 
+# Send confirmation email to creator of resource
 def send_create_mail(sender_address):# [START send_mail]
 	mail.send_mail(sender=sender_address,
                    to=users.get_current_user().email(),
@@ -264,6 +258,7 @@ def send_create_mail(sender_address):# [START send_mail]
 All Mighty Reserve.
 """)
 
+# Send confirmation email to user who make the reservation
 def send_reserved_mail(sender_address):# [START send_mail]
 	mail.send_mail(sender=sender_address,
                    to=users.get_current_user().email(),
@@ -276,13 +271,9 @@ All Mighty Reserve.
 """)
 
 
-
-
-
 ##################################################################################
 
-#Make reservation of a resource.
-#DateTime validation is done by the frontend, in the checkInput.js
+# Make reservation of a resource.
 class Reserve(webapp2.RequestHandler):
 	def get(self):
 		if users.get_current_user():
@@ -300,6 +291,7 @@ class Reserve(webapp2.RequestHandler):
 		resourceIDStr = self.request.get('resourceID')
 		resourceID = ndb.Key(urlsafe=resourceIDStr)
 		resource = resourceID.get()
+		# Update the numsAvailable of the resource
 		resource.numsAvailable = resource.maxReservations - resource.numReservations
 		resource.put()
 		# sleep(0.2)
@@ -315,6 +307,8 @@ class Reserve(webapp2.RequestHandler):
 		template = JINJA_ENVIRONMENT.get_template('resource_reserve.html')
 		self.response.write(template.render(template_values))
 
+	# Get info of reservation from front end.
+	# DateTime validation is done by the frontend, in the checkInput.js
 	def post(self):
 		resourceID = self.request.get('resourceID')
 		resource = ndb.Key(urlsafe = resourceID).get()
@@ -429,7 +423,6 @@ class EditResource(webapp2.RequestHandler):
 ##################################################################################
 
 # Present content of a resource, and all reservations of this resource(including reservations of other users).
-# Delete all expired reservations before presenting the resource content
 class ResourceContent(webapp2.RequestHandler):
 	def get(self):
 		if users.get_current_user():
@@ -539,7 +532,7 @@ class ResourcesWithTag(webapp2.RequestHandler):
 
 ##################################################################################
 
-# Search resource by name
+# Search resource by resource name
 class SearchResource(webapp2.RequestHandler):
 	def get(self):
 		if users.get_current_user():
@@ -549,19 +542,24 @@ class SearchResource(webapp2.RequestHandler):
 			self.redirect(users.create_login_url(self.request.uri))
 		user = users.get_current_user()
 		
-		nowStr = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-		now = datetime.strptime(nowStr, '%Y-%m-%d %H:%M:%S')
-
+		# Query resources by resource name and order them by lastReserveDate if already reserved
+		# If no reservation has been made yet, order them by modDate
 		resources = None
-
 		resourceName = self.request.get('searchResource').strip()
-		if resourceName != "" and Resource:
+		if resourceName and resourceName != "" and Resource:
 			if Resource.name:
 				resource_query_byName = Resource.query(Resource.name == resourceName)
 				if 	Resource.lastReserveDate:
 					resource_query_orderByName = resource_query_byName.order(-Resource.lastReserveDate)
 					if resource_query_orderByName:
 						resources = resource_query_orderByName.fetch()
+				elif Resource.modDate:
+					resource_query_orderByName = resource_query_byName.order(-Resource.modDate)
+					if resource_query_orderByName:
+						resources = resource_query_orderByName.fetch()
+
+		nowStr = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+		now = datetime.strptime(nowStr, '%Y-%m-%d %H:%M:%S')
 
 		template_values = {
 			'user': user,
@@ -656,6 +654,8 @@ class ResourceRSS(webapp2.RequestHandler):
 
 
 ##################################################################################
+
+# Present image on the resource content page
 class Image(webapp2.RequestHandler):
     def get(self):
         resource_key = ndb.Key(urlsafe=self.request.get('img_id'))

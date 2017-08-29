@@ -45,8 +45,7 @@ class Reservation(ndb.Model):
 	pubDate = ndb.DateTimeProperty(auto_now_add=True)
 	modDate = ndb.DateTimeProperty(auto_now=True)
 
-	date = ndb.DateProperty()
-
+	# date = ndb.DateProperty()
 	startDateTime = ndb.DateTimeProperty()
 	endDateTime = ndb.DateTimeProperty()
 	duration = ndb.StringProperty(indexed=False)
